@@ -98,11 +98,12 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
                                                    @NonNull URI uri,
                                                    @Nullable HttpCredentialsInterface credentials,
                                                    @NonNull long contentLength) throws Exception {
-        if(true) {
-            int timeOutSec=10;
-            Timber.i("sleeping for %s sec",timeOutSec);
+        int timeOutSec=10;
+        int timeOutsMax=10;
+        Timber.i("sleeping for %s sec",timeOutSec*timeOutsMax);
+        for(int timeOuts=1;timeOuts<=timeOutsMax;timeOuts++) {
             Thread.sleep(timeOutSec*1000);
-            Timber.i("awake after %s sec",timeOutSec);
+            Timber.i("slept for %s sec",timeOuts* timeOutSec);
         }
         if (alwaysReturnError) {
             return new HttpPostResult("", 500, "");
