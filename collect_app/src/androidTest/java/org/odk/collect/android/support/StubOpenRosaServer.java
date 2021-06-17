@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import timber.log.Timber;
+
 import static java.util.Arrays.asList;
 
 public class StubOpenRosaServer implements OpenRosaHttpInterface {
@@ -91,7 +93,14 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
 
     @NonNull
     @Override
-    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile, @NonNull List<File> fileList, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
+    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
+                                                   @NonNull List<File> fileList,
+                                                   @NonNull URI uri,
+                                                   @Nullable HttpCredentialsInterface credentials,
+                                                   @NonNull long contentLength) throws Exception {
+        Timber.i("uploadSubmissionAndFiles: sleeping");
+        if(true)Thread.sleep(5000);
+        Timber.i("uploadSubmissionAndFiles: awake again");
         if (alwaysReturnError) {
             return new HttpPostResult("", 500, "");
         }
