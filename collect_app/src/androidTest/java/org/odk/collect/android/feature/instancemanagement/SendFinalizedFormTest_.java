@@ -47,7 +47,7 @@ public class SendFinalizedFormTest_ {
                 .clickOK(new SendFinalizedFormPage())
                 .pressBack(new MainMenuPage())
 
-                .clickViewSentForm(1)
+                .clickEditSavedForm(1)
                 .clickOnForm("One Question")
                 .assertText("123");
     }
