@@ -98,9 +98,12 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
                                                    @NonNull URI uri,
                                                    @Nullable HttpCredentialsInterface credentials,
                                                    @NonNull long contentLength) throws Exception {
-        Timber.i("uploadSubmissionAndFiles: sleeping");
-        if(true)Thread.sleep(5000);
-        Timber.i("uploadSubmissionAndFiles: awake again");
+        if(true) {
+            int timeOutSec=10;
+            Timber.i("sleeping for %s sec",timeOutSec);
+            Thread.sleep(timeOutSec*1000);
+            Timber.i("awake after %s sec",timeOutSec);
+        }
         if (alwaysReturnError) {
             return new HttpPostResult("", 500, "");
         }
