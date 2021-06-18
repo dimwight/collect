@@ -170,7 +170,9 @@ public class CursorLoaderFactory {
         return cursorLoader;
     }
 
-    private CursorLoader getInstancesCursorLoader(String selection, String[] selectionArgs, String sortOrder) {
+    private CursorLoader getInstancesCursorLoader(String selection,
+                                                  String[] selectionArgs,
+                                                  String sortOrder) {
         return new CursorLoader(
                 Collect.getInstance(),
                 InstanceProviderAPI.CONTENT_URI,

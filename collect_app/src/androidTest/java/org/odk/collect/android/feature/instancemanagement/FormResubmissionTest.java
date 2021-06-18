@@ -50,10 +50,13 @@ public class FormResubmissionTest {
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
 //                .clickOnText("CANCEL")
-                .pressBack(new MainMenuPage());
+                .pressBack(new MainMenuPage())
+                ;
 
         server.setNoHttpPostResult(false);
-        mainMenuPage.clickSendFinalizedForm(1)
+        mainMenuPage.clickEditSavedForm(1)
+                .pressBack(new MainMenuPage())
+                .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
 //                .assertText("Error")
