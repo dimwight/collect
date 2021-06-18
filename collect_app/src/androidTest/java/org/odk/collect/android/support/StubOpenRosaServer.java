@@ -47,7 +47,7 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
     private boolean noHashInFormList;
 
     private boolean noHttpPostResult;
-    private File submissionFile;
+    private long contentLength;
     private boolean rejectResubmission;
 
     public void setNoHttpPostResult(boolean on) {
@@ -65,10 +65,14 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
 
     @NonNull
     @Override
-    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile, @NonNull List<File> fileList, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
+    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
+                                                   @NonNull List<File> fileList,
+                                                   @NonNull URI uri,
+                                                   @Nullable HttpCredentialsInterface credentials,
+                                                   @NonNull long contentLength) throws Exception {
 
         if(noHttpPostResult){
-            this.submissionFile = submissionFile;
+            this.contentLength = contentLength;
             int timeOutMs=1000;
             int timeOuts=60;
             Timber.i("sleeping for %s sec",timeOutMs*timeOuts/1000);
@@ -76,8 +80,8 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
                 Thread.sleep(timeOutMs);
                 Timber.i("slept for %s ms",timeOut* timeOutMs);
             }
-        }else if(rejectResubmission&&this.submissionFile.equals(submissionFile)){
-            return newErrorResult("Resubmission not permitted for "+submissionFile.getName());
+        }else if(rejectResubmission&&this.contentLength !=contentLength){
+            return newErrorResult("Content has changed for "+submissionFile.getName());
         }
 
         if (alwaysReturnError) {
