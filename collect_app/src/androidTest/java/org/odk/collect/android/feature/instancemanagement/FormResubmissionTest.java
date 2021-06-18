@@ -38,7 +38,7 @@ public class FormResubmissionTest {
             .around(rule);
 
     @Test
-    public void serverRejectsResubmission() {
+    public void serverRejectsResubmissionBefore() {
         server.setNoHttpPostResult(true);
         server.setRejectResubmission(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
@@ -68,6 +68,46 @@ public class FormResubmissionTest {
                 .pressBack(new MainMenuPage());
 
         CursorLoaderFactory.AS_UPDATED=true;
+        mainMenuPage
+                .clickEditSavedForm(1)
+                .pressBack(new MainMenuPage())
+                .clickSendFinalizedForm(1)
+                .clickOnForm(_FORM_NAME)
+                .clickSendSelected()
+//                .assertText("Error")
+        ;
+    }
+
+
+    @Test
+    public void serverRejectsResubmissionAfter() {
+        CursorLoaderFactory.AS_UPDATED=true;
+        server.setNoHttpPostResult(true);
+        MainMenuPage mainMenuPage = rule.startAtMainMenu()
+                .setServer(server.getURL())
+                .copyForm(_FORM_XML)
+                .startBlankForm(_FORM_NAME)
+                .answerQuestion(_QUESTION, _ANSWER0)
+                .swipeToEndScreen()
+                .clickSaveAndExit()
+                .clickEditSavedForm(1)
+                .assertText(_FORM_NAME)
+                .pressBack(new MainMenuPage())
+                .clickSendFinalizedForm(1)
+                .clickOnForm(_FORM_NAME)
+                .clickSendSelected()
+//                .clickOnText("CANCEL")
+                .pressBack(new MainMenuPage());
+        server.setNoHttpPostResult(false);
+        mainMenuPage
+                .clickEditSavedForm(1)
+                .assertTextDoesNotExist(_FORM_NAME)
+                .pressBack(new MainMenuPage())
+                .clickSendFinalizedForm(1)
+                .clickOnForm(_FORM_NAME)
+                .clickSendSelected()
+                .clickOK(new MainMenuPage());
+
         mainMenuPage
                 .clickEditSavedForm(1)
                 .pressBack(new MainMenuPage())
