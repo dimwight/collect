@@ -81,7 +81,7 @@ public class FormResubmissionTest {
 
     @Test
     public void serverRejectsResubmissionAfter() {
-        CursorLoaderFactory.AS_UPDATED=true;
+        CursorLoaderFactory.AS_UPDATED = true;
         server.setNoHttpPostResult(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
@@ -106,17 +106,8 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-                .clickOK(new MainMenuPage());
+                .pressBack(new MainMenuPage());
 
-        mainMenuPage
-                .clickEditSavedForm(1)
-                .pressBack(new MainMenuPage())
-                .clickSendFinalizedForm(1)
-                .clickOnForm(_FORM_NAME)
-                .clickSendSelected()
-//                .assertText("Error")
-        ;
     }
-
 
 }
