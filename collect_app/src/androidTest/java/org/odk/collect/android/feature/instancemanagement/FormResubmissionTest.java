@@ -17,7 +17,7 @@ import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
 @RunWith(AndroidJUnit4.class)
-public class SendFinalizedFormTest_ {
+public class FormResubmissionTest {
 
     public static final String _FORM_NAME = "One Question";
     public static final String _QUESTION = "what is your age";
@@ -36,9 +36,9 @@ public class SendFinalizedFormTest_ {
             .around(rule);
 
     @Test
-    public void canViewSentForms_() {
+    public void rejectsResubmission() {
         server.setNoHttpPostResult(true);
-        server.setRejectResubmission(true);
+        server.setRejectResubmission(false);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
