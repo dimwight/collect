@@ -23,8 +23,7 @@ public class FormResubmissionTest {
     public static final String _FORM_NAME = "One Question";
     public static final String _QUESTION = "what is your age";
     public static final String _FORM_XML = "one-question.xml";
-    public static final String _ANSWER0 = "1";
-    public static final String _ANSWER1 = "12345678";
+    public static final String _ANSWER = "123";
 
     private final TestDependencies testDependencies = new TestDependencies();
     private final CollectTestRule rule = new CollectTestRule();
@@ -45,7 +44,7 @@ public class FormResubmissionTest {
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
                 .startBlankForm(_FORM_NAME)
-                .answerQuestion(_QUESTION, _ANSWER0)
+                .answerQuestion(_QUESTION, _ANSWER)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
                 .clickSendFinalizedForm(1)
@@ -77,7 +76,7 @@ public class FormResubmissionTest {
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
                 .startBlankForm(_FORM_NAME)
-                .answerQuestion(_QUESTION, _ANSWER0)
+                .answerQuestion(_QUESTION, _ANSWER)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
                 .clickEditSavedForm(1)
