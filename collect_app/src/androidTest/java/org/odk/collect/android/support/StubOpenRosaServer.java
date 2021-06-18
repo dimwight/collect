@@ -28,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import timber.log.Timber;
+
 import static java.util.Arrays.asList;
 
 public class StubOpenRosaServer implements OpenRosaHttpInterface {
@@ -43,6 +45,50 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
     private boolean alwaysReturnError;
     private boolean fetchingFormsError;
     private boolean noHashInFormList;
+
+    private boolean noHttpPostResult;
+    private File submissionFile;
+
+    public void setNoHttpPostResult(boolean on) {
+        noHttpPostResult=on;
+    }
+
+    @NotNull
+    private HttpPostResult newErrorResult() {
+        return new HttpPostResult("", 500, "");
+    }
+
+    @NonNull
+    @Override
+    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile, @NonNull List<File> fileList, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
+
+        if(noHttpPostResult){
+            this.submissionFile = submissionFile;
+            int timeOutMs=1000;
+            int timeOuts=60;
+            Timber.i("sleeping for %s sec",timeOutMs*timeOuts/1000);
+            for(int timeOut=1;timeOut<=timeOuts;timeOut++) {
+                Thread.sleep(timeOutMs);
+                Timber.i("slept for %s ms",timeOut* timeOutMs);
+            }
+        }else if(this.submissionFile.equals(submissionFile)){
+            return newErrorResult();
+        }
+
+        if (alwaysReturnError) {
+            return new HttpPostResult("", 500, "");
+        }
+
+        if (!uri.getHost().equals(HOST)) {
+            return new HttpPostResult("Trying to connect to incorrect server: " + uri.getHost(), 410, "");
+        } else if (credentialsIncorrect(credentials)) {
+            return new HttpPostResult("", 401, "");
+        } else if (uri.getPath().equals(submissionPath)) {
+            return new HttpPostResult("", 201, "");
+        } else {
+            return new HttpPostResult("", 404, "");
+        }
+    }
 
     @NonNull
     @Override
@@ -86,24 +132,6 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
             return new HttpHeadResult(204, new MapHeaders(headers));
         } else {
             return new HttpHeadResult(404, new CaseInsensitiveEmptyHeaders());
-        }
-    }
-
-    @NonNull
-    @Override
-    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile, @NonNull List<File> fileList, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
-        if (alwaysReturnError) {
-            return new HttpPostResult("", 500, "");
-        }
-
-        if (!uri.getHost().equals(HOST)) {
-            return new HttpPostResult("Trying to connect to incorrect server: " + uri.getHost(), 410, "");
-        } else if (credentialsIncorrect(credentials)) {
-            return new HttpPostResult("", 401, "");
-        } else if (uri.getPath().equals(submissionPath)) {
-            return new HttpPostResult("", 201, "");
-        } else {
-            return new HttpPostResult("", 404, "");
         }
     }
 

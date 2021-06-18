@@ -29,7 +29,7 @@ public class SendFinalizedFormTest_ {
     private final CollectTestRule rule = new CollectTestRule();
 
     private final StubOpenRosaServer server =
-            false?testDependencies.server: new StubOpenRosaServer_();
+            true?testDependencies.server: new StubOpenRosaServer_();
 
     @Rule
     public RuleChain chain = TestRuleChain.chain(testDependencies)
