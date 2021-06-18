@@ -21,8 +21,8 @@ import org.odk.collect.android.support.pages.MainMenuPage;
 public class FormResubmissionTest {
 
     public static final String _FORM_NAME = "One Question";
-    public static final String _QUESTION = "what is your age";
     public static final String _FORM_XML = "one-question.xml";
+    public static final String _QUESTION = "what is your age";
     public static final String _ANSWER = "123";
 
     private final TestDependencies testDependencies = new TestDependencies();
@@ -66,7 +66,6 @@ public class FormResubmissionTest {
                 .pressBack(new MainMenuPage());
 
     }
-
 
     @Test
     public void serverRejectsResubmissionAfter() {
