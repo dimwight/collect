@@ -46,6 +46,8 @@ public class FormResubmissionTest {
                 .answerQuestion(_QUESTION, _ANSWER)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
+                .clickEditSavedForm(1)
+                .pressBack(new MainMenuPage())
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
@@ -53,7 +55,8 @@ public class FormResubmissionTest {
                 .pressBack(new MainMenuPage());
 
         server.setNoHttpPostResult(false);
-        mainMenuPage.clickEditSavedForm(1)
+        mainMenuPage
+                .clickEditSavedForm(1)
                 .pressBack(new MainMenuPage())
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
