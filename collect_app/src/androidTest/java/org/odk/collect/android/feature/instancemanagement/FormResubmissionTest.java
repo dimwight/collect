@@ -36,9 +36,9 @@ public class FormResubmissionTest {
             .around(rule);
 
     @Test
-    public void rejectsResubmission() {
+    public void serverRejectsResubmission() {
         server.setNoHttpPostResult(true);
-        server.setRejectResubmission(false);
+        server.setRejectResubmission(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
@@ -46,7 +46,6 @@ public class FormResubmissionTest {
                 .answerQuestion(_QUESTION, _ANSWER)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
-
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected() //Set breakpoint here!
