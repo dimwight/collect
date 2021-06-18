@@ -54,8 +54,8 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
     }
 
     @NotNull
-    private HttpPostResult newErrorResult() {
-        return new HttpPostResult("", 500, "");
+    private HttpPostResult newErrorResult(String httpResponse) {
+        return new HttpPostResult(httpResponse, 500, "");
     }
 
     @NonNull
@@ -72,15 +72,17 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
                 Timber.i("slept for %s ms",timeOut* timeOutMs);
             }
         }else if(this.submissionFile.equals(submissionFile)){
-            return newErrorResult();
+            return newErrorResult("File has already been uploaded "+submissionFile);
         }
 
         if (alwaysReturnError) {
-            return new HttpPostResult("", 500, "");
+            return newErrorResult("");
         }
 
         if (!uri.getHost().equals(HOST)) {
-            return new HttpPostResult("Trying to connect to incorrect server: " + uri.getHost(), 410, "");
+            return new HttpPostResult("Trying to connect to incorrect server: " + uri.getHost(),
+                    410,
+                    "");
         } else if (credentialsIncorrect(credentials)) {
             return new HttpPostResult("", 401, "");
         } else if (uri.getPath().equals(submissionPath)) {
