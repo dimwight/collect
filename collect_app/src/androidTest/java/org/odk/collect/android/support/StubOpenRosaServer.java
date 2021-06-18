@@ -55,8 +55,8 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
     }
 
     @NotNull
-    private HttpPostResult newErrorResult(String httpResponse) {
-        return new HttpPostResult(httpResponse, 500, "");
+    private HttpPostResult newErrorResult(String reasonPhrase) {
+        return new HttpPostResult("", 500, reasonPhrase);
     }
 
     public void setRejectResubmission(boolean reject) {
@@ -77,7 +77,7 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
                 Timber.i("slept for %s ms",timeOut* timeOutMs);
             }
         }else if(rejectResubmission&&this.submissionFile.equals(submissionFile)){
-            return newErrorResult("File has already been uploaded "+submissionFile);
+            return newErrorResult("You cannot resubmit file "+submissionFile.getName());
         }
 
         if (alwaysReturnError) {

@@ -48,14 +48,16 @@ public class FormResubmissionTest {
                 .clickSaveAndExit()
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
-                .clickSendSelected() //Set breakpoint here!
-//               clickOnText("CANCEL")
+                .clickSendSelected()
+//                .clickOnText("CANCEL")
                 .pressBack(new MainMenuPage());
 
         server.setNoHttpPostResult(false);
         mainMenuPage.clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
-                .clickSendSelected();
+                .clickSendSelected()
+//                .assertText("Error")
+        ;
     }
 
 
