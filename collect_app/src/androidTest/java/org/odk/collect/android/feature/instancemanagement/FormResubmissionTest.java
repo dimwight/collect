@@ -58,7 +58,6 @@ public class FormResubmissionTest {
                 .clickEditSavedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickOnQuestion(_QUESTION)
-                .answerQuestion(_QUESTION, _ANSWER1)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
                 .clickSendFinalizedForm(1)
@@ -67,15 +66,6 @@ public class FormResubmissionTest {
 //                .assertText("Error")
                 .pressBack(new MainMenuPage());
 
-        CursorLoaderFactory.AS_UPDATED=true;
-        mainMenuPage
-                .clickEditSavedForm(1)
-                .pressBack(new MainMenuPage())
-                .clickSendFinalizedForm(1)
-                .clickOnForm(_FORM_NAME)
-                .clickSendSelected()
-//                .assertText("Error")
-        ;
     }
 
 
