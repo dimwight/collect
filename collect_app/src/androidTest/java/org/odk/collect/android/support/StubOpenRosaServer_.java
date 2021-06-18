@@ -32,7 +32,7 @@ import timber.log.Timber;
 
 import static java.util.Arrays.asList;
 
-public class StubOpenRosaServer_ implements OpenRosaHttpInterface {
+final public class StubOpenRosaServer_ implements OpenRosaHttpInterface {
 
     private static final String HOST = "server.example.com";
 
@@ -46,6 +46,16 @@ public class StubOpenRosaServer_ implements OpenRosaHttpInterface {
     private boolean fetchingFormsError;
     private boolean noHashInFormList;
     private boolean noHttpPostResult;
+    private File submissionFile;
+
+    public void setNoHttpPostResult(boolean on) {
+        noHttpPostResult=on;
+    }
+
+    @NotNull
+    private HttpPostResult newErrorResult() {
+        return new HttpPostResult("", 500, "");
+    }
 
     @NonNull
     @Override
@@ -55,6 +65,7 @@ public class StubOpenRosaServer_ implements OpenRosaHttpInterface {
                                                    @Nullable HttpCredentialsInterface credentials,
                                                    @NonNull long contentLength) throws Exception {
         if(noHttpPostResult){
+            this.submissionFile = submissionFile;
             int timeOutMs=1000;
             int timeOuts=60;
             Timber.i("sleeping for %s sec",timeOutMs*timeOuts/1000);
@@ -62,9 +73,12 @@ public class StubOpenRosaServer_ implements OpenRosaHttpInterface {
                 Thread.sleep(timeOutMs);
                 Timber.i("slept for %s ms",timeOut* timeOutMs);
             }
+        }else if(this.submissionFile.equals(submissionFile)){
+            return newErrorResult();
         }
+
         if (alwaysReturnError) {
-            return new HttpPostResult("", 500, "");
+            return newErrorResult();
         }
 
         if (!uri.getHost().equals(HOST)) {
@@ -221,10 +235,6 @@ public class StubOpenRosaServer_ implements OpenRosaHttpInterface {
 
         AssetManager assetManager = InstrumentationRegistry.getInstrumentation().getContext().getAssets();
         return assetManager.open("forms/" + xmlPath);
-    }
-
-    public void setNoHttpPostResult(boolean on) {
-        noHttpPostResult=on;
     }
 
     private static class FormManifestEntry {

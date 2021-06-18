@@ -19,6 +19,10 @@ import org.odk.collect.android.support.pages.MainMenuPage;
 @RunWith(AndroidJUnit4.class)
 public class SendFinalizedFormTest_ {
 
+    public static final String _FORM_NAME = "One Question";
+    public static final String _QUESTION = "what is your age";
+    public static final String _FORM_XML = "one-question.xml";
+    public static final String _ANSWER = "123";
     private final TestDependencies testDependencies = new TestDependencies();
     private final CollectTestRule rule = new CollectTestRule();
 
@@ -35,22 +39,23 @@ public class SendFinalizedFormTest_ {
         server.setNoHttpPostResult(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
-                .copyForm("one-question.xml")
-                .startBlankForm("One Question")
-                .answerQuestion("what is your age", "123")
+                .copyForm(_FORM_XML)
+                .startBlankForm(_FORM_NAME)
+                .answerQuestion(_QUESTION, _ANSWER)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
 
                 .clickSendFinalizedForm(1)
-                .clickOnForm("One Question")
+                .clickOnForm(_FORM_NAME)
                 .clickSendSelected() //Set breakpoint here!
 //               clickOnText("CANCEL")
                 .pressBack(new MainMenuPage());
 
         server.setNoHttpPostResult(false);
-        mainMenuPage.clickEditSavedForm(1)
-                .clickOnForm("One Question")
-                .assertText("123");
+        mainMenuPage.clickSendFinalizedForm(1)
+                .clickOnForm(_FORM_NAME)
+                .clickSendSelected()
+        ;
     }
 
 
