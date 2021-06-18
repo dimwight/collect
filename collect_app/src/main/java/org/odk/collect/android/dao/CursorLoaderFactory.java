@@ -17,7 +17,7 @@ public class CursorLoaderFactory {
 
     public CursorLoader createUnsentInstancesCursorLoader(String sortOrder) {
         String selection = DatabaseInstanceColumns.STATUS + " !=? " +
-                (AS_UPDATED ?"":("and " +DatabaseInstanceColumns.STATUS + " !=? "));
+                (!AS_UPDATED ?"":("and " +DatabaseInstanceColumns.STATUS + " !=? "));
         String[] selectionArgs = !AS_UPDATED?
             new String[]{
                 Instance.STATUS_SUBMITTED
