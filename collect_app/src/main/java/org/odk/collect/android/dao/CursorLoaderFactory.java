@@ -39,9 +39,8 @@ public class CursorLoaderFactory {
     }
 
     public CursorLoader createUnsentInstancesCursorLoader(String sortOrder) {
-        String selection = DatabaseInstanceColumns.STATUS +
-                " !=? and "+DatabaseInstanceColumns.STATUS +
-                " !=? ";
+        String selection = DatabaseInstanceColumns.STATUS + " !=? and "
+                +DatabaseInstanceColumns.STATUS + " !=? ";
         String[] selectionArgs = {
                 Instance.STATUS_SUBMITTED,
                 Instance.STATUS_SUBMISSION_FAILED
