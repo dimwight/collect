@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.odk.collect.android.RecordedIntentsRule;
 import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.StubOpenRosaServer;
-import org.odk.collect.android.support.StubOpenRosaServer_;
 import org.odk.collect.android.support.TestDependencies;
 import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.pages.MainMenuPage;
@@ -39,6 +38,7 @@ public class SendFinalizedFormTest_ {
     @Test
     public void canViewSentForms_() {
         server.setNoHttpPostResult(true);
+        server.setRejectResubmission(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
