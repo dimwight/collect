@@ -11,6 +11,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.RecordedIntentsRule;
 import org.odk.collect.android.support.CollectTestRule;
+import org.odk.collect.android.support.StubOpenRosaServer;
 import org.odk.collect.android.support.StubOpenRosaServer_;
 import org.odk.collect.android.support.TestDependencies;
 import org.odk.collect.android.support.TestRuleChain;
@@ -26,7 +27,8 @@ public class SendFinalizedFormTest_ {
     private final TestDependencies testDependencies = new TestDependencies();
     private final CollectTestRule rule = new CollectTestRule();
 
-    private final StubOpenRosaServer_ server = new StubOpenRosaServer_();
+    private final StubOpenRosaServer server =
+            true?testDependencies.server: new StubOpenRosaServer_();
 
     @Rule
     public RuleChain chain = TestRuleChain.chain(testDependencies)
@@ -36,7 +38,9 @@ public class SendFinalizedFormTest_ {
 
     @Test
     public void canViewSentForms_() {
-        server.setNoHttpPostResult(true);
+        if (server instanceof StubOpenRosaServer_) {
+            ((StubOpenRosaServer_) server).setNoHttpPostResult(true);
+        }
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
@@ -51,11 +55,12 @@ public class SendFinalizedFormTest_ {
 //               clickOnText("CANCEL")
                 .pressBack(new MainMenuPage());
 
-        server.setNoHttpPostResult(false);
+        if (server instanceof StubOpenRosaServer_) {
+            ((StubOpenRosaServer_) server).setNoHttpPostResult(false);
+        }
         mainMenuPage.clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
-                .clickSendSelected()
-        ;
+                .clickSendSelected();
     }
 
 
