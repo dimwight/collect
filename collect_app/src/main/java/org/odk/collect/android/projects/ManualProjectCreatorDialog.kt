@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.doOnTextChanged
 import org.odk.collect.android.R
@@ -13,6 +14,8 @@ import org.odk.collect.android.activities.MainMenuActivity
 import org.odk.collect.android.configure.qr.AppConfigurationGenerator
 import org.odk.collect.android.databinding.ManualProjectCreatorDialogLayoutBinding
 import org.odk.collect.android.injection.DaggerUtils
+import org.odk.collect.android.utilities.DialogUtils
+import org.odk.collect.android.utilities.SoftKeyboardController
 import org.odk.collect.android.utilities.ToastUtils
 import org.odk.collect.material.MaterialFullScreenDialogFragment
 import javax.inject.Inject
@@ -24,6 +27,9 @@ class ManualProjectCreatorDialog : MaterialFullScreenDialogFragment() {
 
     @Inject
     lateinit var appConfigurationGenerator: AppConfigurationGenerator
+
+    @Inject
+    lateinit var softKeyboardController: SoftKeyboardController
 
     private lateinit var binding: ManualProjectCreatorDialogLayoutBinding
 
@@ -45,12 +51,20 @@ class ManualProjectCreatorDialog : MaterialFullScreenDialogFragment() {
             binding.addButton.isEnabled = !text.isNullOrBlank()
         }
 
+        binding.urlInputText.post {
+            softKeyboardController.showSoftKeyboard(binding.urlInputText)
+        }
+
         binding.cancelButton.setOnClickListener {
             dismiss()
         }
 
         binding.addButton.setOnClickListener {
             handleAddingNewProject()
+        }
+
+        binding.gdrive.setOnClickListener {
+            showGdrivePlaceholderDialog()
         }
     }
 
@@ -80,5 +94,14 @@ class ManualProjectCreatorDialog : MaterialFullScreenDialogFragment() {
         projectCreator.createNewProject(settingsJson)
         ActivityUtils.startActivityAndCloseAllOthers(activity, MainMenuActivity::class.java)
         ToastUtils.showLongToast(getString(org.odk.collect.projects.R.string.new_project_created))
+    }
+
+    private fun showGdrivePlaceholderDialog() {
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Google Drive configuration coming soon")
+            .setMessage("Google Drive configuration is not fully implemented in this beta!")
+            .setPositiveButton(getString(R.string.ok)) { _, _ -> }
+            .create()
+        DialogUtils.showDialog(dialog, activity)
     }
 }
