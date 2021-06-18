@@ -9,20 +9,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.R;
 import org.odk.collect.android.RecordedIntentsRule;
 import org.odk.collect.android.support.CollectTestRule;
+import org.odk.collect.android.support.StubOpenRosaServer_;
 import org.odk.collect.android.support.TestDependencies;
 import org.odk.collect.android.support.TestRuleChain;
-import org.odk.collect.android.support.pages.GeneralSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
-import org.odk.collect.android.support.pages.SendFinalizedFormPage;
 
 @RunWith(AndroidJUnit4.class)
 public class SendFinalizedFormTest_ {
 
     private final TestDependencies testDependencies = new TestDependencies();
     private final CollectTestRule rule = new CollectTestRule();
+
+    private final StubOpenRosaServer_ server = new StubOpenRosaServer_();
 
     @Rule
     public RuleChain chain = TestRuleChain.chain(testDependencies)
@@ -32,9 +32,9 @@ public class SendFinalizedFormTest_ {
 
     @Test
     public void canViewSentForms_() {
-        if(false) testDependencies.server.alwaysReturnError();
-        rule.startAtMainMenu()
-                .setServer(testDependencies.server.getURL())
+        server.setNoHttpPostResult(true);
+        MainMenuPage mainMenuPage = rule.startAtMainMenu()
+                .setServer(server.getURL())
                 .copyForm("one-question.xml")
                 .startBlankForm("One Question")
                 .answerQuestion("what is your age", "123")
@@ -43,11 +43,12 @@ public class SendFinalizedFormTest_ {
 
                 .clickSendFinalizedForm(1)
                 .clickOnForm("One Question")
-                .clickSendSelected()
-//                .clickOnText("CANCEL")
-                .pressBack(new MainMenuPage())
+                .clickSendSelected() //Set breakpoint here!
+//               clickOnText("CANCEL")
+                .pressBack(new MainMenuPage());
 
-                .clickEditSavedForm(1)
+        server.setNoHttpPostResult(false);
+        mainMenuPage.clickEditSavedForm(1)
                 .clickOnForm("One Question")
                 .assertText("123");
     }
