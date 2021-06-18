@@ -67,7 +67,6 @@ public class FormResubmissionTest {
 //                .assertText("Error")
                 .pressBack(new MainMenuPage());
 
-        server.setNoHttpPostResult(false);
         CursorLoaderFactory.AS_UPDATED=true;
         mainMenuPage
                 .clickEditSavedForm(1)
