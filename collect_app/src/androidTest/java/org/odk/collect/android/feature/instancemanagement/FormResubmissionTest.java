@@ -50,7 +50,7 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-                .wait250ms()
+                .checkIsToastWithMessageDisplayed("CANCEL")
                 .clickOnText("CANCEL")
                 .pressBack(new MainMenuPage());
         server.setNoHttpPostResult(false);
