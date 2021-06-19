@@ -37,7 +37,7 @@ public class FormResubmissionTest {
             .around(rule);
 
     @Test
-    public void serverRejectsResubmissionBefore() {
+    public void whenFailedFormCanBeEdited_ServerRejectsResubmission() {
         server.setNoHttpPostResult(true);
         server.setRejectResubmission(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
@@ -50,7 +50,8 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-//                .clickOnText("CANCEL")
+                .wait250ms()
+                .clickOnText("CANCEL")
                 .pressBack(new MainMenuPage());
         server.setNoHttpPostResult(false);
         mainMenuPage
@@ -68,7 +69,7 @@ public class FormResubmissionTest {
     }
 
     @Test
-    public void serverRejectsResubmissionAfter() {
+    public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
         CursorLoaderFactory.asUpdated = true;
         server.setNoHttpPostResult(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
