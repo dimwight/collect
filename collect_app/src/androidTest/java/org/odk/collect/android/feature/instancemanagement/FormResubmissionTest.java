@@ -69,7 +69,7 @@ public class FormResubmissionTest {
 
     @Test
     public void serverRejectsResubmissionAfter() {
-        CursorLoaderFactory.AS_UPDATED = true;
+        CursorLoaderFactory.asUpdated = true;
         server.setNoHttpPostResult(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
