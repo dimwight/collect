@@ -72,7 +72,7 @@ public class FormResubmissionTest {
 
     @Test
     public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
-        CursorLoaderFactory.asUpdated = true;
+        CursorLoaderFactory.afterUpdate = true;
         server.setNoHttpPostResult(true);
         MainMenuPage mainMenuPage = rule.startAtMainMenu()
                 .setServer(server.getURL())
@@ -81,9 +81,6 @@ public class FormResubmissionTest {
                 .answerQuestion(_QUESTION, _ANSWER)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
-//                .clickEditSavedForm(1)
-//                .assertText(_FORM_NAME)
-//                .pressBack(new MainMenuPage())
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
@@ -100,7 +97,6 @@ public class FormResubmissionTest {
                 .clickOK(new SendFinalizedFormPage())
                 .pressBack(new MainMenuPage())
                 .clickViewSentForm(1)
-                .clickOnForm(_FORM_NAME)
         ;
 
     }

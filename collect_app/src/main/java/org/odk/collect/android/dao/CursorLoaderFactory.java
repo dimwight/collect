@@ -13,12 +13,12 @@ import org.odk.collect.forms.instances.Instance;
 
 public class CursorLoaderFactory {
 
-    public static boolean asUpdated;
+    public static boolean afterUpdate;
 
     public CursorLoader createUnsentInstancesCursorLoader(String sortOrder) {
         String selection = DatabaseInstanceColumns.STATUS + " !=? " +
-                (!asUpdated ?"":("and " +DatabaseInstanceColumns.STATUS + " !=? "));
-        String[] selectionArgs = !asUpdated ?
+                (!afterUpdate ?"":("and " +DatabaseInstanceColumns.STATUS + " !=? "));
+        String[] selectionArgs = !afterUpdate ?
             new String[]{
                 Instance.STATUS_SUBMITTED
             }
