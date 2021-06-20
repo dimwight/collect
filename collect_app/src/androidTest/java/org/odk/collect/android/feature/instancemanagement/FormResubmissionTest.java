@@ -57,7 +57,7 @@ public class FormResubmissionTest {
 
     @Test
     public void whenFailedFormCanBeEdited_ServerRejectsResubmission() {
-        CursorLoaderFactory.afterUpdate = true;
+        CursorLoaderFactory.afterUpdate = false;
         server.setRejectResubmission(true);
         server.setNoHttpPostResult(true);
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
