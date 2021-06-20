@@ -24,7 +24,7 @@ public class TestDependencies extends AppDependencyModule {
 
     private final CallbackCountingTaskExecutorRule countingTaskExecutorRule = new CallbackCountingTaskExecutorRule();
 
-    public final StubOpenRosaServer server = new StubOpenRosaServer();
+    public final StubOpenRosaServer server;
     public final TestScheduler scheduler = new TestScheduler();
     public final FakeGoogleApi googleApi = new FakeGoogleApi();
     public final FakeGoogleAccountPicker googleAccountPicker = new FakeGoogleAccountPicker();
@@ -34,6 +34,14 @@ public class TestDependencies extends AppDependencyModule {
             new SchedulerIdlingResource(scheduler),
             new CountingTaskExecutorIdlingResource(countingTaskExecutorRule)
     );
+
+    public TestDependencies(StubOpenRosaServer server) {
+        this.server = server;
+    }
+
+    public TestDependencies() {
+        this(new StubOpenRosaServer());
+    }
 
     @Override
     public OpenRosaHttpInterface provideHttpInterface(MimeTypeMap mimeTypeMap, UserAgentProvider userAgentProvider) {

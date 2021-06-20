@@ -26,7 +26,8 @@ public class FormResubmissionTest {
     public static final String _QUESTION = "what is your age";
     public static final String _ANSWER = "123";
 
-    private final TestDependencies testDependencies = new TestDependencies();
+    private final TestDependencies testDependencies =
+            new TestDependencies(new StubOpenRosaServer());
     private final CollectTestRule rule = new CollectTestRule();
 
     private final StubOpenRosaServer server = testDependencies.server;
