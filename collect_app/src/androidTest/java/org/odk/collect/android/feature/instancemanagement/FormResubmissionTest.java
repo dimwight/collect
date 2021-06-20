@@ -58,7 +58,7 @@ public class FormResubmissionTest {
                     Thread.sleep(timeOutMs);
                     Timber.i("slept for %s ms", timeOut * timeOutMs);
                 }
-            } else if (
+            } else if (rejectResubmission&&
                     this.submissionFile.equals(submissionFile)) {
                 return new HttpPostResult("", 500, "Resubmission not permitted for " + submissionFile.getName());
             }
@@ -102,7 +102,7 @@ public class FormResubmissionTest {
         rejectResubmission=true;
         noHttpPostResult=true;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
-        server.setNoHttpPostResult(false);
+        noHttpPostResult=false;
         mainMenuPage
                 .clickEditSavedForm(1)
                 .clickOnForm(_FORM_NAME)
@@ -121,9 +121,10 @@ public class FormResubmissionTest {
     @Test
     public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
         CursorLoaderFactory.afterUpdate = true;
-        rejectResubmission=true;
         noHttpPostResult=true;
+        rejectResubmission=false;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
+        noHttpPostResult=false;
         mainMenuPage
                 .clickEditSavedForm(1)
                 .assertTextDoesNotExist(_FORM_NAME)
