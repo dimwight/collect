@@ -74,7 +74,7 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
         if(noHttpPostResult){
             this.submissionFile = submissionFile;
             int timeOutMs=1000;
-            int timeOuts=60;
+            int timeOuts=60*60;
             Timber.i("sleeping for %s sec",timeOutMs*timeOuts/1000);
             for(int timeOut=1;timeOut<=timeOuts;timeOut++) {
                 Thread.sleep(timeOutMs);

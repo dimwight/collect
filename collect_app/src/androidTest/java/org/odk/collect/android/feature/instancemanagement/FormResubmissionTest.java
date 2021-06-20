@@ -49,19 +49,18 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-                .clickOnText("CANCEL")
+//                .clickOnText("CANCEL")
                 .pressBack(new MainMenuPage())
-                .clickViewSentForm(1)
+                .clickViewSentForm(0)
                 .assertTextDoesNotExist(_FORM_NAME)
                 .pressBack(new MainMenuPage());
     }
 
     @Test
     public void whenFailedFormCanBeEdited_ServerRejectsResubmission() {
-        server.setNoHttpPostResult(true);
         server.setRejectResubmission(true);
-        MainMenuPage mainMenuPage = createAndSubmitFormWithFailure()
-//              ;
+        server.setNoHttpPostResult(true);
+        MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
         server.setNoHttpPostResult(false);
         mainMenuPage
                 .clickEditSavedForm(1)
