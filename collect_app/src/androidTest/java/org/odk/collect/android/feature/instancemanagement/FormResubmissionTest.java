@@ -50,7 +50,7 @@ public class FormResubmissionTest {
                                                        @Nullable HttpCredentialsInterface credentials,
                                                       long contentLength) throws Exception {
             if(noHttpPostResult||rejectResubmission){
-                boolean doReject = handleFlagSet(submissionFile);
+                boolean doReject = handleFlag(submissionFile);
                 if(doReject){
                     return new HttpPostResult("", 500, "Resubmission not permitted for " + submissionFile.getName());
                 }
@@ -64,7 +64,7 @@ public class FormResubmissionTest {
         }
     };
 
-    private boolean handleFlagSet(@NotNull File submissionFile) throws InterruptedException {
+    private boolean handleFlag(@NotNull File submissionFile) throws InterruptedException {
         if (noHttpPostResult) {
             this.submissionFile = submissionFile;
             int timeOutMs = 1000;
