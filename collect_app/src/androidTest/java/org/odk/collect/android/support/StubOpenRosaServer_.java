@@ -39,7 +39,6 @@ final public class StubOpenRosaServer_ extends StubOpenRosaServer {
     private String formListPath = "/formList";
     private String submissionPath = "/submission";
 
-    private final List<FormManifestEntry> forms = new ArrayList<>();
     private String username;
     private String password;
     private boolean alwaysReturnError;
@@ -57,27 +56,5 @@ final public class StubOpenRosaServer_ extends StubOpenRosaServer {
         return new HttpPostResult("", 500, "");
     }
 
-    @NonNull
-    @Override
-    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
-                                                   @NonNull List<File> fileList,
-                                                   @NonNull URI uri,
-                                                   @Nullable HttpCredentialsInterface credentials,
-                                                   @NonNull long contentLength) throws Exception {
-        if(noHttpPostResult){
-            this.submissionFile = submissionFile;
-            int timeOutMs=1000;
-            int timeOuts=60;
-            Timber.i("sleeping for %s sec",timeOutMs*timeOuts/1000);
-            for(int timeOut=1;timeOut<=timeOuts;timeOut++) {
-                Thread.sleep(timeOutMs);
-                Timber.i("slept for %s ms",timeOut* timeOutMs);
-            }
-        }else if(this.submissionFile.equals(submissionFile)){
-            return newErrorResult();
-        }
-        else return super.uploadSubmissionAndFiles()
-
-            }
 
    }

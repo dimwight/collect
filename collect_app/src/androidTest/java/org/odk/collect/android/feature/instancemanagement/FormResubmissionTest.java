@@ -37,49 +37,42 @@ public class FormResubmissionTest {
     public static final String _QUESTION = "what is your age";
     public static final String _ANSWER = "123";
 
-    private final TestDependencies testDependencies =
-            new TestDependencies(new StubOpenRosaServer(){
-                @NonNull
-                @Override
-                public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
-                                                               @NonNull List<File> fileList,
-                                                               @NonNull URI uri,
-                                                               @Nullable HttpCredentialsInterface credentials,
-                                                               @NonNull long contentLength) throws Exception {
-                    if(noHttpPostResult){
-                        FormResubmissionTest.this.submissionFile = submissionFile;
-                        int timeOutMs=1000;
-                        int timeOuts=60;
-                        Timber.i("sleeping for %s sec",timeOutMs*timeOuts/1000);
-                        for(int timeOut=1;timeOut<=timeOuts;timeOut++) {
-                            Thread.sleep(timeOutMs);
-                            Timber.i("slept for %s ms",timeOut* timeOutMs);
-                        }
-                    }else if(submissionFile.equals(submissionFile)){
-                        return new HttpPostResult("", 500, "Resubmission not permitted for "+submissionFile.getName());
-                    }
-                    return super.uploadSubmissionAndFiles(submissionFile,
-                                fileList,
-                                uri,
-                                credentials,
-                                contentLength);
-
-                }
-            });
     private boolean noHttpPostResult;
     private File submissionFile;
     private boolean rejectResubmission;
-    @NotNull
-    private HttpPostResult newErrorResult(String reasonPhrase) {
-        return new HttpPostResult("", 500, reasonPhrase);
-    }
 
-    private final CollectTestRule rule = new CollectTestRule();
+    private final StubOpenRosaServer server = new StubOpenRosaServer() {
+        @NonNull
+        @Override
+        public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
+                                                       @NonNull List<File> fileList,
+                                                       @NonNull URI uri,
+                                                       @Nullable HttpCredentialsInterface credentials,
+                                                       @NonNull long contentLength) throws Exception {
+            if (noHttpPostResult) {
+                FormResubmissionTest.this.submissionFile = submissionFile;
+                int timeOutMs = 1000;
+                int timeOuts = 60;
+                Timber.i("sleeping for %s sec", timeOutMs * timeOuts / 1000);
+                for (int timeOut = 1; timeOut <= timeOuts; timeOut++) {
+                    Thread.sleep(timeOutMs);
+                    Timber.i("slept for %s ms", timeOut * timeOutMs);
+                }
+            } else if (submissionFile.equals(submissionFile)) {
+                return new HttpPostResult("", 500, "Resubmission not permitted for " + submissionFile.getName());
+            }
+            return super.uploadSubmissionAndFiles(submissionFile,
+                    fileList,
+                    uri,
+                    credentials,
+                    contentLength);
+        }
+    };
 
-    private final StubOpenRosaServer server = testDependencies.server;
+   private final CollectTestRule rule = new CollectTestRule();
 
     @Rule
-    public RuleChain chain = TestRuleChain.chain(testDependencies)
+    public RuleChain chain = TestRuleChain.chain(new TestDependencies(server))
             .around(GrantPermissionRule.grant(Manifest.permission.GET_ACCOUNTS))
             .around(new RecordedIntentsRule())
             .around(rule);
