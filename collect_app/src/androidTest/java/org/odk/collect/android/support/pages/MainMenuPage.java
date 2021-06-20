@@ -189,9 +189,11 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public ViewSentFormPage clickViewSentForm(int formCount) {
-        onView(withText(formCount<1
-                ?getTranslatedString( R.string.view_sent_forms_button)
-                :getTranslatedString(R.string.view_sent_forms_button, formCount))).perform(click());
+        String text = formCount < 1
+                ? getTranslatedString(R.string.view_sent_forms_button)
+                .replace(" (%s)", "")
+                : getTranslatedString(R.string.view_sent_forms_button, formCount);
+        onView(withText(text)).perform(click());
         return new ViewSentFormPage().assertOnPage();
     }
 
