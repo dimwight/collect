@@ -38,10 +38,10 @@ public class FormResubmissionTest {
     public static final String _ANSWER = "123";
 
     private boolean noHttpPostResult;
-    private File submissionFile;
     private boolean rejectResubmission;
 
     private final StubOpenRosaServer server = new StubOpenRosaServer() {
+        private File submissionFile;
         @NonNull
         @Override
         public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
@@ -50,7 +50,7 @@ public class FormResubmissionTest {
                                                        @Nullable HttpCredentialsInterface credentials,
                                                        @NonNull long contentLength) throws Exception {
             if (noHttpPostResult) {
-                FormResubmissionTest.this.submissionFile = submissionFile;
+                this.submissionFile = submissionFile;
                 int timeOutMs = 1000;
                 int timeOuts = 60;
                 Timber.i("sleeping for %s sec", timeOutMs * timeOuts / 1000);
@@ -58,7 +58,8 @@ public class FormResubmissionTest {
                     Thread.sleep(timeOutMs);
                     Timber.i("slept for %s ms", timeOut * timeOutMs);
                 }
-            } else if (submissionFile.equals(submissionFile)) {
+            } else if (
+                    this.submissionFile.equals(submissionFile)) {
                 return new HttpPostResult("", 500, "Resubmission not permitted for " + submissionFile.getName());
             }
             return super.uploadSubmissionAndFiles(submissionFile,
@@ -98,8 +99,8 @@ public class FormResubmissionTest {
     @Test
     public void whenFailedFormCanBeEdited_ServerRejectsResubmission() {
         CursorLoaderFactory.afterUpdate = false;
-        server.setRejectResubmission(true);
-        server.setNoHttpPostResult(true);
+        rejectResubmission=true;
+        noHttpPostResult=true;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
         server.setNoHttpPostResult(false);
         mainMenuPage
@@ -120,9 +121,9 @@ public class FormResubmissionTest {
     @Test
     public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
         CursorLoaderFactory.afterUpdate = true;
-        server.setNoHttpPostResult(true);
+        rejectResubmission=true;
+        noHttpPostResult=true;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
-        server.setNoHttpPostResult(false);
         mainMenuPage
                 .clickEditSavedForm(1)
                 .assertTextDoesNotExist(_FORM_NAME)
