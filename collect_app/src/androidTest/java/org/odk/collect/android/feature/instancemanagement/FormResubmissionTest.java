@@ -57,18 +57,13 @@ public class FormResubmissionTest {
         server.setNoHttpPostResult(true);
         server.setRejectResubmission(true);
         MainMenuPage mainMenuPage = createAndSubmitForm()
-                .checkIsToastWithMessageDisplayed(_CANCEL)
 //                .clickOnText("CANCEL")
                 .pressBack(new MainMenuPage())
                 .clickViewSentForm(1)
                 .assertTextDoesNotExist(_FORM_NAME)
-                .pressBack(new MainMenuPage())
-                ;
+                .pressBack(new MainMenuPage());
         server.setNoHttpPostResult(false);
         mainMenuPage
-                .clickViewSentForm(1)
-                .assertTextDoesNotExist(_FORM_NAME)
-                .pressBack(new MainMenuPage())
                 .clickEditSavedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickOnQuestion(_QUESTION)
@@ -77,11 +72,9 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-//                .assertText("Error")
                 .pressBack(new MainMenuPage())
                 .clickViewSentForm(1)
-                .assertTextDoesNotExist(_FORM_NAME)
-        ;
+                .assertTextDoesNotExist(_FORM_NAME);
 
     }
 
