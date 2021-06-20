@@ -16,6 +16,7 @@ import org.odk.collect.android.support.StubOpenRosaServer;
 import org.odk.collect.android.support.TestDependencies;
 import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.pages.MainMenuPage;
+import org.odk.collect.android.support.pages.SendFinalizedFormPage;
 
 @RunWith(AndroidJUnit4.class)
 public class FormResubmissionTest {
@@ -24,6 +25,7 @@ public class FormResubmissionTest {
     public static final String _FORM_XML = "one-question.xml";
     public static final String _QUESTION = "what is your age";
     public static final String _ANSWER = "123";
+    public static final String _CANCEL = "CANCEL";
 
     private final TestDependencies testDependencies = new TestDependencies();
     private final CollectTestRule rule = new CollectTestRule();
@@ -50,8 +52,8 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-                .wait250ms()
-                .clickOnText("CANCEL")
+                .checkIsToastWithMessageDisplayed(_CANCEL)
+//                .clickOnText("CANCEL")
                 .pressBack(new MainMenuPage());
         server.setNoHttpPostResult(false);
         mainMenuPage
@@ -63,7 +65,7 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-//                .assertText("Error")
+                .assertText("Error")
                 .pressBack(new MainMenuPage());
 
     }
@@ -95,6 +97,7 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
+                .clickOK(new SendFinalizedFormPage())
                 .pressBack(new MainMenuPage());
 
     }
