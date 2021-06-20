@@ -79,6 +79,7 @@ public class FormResubmissionTest {
             .around(rule);
 
     private MainMenuPage createAndSubmitFormWithFailure() {
+        noHttpPostResult=true;
         return rule.startAtMainMenu()
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
@@ -100,7 +101,6 @@ public class FormResubmissionTest {
     public void whenFailedFormCanBeEdited_ServerRejectsResubmission() {
         CursorLoaderFactory.afterUpdate = false;
         rejectResubmission=true;
-        noHttpPostResult=true;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
         noHttpPostResult=false;
         mainMenuPage
@@ -121,7 +121,6 @@ public class FormResubmissionTest {
     @Test
     public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
         CursorLoaderFactory.afterUpdate = true;
-        noHttpPostResult=true;
         rejectResubmission=false;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
         noHttpPostResult=false;
