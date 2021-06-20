@@ -81,7 +81,7 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
                 Timber.i("slept for %s ms",timeOut* timeOutMs);
             }
         }else if(rejectResubmission&&this.submissionFile!=null){
-            return newErrorResult("Resubmission not permitted for "+submissionFile.getName());
+            return new HttpPostResult("", 500, "Resubmission not permitted for "+submissionFile.getName());
         }
 
         if (alwaysReturnError) {

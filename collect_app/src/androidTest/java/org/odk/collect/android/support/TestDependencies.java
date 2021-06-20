@@ -24,7 +24,6 @@ public class TestDependencies extends AppDependencyModule {
 
     private final CallbackCountingTaskExecutorRule countingTaskExecutorRule = new CallbackCountingTaskExecutorRule();
 
-    public final StubOpenRosaServer server;
     public final TestScheduler scheduler = new TestScheduler();
     public final FakeGoogleApi googleApi = new FakeGoogleApi();
     public final FakeGoogleAccountPicker googleAccountPicker = new FakeGoogleAccountPicker();
@@ -35,6 +34,7 @@ public class TestDependencies extends AppDependencyModule {
             new CountingTaskExecutorIdlingResource(countingTaskExecutorRule)
     );
 
+    public final StubOpenRosaServer server;
     public TestDependencies(StubOpenRosaServer server) {
         this.server = server;
     }

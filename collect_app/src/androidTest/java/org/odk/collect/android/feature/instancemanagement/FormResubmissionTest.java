@@ -2,21 +2,32 @@ package org.odk.collect.android.feature.instancemanagement;
 
 import android.Manifest;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.RecordedIntentsRule;
 import org.odk.collect.android.dao.CursorLoaderFactory;
+import org.odk.collect.android.openrosa.HttpCredentialsInterface;
+import org.odk.collect.android.openrosa.HttpPostResult;
 import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.StubOpenRosaServer;
 import org.odk.collect.android.support.TestDependencies;
 import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.pages.SendFinalizedFormPage;
+
+import java.io.File;
+import java.net.URI;
+import java.util.List;
+
+import timber.log.Timber;
 
 @RunWith(AndroidJUnit4.class)
 public class FormResubmissionTest {
@@ -27,7 +38,42 @@ public class FormResubmissionTest {
     public static final String _ANSWER = "123";
 
     private final TestDependencies testDependencies =
-            new TestDependencies(new StubOpenRosaServer());
+            new TestDependencies(new StubOpenRosaServer(){
+                @NonNull
+                @Override
+                public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
+                                                               @NonNull List<File> fileList,
+                                                               @NonNull URI uri,
+                                                               @Nullable HttpCredentialsInterface credentials,
+                                                               @NonNull long contentLength) throws Exception {
+                    if(noHttpPostResult){
+                        FormResubmissionTest.this.submissionFile = submissionFile;
+                        int timeOutMs=1000;
+                        int timeOuts=60;
+                        Timber.i("sleeping for %s sec",timeOutMs*timeOuts/1000);
+                        for(int timeOut=1;timeOut<=timeOuts;timeOut++) {
+                            Thread.sleep(timeOutMs);
+                            Timber.i("slept for %s ms",timeOut* timeOutMs);
+                        }
+                    }else if(submissionFile.equals(submissionFile)){
+                        return new HttpPostResult("", 500, "Resubmission not permitted for "+submissionFile.getName());
+                    }
+                    return super.uploadSubmissionAndFiles(submissionFile,
+                                fileList,
+                                uri,
+                                credentials,
+                                contentLength);
+
+                }
+            });
+    private boolean noHttpPostResult;
+    private File submissionFile;
+    private boolean rejectResubmission;
+    @NotNull
+    private HttpPostResult newErrorResult(String reasonPhrase) {
+        return new HttpPostResult("", 500, reasonPhrase);
+    }
+
     private final CollectTestRule rule = new CollectTestRule();
 
     private final StubOpenRosaServer server = testDependencies.server;
