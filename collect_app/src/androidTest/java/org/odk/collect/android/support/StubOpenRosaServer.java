@@ -54,13 +54,13 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
         noHttpPostResult=on;
     }
 
+    public void setRejectResubmission(boolean reject) {
+        rejectResubmission = reject;
+    }
+
     @NotNull
     private HttpPostResult newErrorResult(String reasonPhrase) {
         return new HttpPostResult("", 500, reasonPhrase);
-    }
-
-    public void setRejectResubmission(boolean reject) {
-        rejectResubmission = reject;
     }
 
     @NonNull
