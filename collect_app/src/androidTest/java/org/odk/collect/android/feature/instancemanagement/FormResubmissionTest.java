@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
-import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -48,7 +47,7 @@ public class FormResubmissionTest {
                                                        @NonNull List<File> fileList,
                                                        @NonNull URI uri,
                                                        @Nullable HttpCredentialsInterface credentials,
-                                                       @NonNull long contentLength) throws Exception {
+                                                       long contentLength) throws Exception {
             if (noHttpPostResult) {
                 this.submissionFile = submissionFile;
                 int timeOutMs = 1000;
