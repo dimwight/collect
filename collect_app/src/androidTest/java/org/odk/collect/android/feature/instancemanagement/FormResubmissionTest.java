@@ -66,7 +66,7 @@ public class FormResubmissionTest {
 
     private boolean handleFlagSet(@NotNull File submissionFile) throws InterruptedException {
         if (noHttpPostResult) {
-            FormResubmissionTest.this.submissionFile = submissionFile;
+            this.submissionFile = submissionFile;
             int timeOutMs = 1000;
             int timeOuts = 60;
             Timber.i("sleeping for %s sec", timeOutMs * timeOuts / 1000);
@@ -74,8 +74,8 @@ public class FormResubmissionTest {
                 Thread.sleep(timeOutMs);
                 Timber.i("slept for %s ms", timeOut * timeOutMs);
             }
-        } else return   (rejectResubmission&&
-                FormResubmissionTest.this.submissionFile.equals(submissionFile)) ;
+        } else return rejectResubmission
+                && this.submissionFile.equals(submissionFile) ;
         return false;
     }
 
