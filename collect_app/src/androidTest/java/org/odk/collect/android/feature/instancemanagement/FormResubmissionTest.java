@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -38,29 +39,23 @@ public class FormResubmissionTest {
 
     private boolean noHttpPostResult;
     private boolean rejectResubmission;
+    private File submissionFile;
 
     private final StubOpenRosaServer server = new StubOpenRosaServer() {
-        private File submissionFile;
         @NonNull
         @Override
         public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile,
                                                        @NonNull List<File> fileList,
                                                        @NonNull URI uri,
                                                        @Nullable HttpCredentialsInterface credentials,
-                                                       long contentLength) throws Exception {
-            if (noHttpPostResult) {
-                this.submissionFile = submissionFile;
-                int timeOutMs = 1000;
-                int timeOuts = 60;
-                Timber.i("sleeping for %s sec", timeOutMs * timeOuts / 1000);
-                for (int timeOut = 1; timeOut <= timeOuts; timeOut++) {
-                    Thread.sleep(timeOutMs);
-                    Timber.i("slept for %s ms", timeOut * timeOutMs);
+                                                      long contentLength) throws Exception {
+            if(noHttpPostResult||rejectResubmission){
+                boolean badReturn = handleFlagSet(submissionFile);
+                if(badReturn){
+                    return new HttpPostResult("", 500, "Resubmission not permitted for " + submissionFile.getName());
                 }
-            } else if (rejectResubmission&&
-                    this.submissionFile.equals(submissionFile)) {
-                return new HttpPostResult("", 500, "Resubmission not permitted for " + submissionFile.getName());
             }
+
             return super.uploadSubmissionAndFiles(submissionFile,
                     fileList,
                     uri,
@@ -69,7 +64,22 @@ public class FormResubmissionTest {
         }
     };
 
-   private final CollectTestRule rule = new CollectTestRule();
+    private boolean handleFlagSet(@NotNull File submissionFile) throws InterruptedException {
+        if (noHttpPostResult) {
+            FormResubmissionTest.this.submissionFile = submissionFile;
+            int timeOutMs = 1000;
+            int timeOuts = 60;
+            Timber.i("sleeping for %s sec", timeOutMs * timeOuts / 1000);
+            for (int timeOut = 1; timeOut <= timeOuts; timeOut++) {
+                Thread.sleep(timeOutMs);
+                Timber.i("slept for %s ms", timeOut * timeOutMs);
+            }
+        } else return   (rejectResubmission&&
+                FormResubmissionTest.this.submissionFile.equals(submissionFile)) ;
+        return false;
+    }
+
+    private final CollectTestRule rule = new CollectTestRule();
 
     @Rule
     public RuleChain chain = TestRuleChain.chain(new TestDependencies(server))
