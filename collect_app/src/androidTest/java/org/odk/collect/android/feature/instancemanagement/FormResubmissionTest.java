@@ -40,8 +40,6 @@ public class FormResubmissionTest {
 
     private MainMenuPage createAndSubmitFormWithFailure() {
         return rule.startAtMainMenu()
-                .clickViewSentForm(0)
-                .pressBack(new MainMenuPage())
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
                 .startBlankForm(_FORM_NAME)
@@ -73,8 +71,9 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
+                .clickOK(new SendFinalizedFormPage())
                 .pressBack(new MainMenuPage())
-                .clickViewSentForm(1)
+                .clickViewSentForm(0)
                 .assertTextDoesNotExist(_FORM_NAME);
 
     }
@@ -83,9 +82,7 @@ public class FormResubmissionTest {
     public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
         CursorLoaderFactory.afterUpdate = true;
         server.setNoHttpPostResult(true);
-        MainMenuPage mainMenuPage = createAndSubmitFormWithFailure()
-//                .clickOnText("CANCEL")
-                .pressBack(new MainMenuPage());
+        MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
         server.setNoHttpPostResult(false);
         mainMenuPage
                 .clickEditSavedForm(1)
