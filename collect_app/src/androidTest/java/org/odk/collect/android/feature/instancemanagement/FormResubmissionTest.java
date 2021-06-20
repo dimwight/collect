@@ -25,7 +25,6 @@ public class FormResubmissionTest {
     public static final String _FORM_XML = "one-question.xml";
     public static final String _QUESTION = "what is your age";
     public static final String _ANSWER = "123";
-    public static final String _CANCEL = "CArrrrNCEL";
 
     private final TestDependencies testDependencies = new TestDependencies();
     private final CollectTestRule rule = new CollectTestRule();
@@ -49,7 +48,7 @@ public class FormResubmissionTest {
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
-//                .clickOnText("CANCEL")
+//               clickOnText("CANCEL")
                 .pressBack(new MainMenuPage())
                 .clickViewSentForm(0)
                 .assertTextDoesNotExist(_FORM_NAME)
@@ -75,7 +74,6 @@ public class FormResubmissionTest {
                 .pressBack(new MainMenuPage())
                 .clickViewSentForm(0)
                 .assertTextDoesNotExist(_FORM_NAME);
-
     }
 
     @Test
@@ -94,9 +92,7 @@ public class FormResubmissionTest {
                 .clickOK(new SendFinalizedFormPage())
                 .pressBack(new MainMenuPage())
                 .clickViewSentForm(1)
-                .assertText(_FORM_NAME)
-        ;
-
+                .assertText(_FORM_NAME);
     }
 
 }
