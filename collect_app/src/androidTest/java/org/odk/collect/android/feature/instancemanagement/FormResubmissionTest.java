@@ -50,8 +50,8 @@ public class FormResubmissionTest {
                                                        @Nullable HttpCredentialsInterface credentials,
                                                       long contentLength) throws Exception {
             if(noHttpPostResult||rejectResubmission){
-                boolean badReturn = handleFlagSet(submissionFile);
-                if(badReturn){
+                boolean doReject = handleFlagSet(submissionFile);
+                if(doReject){
                     return new HttpPostResult("", 500, "Resubmission not permitted for " + submissionFile.getName());
                 }
             }
@@ -68,7 +68,7 @@ public class FormResubmissionTest {
         if (noHttpPostResult) {
             this.submissionFile = submissionFile;
             int timeOutMs = 1000;
-            int timeOuts = 60;
+            int timeOuts = 60*60;
             Timber.i("sleeping for %s sec", timeOutMs * timeOuts / 1000);
             for (int timeOut = 1; timeOut <= timeOuts; timeOut++) {
                 Thread.sleep(timeOutMs);
