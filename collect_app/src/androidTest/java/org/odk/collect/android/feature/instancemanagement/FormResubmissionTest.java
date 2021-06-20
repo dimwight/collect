@@ -40,14 +40,14 @@ public class FormResubmissionTest {
 
     private MainMenuPage createAndSubmitFormWithFailure() {
         return rule.startAtMainMenu()
+                .clickViewSentForm(0)
+                .pressBack(new MainMenuPage())
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
                 .startBlankForm(_FORM_NAME)
                 .answerQuestion(_QUESTION, _ANSWER)
                 .swipeToEndScreen()
                 .clickSaveAndExit()
-                .clickViewSentForm(0)
-                .pressBack(new MainMenuPage())
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
