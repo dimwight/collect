@@ -98,7 +98,10 @@ public class FormResubmissionTest {
                 .clickOnForm(_FORM_NAME)
                 .clickSendSelected()
                 .clickOK(new SendFinalizedFormPage())
-                .pressBack(new MainMenuPage());
+                .pressBack(new MainMenuPage())
+                .clickViewSentForm(1)
+                .clickOnForm(_FORM_NAME)
+        ;
 
     }
 
