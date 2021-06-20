@@ -16,7 +16,6 @@ import org.odk.collect.android.support.StubOpenRosaServer;
 import org.odk.collect.android.support.TestDependencies;
 import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.pages.MainMenuPage;
-import org.odk.collect.android.support.pages.OkDialog;
 import org.odk.collect.android.support.pages.SendFinalizedFormPage;
 
 @RunWith(AndroidJUnit4.class)
@@ -39,7 +38,7 @@ public class FormResubmissionTest {
             .around(new RecordedIntentsRule())
             .around(rule);
 
-    private OkDialog createAndSubmitForm() {
+    private MainMenuPage createAndSubmitFormWithFailure() {
         return rule.startAtMainMenu()
                 .setServer(server.getURL())
                 .copyForm(_FORM_XML)
@@ -49,19 +48,20 @@ public class FormResubmissionTest {
                 .clickSaveAndExit()
                 .clickSendFinalizedForm(1)
                 .clickOnForm(_FORM_NAME)
-                .clickSendSelected();
+                .clickSendSelected()
+                .clickOnText("CANCEL")
+                .pressBack(new MainMenuPage())
+                .clickViewSentForm(1)
+                .assertTextDoesNotExist(_FORM_NAME)
+                .pressBack(new MainMenuPage());
     }
 
     @Test
     public void whenFailedFormCanBeEdited_ServerRejectsResubmission() {
         server.setNoHttpPostResult(true);
         server.setRejectResubmission(true);
-        MainMenuPage mainMenuPage = createAndSubmitForm()
-//                .clickOnText("CANCEL")
-                .pressBack(new MainMenuPage())
-                .clickViewSentForm(1)
-                .assertTextDoesNotExist(_FORM_NAME)
-                .pressBack(new MainMenuPage());
+        MainMenuPage mainMenuPage = createAndSubmitFormWithFailure()
+//              ;
         server.setNoHttpPostResult(false);
         mainMenuPage
                 .clickEditSavedForm(1)
@@ -82,7 +82,7 @@ public class FormResubmissionTest {
     public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
         CursorLoaderFactory.afterUpdate = true;
         server.setNoHttpPostResult(true);
-        MainMenuPage mainMenuPage = createAndSubmitForm()
+        MainMenuPage mainMenuPage = createAndSubmitFormWithFailure()
 //                .clickOnText("CANCEL")
                 .pressBack(new MainMenuPage());
         server.setNoHttpPostResult(false);
