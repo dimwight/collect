@@ -74,8 +74,10 @@ public class FormResubmissionTest {
                 Thread.sleep(timeOutMs);
                 Timber.i("slept for %s ms", timeOut * timeOutMs);
             }
-        } else return rejectResubmission
-                && this.submissionFile.equals(submissionFile) ;
+        } else{
+            return rejectResubmission
+                    && this.submissionFile.equals(submissionFile) ;
+        }
         return false;
     }
 
