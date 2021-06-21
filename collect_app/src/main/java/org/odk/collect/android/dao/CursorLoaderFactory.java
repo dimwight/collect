@@ -30,6 +30,24 @@ public class CursorLoaderFactory {
         return getInstancesCursorLoader(selection, selectionArgs, sortOrder);
     }
 
+    public CursorLoader createUnsentInstancesCursorLoader(CharSequence charSequence, String sortOrder) {
+        CursorLoader cursorLoader;
+        if (charSequence.length() == 0) {
+            cursorLoader = createUnsentInstancesCursorLoader(sortOrder);
+        } else {
+            String selection =
+                    DatabaseInstanceColumns.STATUS + " !=? and "
+                            + DatabaseInstanceColumns.DISPLAY_NAME + " LIKE ?";
+            String[] selectionArgs = {
+                    Instance.STATUS_SUBMITTED,
+                    "%" + charSequence + "%"};
+
+            cursorLoader = getInstancesCursorLoader(selection, selectionArgs, sortOrder);
+        }
+
+        return cursorLoader;
+    }
+
     public CursorLoader createSentInstancesCursorLoader(CharSequence charSequence, String sortOrder) {
         CursorLoader cursorLoader;
         if (charSequence.length() == 0) {
@@ -53,24 +71,6 @@ public class CursorLoaderFactory {
         String[] selectionArgs = {Instance.STATUS_SUBMITTED};
 
         return getInstancesCursorLoader(selection, selectionArgs, sortOrder);
-    }
-
-    public CursorLoader createUnsentInstancesCursorLoader(CharSequence charSequence, String sortOrder) {
-        CursorLoader cursorLoader;
-        if (charSequence.length() == 0) {
-            cursorLoader = createUnsentInstancesCursorLoader(sortOrder);
-        } else {
-            String selection =
-                    DatabaseInstanceColumns.STATUS + " !=? and "
-                            + DatabaseInstanceColumns.DISPLAY_NAME + " LIKE ?";
-            String[] selectionArgs = {
-                    Instance.STATUS_SUBMITTED,
-                    "%" + charSequence + "%"};
-
-            cursorLoader = getInstancesCursorLoader(selection, selectionArgs, sortOrder);
-        }
-
-        return cursorLoader;
     }
 
     public CursorLoader createSavedInstancesCursorLoader(String sortOrder) {
