@@ -110,7 +110,7 @@ public class FormResubmissionTest {
 
     @Test
     public void whenFailedFormCanBeEdited_ServerRejectsResubmission() {
-        CursorLoaderFactory.afterUpdate = false;
+        CursorLoaderFactory.beforeUpdate = true;
         rejectResubmission=true;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
         noHttpPostResult=false;
@@ -131,7 +131,7 @@ public class FormResubmissionTest {
 
     @Test
     public void whenFailedFormCannotBeEdited_ServerAcceptsResubmission() {
-        CursorLoaderFactory.afterUpdate = true;
+        CursorLoaderFactory.beforeUpdate = false;
         rejectResubmission=false;
         MainMenuPage mainMenuPage = createAndSubmitFormWithFailure();
         noHttpPostResult=false;
