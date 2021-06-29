@@ -35,6 +35,7 @@ public class TestDependencies extends AppDependencyModule {
     );
 
     public final StubOpenRosaServer server;
+
     public TestDependencies(StubOpenRosaServer server) {
         this.server = server;
     }
