@@ -49,6 +49,7 @@ public class CursorLoaderFactory {
         return getInstancesCursorLoader(selection, selectionArgs, sortOrder);
     }
 
+    //2021-06 Not updated as not testable?
     public CursorLoader createUnsentInstancesCursorLoader(CharSequence charSequence, String sortOrder) {
         CursorLoader cursorLoader;
         if (charSequence.length() == 0) {
