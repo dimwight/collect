@@ -42,8 +42,8 @@ public class CursorLoaderFactory {
         String selection = DatabaseInstanceColumns.STATUS + " !=? " +
                 "and " + DatabaseInstanceColumns.STATUS + " !=? ";
         String[] selectionArgs = {
-            Instance.STATUS_SUBMITTED,
-            Instance.STATUS_SUBMISSION_FAILED
+                Instance.STATUS_SUBMITTED,
+                Instance.STATUS_SUBMISSION_FAILED
         };
 
         return getInstancesCursorLoader(selection, selectionArgs, sortOrder);
