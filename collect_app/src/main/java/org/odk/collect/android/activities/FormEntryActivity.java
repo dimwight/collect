@@ -64,6 +64,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.R;
+import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AMRAppender;
 import org.odk.collect.android.audio.AudioControllerView;
@@ -107,6 +108,7 @@ import org.odk.collect.android.fragments.dialogs.NumberPickerDialog;
 import org.odk.collect.android.fragments.dialogs.ProgressDialogFragment;
 import org.odk.collect.android.fragments.dialogs.RankingWidgetDialog;
 import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
+import org.odk.collect.android.instancemanagement.InstanceDeleter;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.javarosawrapper.FormController.FailedConstraint;
 import org.odk.collect.android.javarosawrapper.FormDesignException;
@@ -241,7 +243,6 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     // Tracks whether we are autosaving
     public static final String KEY_AUTO_SAVED = "autosaved";
 
-    public static final String EXTRA_TESTING_PATH = "testingPath";
     public static final String KEY_READ_PHONE_STATE_PERMISSION_REQUEST_NEEDED = "readPhoneStatePermissionRequestNeeded";
 
     private boolean autoSaved;
@@ -596,10 +597,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             uriMimeType = getContentResolver().getType(uri);
         }
 
-        if (uriMimeType == null && intent.hasExtra(EXTRA_TESTING_PATH)) {
-            formPath = intent.getStringExtra(EXTRA_TESTING_PATH);
-
-        } else if (uriMimeType != null && uriMimeType.equals(InstanceProviderAPI.CONTENT_ITEM_TYPE)) {
+        if (uriMimeType != null && uriMimeType.equals(InstanceProviderAPI.CONTENT_ITEM_TYPE)) {
             Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().get(ContentUriHelper.getIdFromUri(uri));
 
             if (instance == null) {
@@ -608,6 +606,13 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
 
             instancePath = instance.getInstanceFilePath();
+            if (!new File(instancePath).exists()) {
+                analytics.logEvent(AnalyticsEvents.OPEN_DELETED_INSTANCE);
+                new InstanceDeleter(new InstancesRepositoryProvider(Collect.getInstance()).get(), formsRepository).delete(instance.getDbId());
+                createErrorDialog(getString(R.string.instance_deleted_message), true);
+                return;
+            }
+
             List<Form> candidateForms = formsRepository.getAllByFormIdAndVersion(instance.getFormId(), instance.getFormVersion());
 
             if (candidateForms.isEmpty()) {
@@ -624,10 +629,9 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
 
             formPath = candidateForms.get(0).getFormFilePath();
-        } else if (uriMimeType != null
-                && uriMimeType.equals(FormsProviderAPI.CONTENT_ITEM_TYPE)) {
-
-            Form form = formsRepository.get(ContentUriHelper.getIdFromUri(uri));
+        } else if (uriMimeType != null && uriMimeType.equals(FormsProviderAPI.CONTENT_ITEM_TYPE)) {
+            String projectId = uri.getQueryParameter("projectId");
+            Form form = formsRepositoryProvider.get(projectId).get(ContentUriHelper.getIdFromUri(uri));
             if (form != null) {
                 formPath = form.getFormFilePath();
             }
@@ -2306,7 +2310,15 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         String action = getIntent().getAction();
         if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_EDIT.equals(action)) {
             // caller is waiting on a picked form
-            Uri uri = InstancesDaoHelper.getLastInstanceUri(getAbsoluteInstancePath());
+            Uri uri = null;
+            String path = getAbsoluteInstancePath();
+            if (path != null) {
+                Instance instance = new InstancesRepositoryProvider(this).get().getOneByPath(path);
+                if (instance != null) {
+                    uri = InstanceProviderAPI.getUri(currentProjectProvider.getCurrentProject().getUuid(), instance.getDbId());
+                }
+            }
+
             if (uri != null) {
                 setResult(RESULT_OK, new Intent().setData(uri));
             }
