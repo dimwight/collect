@@ -18,22 +18,31 @@ package org.odk.collect.android.widgets.items;
 
 import android.content.Context;
 
+import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.QuestionDef;
 import org.javarosa.core.model.SelectChoice;
 import org.javarosa.xpath.expr.XPathFuncExpr;
 import org.javarosa.xpath.parser.XPathSyntaxException;
 import org.odk.collect.android.R;
+import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.exception.ExternalDataException;
+import org.odk.collect.android.exception.JavaRosaException;
+import org.odk.collect.android.external.ExternalDataUtil;
 import org.odk.collect.android.fastexternalitemset.ItemsetDao;
 import org.odk.collect.android.fastexternalitemset.ItemsetDbAdapter;
-import org.odk.collect.android.external.ExternalDataUtil;
-import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.fastexternalitemset.XPathParseTool;
+import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.android.utilities.SelectOneWidgetUtils;
 import org.odk.collect.android.widgets.QuestionWidget;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
+import timber.log.Timber;
+
+import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_2;
 
 /**
  * ItemsWidget is an abstract class used by widgets containing a list of choices.
@@ -41,6 +50,38 @@ import java.util.List;
  * like: SelectOne, SelectMultiple, Ranking.
  */
 public abstract class ItemsWidget extends QuestionWidget {
+
+    /**
+     * If there are "fast external itemset" selects right after this select,
+     * assume that they are linked to the current question and clear them.
+     */
+    final protected void clearFollowingItemsetWidgets() {
+        if (!isFastExternalItemsetUsed()) {
+            return;
+        } else if (STAGE_2.isApplied()) {
+            SelectOneWidgetUtils.checkFastExternalCascade(this);
+            return;
+        }
+        FormController formController = Collect.getInstance().getFormController();
+        if (formController == null) {
+            return;
+        }
+
+        if (formController.currentCaptionPromptIsQuestion()) {
+            try {
+                FormIndex startFormIndex = formController.getQuestionPrompt().getIndex();
+                formController.stepToNextScreenEvent();
+                while (formController.currentCaptionPromptIsQuestion()
+                        && formController.getQuestionPrompt().getFormElement().getAdditionalAttribute(null, "query") != null) {
+                    formController.saveAnswer(formController.getQuestionPrompt().getIndex(), null);
+                    formController.stepToNextScreenEvent();
+                }
+                formController.jumpToIndex(startFormIndex);
+            } catch (JavaRosaException e) {
+                Timber.d(e);
+            }
+        }
+    }
 
     List<SelectChoice> items = new ArrayList<>();
 
