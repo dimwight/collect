@@ -22,26 +22,16 @@ import java.util.function.Supplier;
 
 import timber.log.Timber;
 
-public class
-SelectOneWidgetUtils {
+public class SelectOneWidgetUtils {
 
     private SelectOneWidgetUtils() {
 
     }
 
     public enum UpdateStage {
-        //Current codebase
-        STAGE_0,
-        //Preparatory changes
-        STAGE_1,
-        //Basic improvement
-        STAGE_2,
-        //Field lists improvement
-        STAGE_3,
-        //Unhidden reset
-        STAGE_4;
+        STAGE_0, STAGE_1, STAGE_2, STAGE_3, STAGE_4;
 
-        private static UpdateStage latest = STAGE_0;
+        private static UpdateStage latest = STAGE_4;
 
         public static UpdateStage getLatest() {
             return latest;

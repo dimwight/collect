@@ -24,11 +24,10 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appea
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.MinimalAutocomplete;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Plain;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1e;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC2e;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC3e;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC1h;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC2h;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC3h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC2h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC3;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE1;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE2;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE3;
@@ -42,7 +41,6 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Items
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_0;
 
 public class SelectOneResetTest {
-
     enum ItemsetType {
         Internal,
         FastExternal
@@ -59,38 +57,14 @@ public class SelectOneResetTest {
         }
     }
 
-    enum SectionVariant {
-        Internal_Plain(Internal, Plain),
-        Internal_Minimal(Internal, Minimal),
-        FastExternal_Plain(FastExternal, Plain),
-        FastExternal_Minimal(FastExternal, Minimal),
-        Internal_MinimalAutocomplete(Internal, MinimalAutocomplete),
-        FastExternal_MinimalAutocomplete(FastExternal, MinimalAutocomplete),
-        Internal_Autocomplete(Internal, Autocomplete),
-        FastExternal_Autocomplete(FastExternal, Autocomplete);
-
-        final ItemsetType itemsetType;
-        final Appearance appearance;
-        private final List<Assert> asserts0;
-
-        public boolean canAlwaysAssert(Assert asserty) {
-            return asserts0.contains(asserty);
-        }
-
-        SectionVariant(ItemsetType itemsetType, Appearance appearance) {
-            this.itemsetType = itemsetType;
-            this.appearance = appearance;
-            asserts0 = new ArrayList<>(Arrays.asList(Assert.values()));
-            if (itemsetType == Internal) {
-                return;
-            }
-            asserts0.removeAll(appearance == Plain
-                    ? Arrays.asList()
-                    : Arrays.asList()
-            );
-        }
-    }
-    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1, DE2, DE3}
+    final static String formName = "selectOneReset";
+    public CollectTestRule rule = new CollectTestRule();
+    @Rule
+    public RuleChain copyFormChain = RuleChain
+            .outerRule(new ResetStateRule())
+            .around(new CopyFormRule((formName) + ".xml",
+                    Collections.singletonList(formName + "-media/itemsets.csv")))
+            .around(rule);
 
     enum Block {
         A, B, C, D, E;
@@ -121,28 +95,51 @@ public class SelectOneResetTest {
 
     }
 
-    static final String TEXT_NO = "no";
-    static final String TEXT_YES = "yes";
-    static final String TEXT_SELECT_ANSWER = "Select Answer";
-    static final String TEXT_HARLINGEN = "Harlingen";
-    static final String TEXT_BROWNSVILLE = "Brownsville";
-    static final String TEXT_TEXAS = "Texas";
-    static final String TEXT_WASHINGTON = "Washington";
-    static final String TEXT_NORTH = "North";
-    static final String TEXT_SOUTH = "South";
-    static final String TEXT_WEST = "West";
-    static final String TEXT_EAST = "East";
-    static final String TEXT_FORM = "selectOneReset";
+    final static String TEXT_NO = "no";
+    final static String TEXT_YES = "yes";
+    final static String TEXT_SELECT_ANSWER = "Select Answer";
+    final static String TEXT_HARLINGEN = "Harlingen";
+    final static String TEXT_BROWNSVILLE = "Brownsville";
+    final static String TEXT_TEXAS = "Texas";
+    final static String TEXT_WASHINGTON = "Washington";
+    final static String TEXT_NORTH = "North";
+    final static String TEXT_SOUTH = "South";
+    final static String TEXT_WEST = "West";
+    final static String TEXT_EAST = "East";
 
-    public CollectTestRule rule = new CollectTestRule();
-    @Rule
-    public RuleChain copyFormChain = RuleChain
-            .outerRule(new ResetStateRule())
-            .around(new CopyFormRule(TEXT_FORM + ".xml",
-                    Collections.singletonList(TEXT_FORM + "-media/itemsets.csv")))
-            .around(rule);
+    enum Assert {ABC1h, ABC1e, ABC2h, ABC2e, ABC3, DE1, DE2, DE3}
 
-    private SectionVariant variantNow;
+    enum SectionVariant {
+        Internal_Plain(Internal, Plain),
+        Internal_Minimal(Internal, Minimal),
+        FastExternal_Plain(FastExternal, Plain),
+        FastExternal_Minimal(FastExternal, Minimal),
+        Internal_MinimalAutocomplete(Internal, MinimalAutocomplete),
+        FastExternal_MinimalAutocomplete(FastExternal, MinimalAutocomplete),
+        Internal_Autocomplete(Internal, Autocomplete),
+        FastExternal_Autocomplete(FastExternal, Autocomplete);
+
+        final ItemsetType itemsetType;
+        final Appearance appearance;
+        private final List<Assert> asserts0;
+
+        SectionVariant(ItemsetType itemsetType, Appearance appearance) {
+            this.itemsetType = itemsetType;
+            this.appearance = appearance;
+            asserts0 = new ArrayList<>(Arrays.asList(Assert.values()));
+            if (itemsetType == Internal) {
+                return;
+            }
+            asserts0.removeAll(appearance == Plain
+                    ? Arrays.asList()
+                    : Arrays.asList()
+            );
+        }
+
+        public boolean alwaysAsserts(Assert asserty) {
+            return asserts0.contains(asserty);
+        }
+    }
 
     @Test
     public void testAllVariants() {
@@ -150,56 +147,55 @@ public class SelectOneResetTest {
         Timber.i("updateStage = " + UpdateStage.getLatest());
 
         boolean testSelectedVariants = true;
-        boolean testBlockB = true;
-        boolean testBlockA = testBlockB && false;
-        boolean testBlockC = testBlockA && false;
+        boolean testBlockA = true;
+        boolean testBlockB = testBlockA && true;
+        boolean testBlockC = testBlockB && true;
         boolean testBlocksDE = true;
         boolean testBlockE = testBlocksDE && true;
-        int lastOrdinal = 3;
+        boolean skipLastPair = true;
 
         FormHierarchyPage hierarchy = new MainMenuPage()
-                .startBlankForm(TEXT_FORM)
+                .startBlankForm(formName)
                 .clickGoToArrow();
         for (SectionVariant variant : SectionVariant.values()) {
-            variantNow = variant;
             int ordinal = variant.ordinal();
-            if (ordinal > lastOrdinal) {
+            if (skipLastPair && ordinal > 5) {
                 break;
             } else if (testSelectedVariants && !(
-                    ordinal > 1
+                    ordinal == 2
             )) {
                 continue;
             }
             Timber.i("testing " + variant + "=" + ordinal);
             if (testBlockA) {
-                testBlockABC(A, hierarchy);
+                testBlockABC(A, variant, hierarchy);
             }
             hierarchy.clickOnGroup(B.groupLabel(variant));
             if (testBlockB) {
-                testBlockABC(B, hierarchy);
+                testBlockABC(B, variant, hierarchy);
             }
             hierarchy.clickOnGroup(C.groupLabel(variant));
             if (testBlockC) {
-                testBlockABC(C, hierarchy);
+                testBlockABC(C, variant, hierarchy);
             }
             hierarchy.clickGoUpIcon();
             hierarchy.clickGoUpIcon();
             hierarchy.clickOnGroup(D.groupLabel(variant));
             if (testBlocksDE) {
-                testBlocksDE(hierarchy, testBlockE);
+                testBlocksDE(variant, hierarchy, testBlockE);
             }
             hierarchy.clickGoUpIcon();
             Timber.i("passed " + variant + "=" + ordinal);
         }
     }
 
-    void testBlockABC(Block block, FormHierarchyPage hierarchy) {
-        Timber.i(newBlockMsg(block, variantNow));
-        String showWardLabel = block.showWardLabel(variantNow);
-        String cityLabel = block.cityLabel(variantNow);
-        String wardLabel = block.wardLabel(variantNow);
-        String stateLabel = block.stateLabel(variantNow);
-        boolean minimal = variantNow.appearance.isMinimal();
+    void testBlockABC(Block block, SectionVariant variant, @NotNull FormHierarchyPage hierarchy) {
+        Timber.i(newBlockMsg(block, variant));
+        String showWardLabel = block.showWardLabel(variant);
+        String cityLabel = block.cityLabel(variant);
+        String wardLabel = block.wardLabel(variant);
+        String stateLabel = block.stateLabel(variant);
+        boolean minimal = variant.appearance.isMinimal();
         FormEntryPage entry = hierarchy
                 .clickOnQuestion(showWardLabel)
                 .clickOnText(TEXT_NO)
@@ -211,13 +207,16 @@ public class SelectOneResetTest {
                 .swipeToNextQuestion(showWardLabel)
                 .clickOnText(TEXT_YES)
                 .clickGoToArrow();
-        //BC1h
-        if (block != A && canAssertAtStage(BC1h, 0)) {
+        if (block != A &&
+                (STAGE_0.isApplied() ||
+                        variant.alwaysAsserts(ABC1h))) {
+            //ABC1h
             hierarchy.assertTextDoesNotExist(TEXT_NORTH);
         }
         hierarchy.clickOnQuestion(wardLabel);
-        //ABC1e
-        if (canAssertAtStage(ABC1e, 0)) {
+        if ((STAGE_0.isApplied() ||
+                variant.alwaysAsserts(ABC1e))) {
+            //ABC1e
             entry.assertTextDoesNotExist();
         }
         if (minimal) {
@@ -231,15 +230,17 @@ public class SelectOneResetTest {
         }
         entry.clickOnText(TEXT_BROWNSVILLE)
                 .clickGoToArrow();
-        //BC2h
-        if (block != A && canAssertAtStage(BC2h, 0)) {
+        if (block != A &&
+                (STAGE_0.isApplied() ||
+                        variant.alwaysAsserts(ABC2h))) {
+            //ABC2h
             hierarchy.assertTextDoesNotExist(TEXT_EAST);
         }
         hierarchy.clickOnQuestion(wardLabel);
-        //ABC2e
-        if ((canAssertAtStage(ABC2e, 0))) {
+        if ((STAGE_0.isApplied() ||
+                variant.alwaysAsserts(ABC2e)))
+            //ABC2e
             entry.assertTextDoesNotExist();
-        }
         if (minimal) {
             entry.openSelectMinimalDialog();
         }
@@ -249,86 +250,65 @@ public class SelectOneResetTest {
         if (minimal) {
             entry.openSelectMinimalDialog();
         }
-        entry.clickOnText(TEXT_WASHINGTON);
-        //BC3h
-        if (block != A && canAssertAtStage(BC3h, 0)) {
-            entry.clickGoToArrow()
-                    .assertText(TEXT_WASHINGTON, TEXT_YES)
-                    .assertTextDoesNotExist(TEXT_NORTH)
-                    .clickOnQuestion(stateLabel);
-        }
-        //ABC3e
-        if (canAssertAtStage(ABC3e, 0)) {
-            entry.swipeToNextQuestion(block.countyLabel(variantNow))
+        entry.clickOnText(TEXT_WASHINGTON)
+                .swipeToNextQuestion(block.countyLabel(variant))
+                .assertTextDoesNotExist();
+        if (STAGE_0.isApplied() ||
+                variant.alwaysAsserts(ABC3)) {//ABC3
+            entry.swipeToNextQuestion(block.cityLabel(variant))
                     .assertTextDoesNotExist()
-                    .swipeToNextQuestion(block.cityLabel(variantNow))
-                    .assertTextDoesNotExist()
-                    .swipeToNextQuestion(block.showWardLabel(variantNow))
-                    .swipeToNextQuestion(block.wardLabel(variantNow))
+                    .swipeToNextQuestion(block.showWardLabel(variant))
+                    .swipeToNextQuestion(block.wardLabel(variant))
                     .assertTextDoesNotExist();
         }
         entry.clickGoToArrow();
-
     }
 
-    void testBlocksDE(FormHierarchyPage hierarchy, boolean testBlockE) {
+    void testBlocksDE(SectionVariant variant, FormHierarchyPage hierarchy, boolean testBlockE) {
         Block block = D;
-        Timber.i(newBlockMsg(block, variantNow));
-        String wardLabel = block.wardLabel(variantNow);
+        Timber.i(newBlockMsg(block, variant));
+        String wardLabel = block.wardLabel(variant);
         FormEntryPage entry = hierarchy.clickOnQuestion(wardLabel);
-        int minimalBrownsvilles = 0;
-        if (variantNow.appearance.isMinimal()) {
+        if (variant.appearance.isMinimal()) {
             entry.clickOnText(TEXT_NO, 0)
                     .clickOnText(TEXT_BROWNSVILLE, 0)
                     .clickOnText(TEXT_HARLINGEN)
-                    .clickOnText(TEXT_YES, 0);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
+                    .clickOnText(TEXT_YES, 0)
+            ;
+            if ((STAGE_0.isApplied() ||
+                    variant.alwaysAsserts(DE1))) {//DE1
                 entry.clickOnText(TEXT_SELECT_ANSWER)
-                ;
-            } else {
-                entry.clickOnText(TEXT_NORTH, 0);
+                        .clickOnText(TEXT_EAST);
             }
-            entry.clickOnText(TEXT_EAST)
-                    .clickOnText(TEXT_HARLINGEN, 0)
+            entry.scrollToAndClickText(TEXT_HARLINGEN, 0)
                     .clickOnText(TEXT_BROWNSVILLE);
-            minimalBrownsvilles++;
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
-                entry.clickOnText(TEXT_SELECT_ANSWER);
-            } else {
-                entry.clickOnText(TEXT_EAST);
+            if (STAGE_0.isApplied() ||
+                    variant.alwaysAsserts(DE2)) {//DE2
+                entry.clickOnText(TEXT_SELECT_ANSWER)
+                        .clickOnText(TEXT_NORTH);
             }
-            entry.clickOnText(TEXT_NORTH)
-                    .scrollToAndClickText(TEXT_TEXAS, 0)
+            entry.scrollToAndClickText(TEXT_TEXAS, 0)
                     .clickOnText(TEXT_WASHINGTON);
         } else {
             entry.scrollToAndClickText(TEXT_NO, 0)
                     .clickOnText(TEXT_HARLINGEN, 0)
                     .scrollToAndClickText(TEXT_YES, 0)
-                    .scrollToText(TEXT_WEST, 0);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
-                entry.assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0);
-            }
-            entry.clickOnText(TEXT_EAST, 0)
+                    .scrollToText(TEXT_WEST, 0)
+                    .assertTextIsNotChecked(TEXT_WEST, 0)//DE1…
+                    .assertTextIsNotChecked(TEXT_EAST, 0)
+                    .clickOnText(TEXT_EAST, 0)
                     .clickOnText(TEXT_BROWNSVILLE, 0)
-                    .scrollToText(TEXT_SOUTH, 0);
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
-                entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0);
-            }
-            entry.clickOnText(TEXT_NORTH, 0)
+                    .scrollToText(TEXT_SOUTH, 0)
+                    .assertTextIsNotChecked(TEXT_SOUTH, 0)//DE2…
+                    .assertTextIsNotChecked(TEXT_NORTH, 0)
+                    .clickOnText(TEXT_NORTH, 0)
                     .scrollToAndClickText(TEXT_WASHINGTON, 0);
         }
         entry.clickGoToArrow();
-        //DE3
-        if (canAssertAtStage(DE3, 0)) {
-            minimalBrownsvilles--;
-            hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
-                    .assertTextDoesNotExist(TEXT_NORTH);
+        if (STAGE_0.isApplied() ||
+                variant.alwaysAsserts(DE3)) {//DE3
+            hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES).
+                    assertTextDoesNotExist(TEXT_NORTH);
         }
 
         if (!testBlockE) {
@@ -336,73 +316,59 @@ public class SelectOneResetTest {
         }
 
         block = E;
-        Timber.i(newBlockMsg(block, variantNow));
-        String groupLabel = block.groupLabel(variantNow);
-        wardLabel = block.wardLabel(variantNow);
+        Timber.i(newBlockMsg(block, variant));
+        String groupLabel = block.groupLabel(variant);
+        wardLabel = block.wardLabel(variant);
         entry = hierarchy.clickOnGroup(groupLabel)
-                .clickOnQuestion(wardLabel)
-                .scrollToText(wardLabel, 0)
+                .clickOnQuestion(wardLabel).scrollToText(wardLabel, 0)
                 .clickOnText(TEXT_NO, 1);
-        if (variantNow.appearance.isMinimal()) {
+        if (variant.appearance.isMinimal()) {
             entry.scrollToAndClickText(TEXT_BROWNSVILLE,
-                    minimalBrownsvilles)
+                    STAGE_0.isApplied() ||
+                            variant.itemsetType == Internal
+                            ? 0 : 1)
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 1);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
-                entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
-            } else {
-                entry.scrollToAndClickText(TEXT_NORTH, 1);
+            if ((STAGE_0.isApplied() ||
+                    variant.alwaysAsserts(DE1))) {//DE1
+                entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3)
+                        .clickOnText(TEXT_EAST);
             }
-            entry.clickOnText(TEXT_EAST)
-                    .clickOnText(TEXT_HARLINGEN)
+            entry.clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_BROWNSVILLE);
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
-                entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
-            } else {
-                entry.scrollToAndClickText(TEXT_EAST);
+            if (STAGE_0.isApplied() ||
+                    variant.alwaysAsserts(DE2)) {//DE2
+                entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3)
+                        .clickOnText(TEXT_NORTH);
             }
-            entry.clickOnText(TEXT_NORTH)
-                    .scrollToAndClickText(TEXT_TEXAS)
+            entry.clickOnText(TEXT_TEXAS)
                     .clickOnText(TEXT_WASHINGTON);
         } else {
             entry.clickOnText(TEXT_HARLINGEN)
                     .scrollToAndClickText(TEXT_YES, 1)
-                    .scrollToText(TEXT_WEST, 0);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
-                entry.assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0);
-            }
-            entry.clickOnText(TEXT_EAST)
+                    .scrollToText(TEXT_WEST, 0)
+                    .assertTextIsNotChecked(TEXT_WEST, 0)//DE1…
+                    .assertTextIsNotChecked(TEXT_EAST, 0)
+                    .clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_BROWNSVILLE)
-                    .scrollToText(TEXT_SOUTH, 0);
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
-                entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0);
-            }
-            entry.clickOnText(TEXT_NORTH)
+                    .scrollToText(TEXT_SOUTH, 0)
+                    .assertTextIsNotChecked(TEXT_SOUTH, 0)//DE2…
+                    .assertTextIsNotChecked(TEXT_NORTH, 0)
+                    .clickOnText(TEXT_NORTH)
                     .scrollToAndClickText(TEXT_WASHINGTON, 1);
         }
         entry.clickGoToArrow()
                 .clickOnGroup(groupLabel);
-        //DE3
-        if (canAssertAtStage(DE3, 0)) {
-            hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
-                    .assertTextDoesNotExist(TEXT_NORTH);
+        if (STAGE_0.isApplied() ||
+                variant.alwaysAsserts(DE3)) {//DE3
+            hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES).
+                    assertTextDoesNotExist(TEXT_NORTH);
         }
         hierarchy.clickGoUpIcon();
     }
 
-    private boolean canAssertAtStage(Assert asserty, int stage) {
-        return variantNow.ordinal() < 2 &&
-                (UpdateStage.values()[stage].isApplied() ||
-                        variantNow.canAlwaysAssert(asserty));
-    }
-
-    private String newBlockMsg(Block block, SectionVariant variant) {
+    @NotNull
+    private String newBlockMsg(@NotNull Block block, @NotNull SectionVariant variant) {
         return "Block " + block.name() + "-" + variant.ordinal();
     }
 }
