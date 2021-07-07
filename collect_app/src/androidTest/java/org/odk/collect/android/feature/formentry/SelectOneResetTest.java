@@ -24,10 +24,10 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appea
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.MinimalAutocomplete;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Plain;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1e;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC1h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC2e;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC2h;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC3;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC2h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC3h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE1;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE2;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE3;
@@ -107,7 +107,7 @@ public class SelectOneResetTest {
     final static String TEXT_WEST = "West";
     final static String TEXT_EAST = "East";
 
-    enum Assert {ABC1h, ABC1e, ABC2h, ABC2e, ABC3, DE1, DE2, DE3}
+    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1, DE2, DE3}
 
     enum SectionVariant {
         Internal_Plain(Internal, Plain),
@@ -209,8 +209,8 @@ public class SelectOneResetTest {
                 .clickGoToArrow();
         if (block != A &&
                 (STAGE_0.isApplied() ||
-                        variant.alwaysAsserts(ABC1h))) {
-            //ABC1h
+                        variant.alwaysAsserts(BC1h))) {
+            //BC1h
             hierarchy.assertTextDoesNotExist(TEXT_NORTH);
         }
         hierarchy.clickOnQuestion(wardLabel);
@@ -232,8 +232,8 @@ public class SelectOneResetTest {
                 .clickGoToArrow();
         if (block != A &&
                 (STAGE_0.isApplied() ||
-                        variant.alwaysAsserts(ABC2h))) {
-            //ABC2h
+                        variant.alwaysAsserts(BC2h))) {
+            //BC2h
             hierarchy.assertTextDoesNotExist(TEXT_EAST);
         }
         hierarchy.clickOnQuestion(wardLabel);
@@ -254,7 +254,7 @@ public class SelectOneResetTest {
                 .swipeToNextQuestion(block.countyLabel(variant))
                 .assertTextDoesNotExist();
         if (STAGE_0.isApplied() ||
-                variant.alwaysAsserts(ABC3)) {//ABC3
+                variant.alwaysAsserts(BC3h)) {//BC3h
             entry.swipeToNextQuestion(block.cityLabel(variant))
                     .assertTextDoesNotExist()
                     .swipeToNextQuestion(block.showWardLabel(variant))
