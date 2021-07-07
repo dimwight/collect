@@ -59,8 +59,6 @@ public class SelectOneResetTest {
         }
     }
 
-    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1, DE2, DE3}
-
     enum SectionVariant {
         Internal_Plain(Internal, Plain),
         Internal_Minimal(Internal, Minimal),
@@ -75,6 +73,10 @@ public class SelectOneResetTest {
         final Appearance appearance;
         private final List<Assert> asserts0;
 
+        public boolean canAlwaysAssert(Assert asserty) {
+            return asserts0.contains(asserty);
+        }
+
         SectionVariant(ItemsetType itemsetType, Appearance appearance) {
             this.itemsetType = itemsetType;
             this.appearance = appearance;
@@ -87,11 +89,8 @@ public class SelectOneResetTest {
                     : Arrays.asList()
             );
         }
-
-        public boolean canAlwaysAssert(Assert asserty) {
-            return asserts0.contains(asserty);
-        }
     }
+    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1, DE2, DE3}
 
     enum Block {
         A, B, C, D, E;
@@ -154,9 +153,9 @@ public class SelectOneResetTest {
         boolean testBlockB = true;
         boolean testBlockA = testBlockB && false;
         boolean testBlockC = testBlockA && false;
-        boolean testBlocksDE = false;
+        boolean testBlocksDE = true;
         boolean testBlockE = testBlocksDE && true;
-        int stopAfter = 3;
+        int lastOrdinal = 3;
 
         FormHierarchyPage hierarchy = new MainMenuPage()
                 .startBlankForm(TEXT_FORM)
@@ -164,10 +163,10 @@ public class SelectOneResetTest {
         for (SectionVariant variant : SectionVariant.values()) {
             variantNow = variant;
             int ordinal = variant.ordinal();
-            if (ordinal > stopAfter) {
+            if (ordinal > lastOrdinal) {
                 break;
             } else if (testSelectedVariants && !(
-                    ordinal == 2
+                    ordinal > 1
             )) {
                 continue;
             }
@@ -398,9 +397,9 @@ public class SelectOneResetTest {
     }
 
     private boolean canAssertAtStage(Assert asserty, int stage) {
-        return variantNow.ordinal() < 2
-                && (UpdateStage.values()[stage].isApplied() ||
-                variantNow.canAlwaysAssert(asserty));
+        return variantNow.ordinal() < 2 &&
+                (UpdateStage.values()[stage].isApplied() ||
+                        variantNow.canAlwaysAssert(asserty));
     }
 
     private String newBlockMsg(Block block, SectionVariant variant) {
