@@ -31,7 +31,7 @@ public class SelectOneWidgetUtils {
     public enum UpdateStage {
         STAGE_0, STAGE_1, STAGE_2, STAGE_3, STAGE_4;
 
-        private static UpdateStage latest = STAGE_4;
+        private static UpdateStage latest = STAGE_0;
 
         public static UpdateStage getLatest() {
             return latest;
