@@ -16,19 +16,26 @@ package org.odk.collect.android.widgets.items;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.widget.RadioButton;
 
 import androidx.annotation.Nullable;
 
+import android.widget.RadioButton;
+
+import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.data.SelectOneData;
 import org.javarosa.core.model.data.helper.Selection;
 import org.odk.collect.android.adapters.AbstractSelectListAdapter;
 import org.odk.collect.android.adapters.SelectOneListAdapter;
+import org.odk.collect.android.application.Collect;
+import org.odk.collect.android.exception.JavaRosaException;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.AdvanceToNextListener;
-import org.odk.collect.android.utilities.Appearances;
+import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.utilities.SelectOneWidgetUtils;
+import org.odk.collect.android.utilities.Appearances;
+
+import timber.log.Timber;
 
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 
@@ -39,8 +46,7 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColo
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
 @SuppressLint("ViewConstructor")
-public class
-SelectOneWidget extends BaseSelectListWidget {
+public class SelectOneWidget extends BaseSelectListWidget {
 
     @Nullable
     private AdvanceToNextListener listener;
@@ -102,6 +108,31 @@ SelectOneWidget extends BaseSelectListWidget {
     public void clearAnswer() {
         clearFollowingItemsetWidgets();
         super.clearAnswer();
+    }
+
+    /**
+     * If there are "fast external itemset" selects right after this select, assume that they are linked to the current question and clear them.
+     */
+    private void clearFollowingItemsetWidgets() {
+        FormController formController = Collect.getInstance().getFormController();
+        if (formController == null) {
+            return;
+        }
+
+        if (formController.currentCaptionPromptIsQuestion()) {
+            try {
+                FormIndex startFormIndex = formController.getQuestionPrompt().getIndex();
+                formController.stepToNextScreenEvent();
+                while (formController.currentCaptionPromptIsQuestion()
+                        && formController.getQuestionPrompt().getFormElement().getAdditionalAttribute(null, "query") != null) {
+                    formController.saveAnswer(formController.getQuestionPrompt().getIndex(), null);
+                    formController.stepToNextScreenEvent();
+                }
+                formController.jumpToIndex(startFormIndex);
+            } catch (JavaRosaException e) {
+                Timber.d(e);
+            }
+        }
     }
 
     public void setListener(AdvanceToNextListener listener) {

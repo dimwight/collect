@@ -142,7 +142,6 @@ import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 import org.odk.collect.android.utilities.ScreenContext;
-import org.odk.collect.android.utilities.SelectOneWidgetUtils;
 import org.odk.collect.android.utilities.SnackbarUtils;
 import org.odk.collect.android.utilities.SoftKeyboardController;
 import org.odk.collect.android.utilities.ToastUtils;
@@ -165,7 +164,6 @@ import org.odk.collect.forms.instances.Instance;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,8 +191,6 @@ import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnab
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.android.utilities.DialogUtils.getDialog;
 import static org.odk.collect.android.utilities.DialogUtils.showIfNotShowing;
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_3;
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_4;
 import static org.odk.collect.android.utilities.ToastUtils.showLongToast;
 import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
 
@@ -208,8 +204,7 @@ import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
  */
 
 @SuppressWarnings("PMD.CouplingBetweenObjects")
-public class
-FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
+public class FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
         FormLoaderListener, AdvanceToNextListener, SwipeHandler.OnSwipeListener,
         SavePointListener, NumberPickerDialog.NumberPickerListener,
         RankingWidgetDialog.RankingListener, SaveFormIndexTask.SaveFormIndexListener,
@@ -2556,15 +2551,8 @@ FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
         // populateDynamicChoices. See https://github.com/getodk/javarosa/issues/436
         List<FormEntryPrompt> questionsThatHaveNotChanged = new ArrayList<>();
         List<FormIndex> formIndexesToRemove = new ArrayList<>();
-
-        //May there be a newly-relevant select to reset?
-        boolean questionAdded = questionsAfterSave.length == questionsBeforeSave.length + 1;
-        boolean findAddedQuestion = questionAdded && STAGE_4.isApplied();
-
         for (ImmutableDisplayableQuestion questionBeforeSave : immutableQuestionsBeforeSave) {
-            FormEntryPrompt questionAtSameFormIndex = findAddedQuestion
-                    ? questionsAfterSaveByIndex.remove(questionBeforeSave.getFormIndex())
-                    : questionsAfterSaveByIndex.get(questionBeforeSave.getFormIndex());
+            FormEntryPrompt questionAtSameFormIndex = questionsAfterSaveByIndex.get(questionBeforeSave.getFormIndex());
 
             // Always rebuild questions that use database-driven external data features since they
             // bypass SelectChoices stored in ImmutableDisplayableQuestion
@@ -2574,27 +2562,6 @@ FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
             } else if (!lastChangedIndex.equals(questionBeforeSave.getFormIndex())) {
                 formIndexesToRemove.add(questionBeforeSave.getFormIndex());
             }
-        }
-
-        //Find the question(s) added
-        Collection<FormEntryPrompt> questionsAfterSaveLeftOver = questionsAfterSaveByIndex.values();
-
-        //Double check that there is in fact just one.
-        if (questionAdded && questionsAfterSaveLeftOver.size() == 1) {
-            FormEntryPrompt addedQuestion = (FormEntryPrompt) questionsAfterSaveLeftOver.toArray()[0];
-
-            //If it's what we think it is, reset it
-            if (addedQuestion.getFormElement().getAdditionalAttribute(null, "query") != null) {
-                try {
-                    getFormController().saveAnswer(addedQuestion.getIndex(), null);
-                } catch (JavaRosaException e) {
-                    Timber.d(e);
-                }
-            }
-
-        } else if (STAGE_3.isApplied()){
-            //By far the commonest case?
-            SelectOneWidgetUtils.checkFastExternalCascadeInFieldList(lastChangedIndex, questionsAfterSave);
         }
 
         for (int i = immutableQuestionsBeforeSave.size() - 1; i >= 0; i--) {
