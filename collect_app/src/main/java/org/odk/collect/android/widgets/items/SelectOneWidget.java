@@ -110,31 +110,6 @@ public class SelectOneWidget extends BaseSelectListWidget {
         super.clearAnswer();
     }
 
-    /**
-     * If there are "fast external itemset" selects right after this select, assume that they are linked to the current question and clear them.
-     */
-    private void clearFollowingItemsetWidgets() {
-        FormController formController = Collect.getInstance().getFormController();
-        if (formController == null) {
-            return;
-        }
-
-        if (formController.currentCaptionPromptIsQuestion()) {
-            try {
-                FormIndex startFormIndex = formController.getQuestionPrompt().getIndex();
-                formController.stepToNextScreenEvent();
-                while (formController.currentCaptionPromptIsQuestion()
-                        && formController.getQuestionPrompt().getFormElement().getAdditionalAttribute(null, "query") != null) {
-                    formController.saveAnswer(formController.getQuestionPrompt().getIndex(), null);
-                    formController.stepToNextScreenEvent();
-                }
-                formController.jumpToIndex(startFormIndex);
-            } catch (JavaRosaException e) {
-                Timber.d(e);
-            }
-        }
-    }
-
     public void setListener(AdvanceToNextListener listener) {
         this.listener = listener;
     }
