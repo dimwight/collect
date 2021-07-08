@@ -29,7 +29,15 @@ public class SelectOneWidgetUtils {
     }
 
     public enum UpdateStage {
-        STAGE_0, STAGE_1, STAGE_2, STAGE_3, STAGE_4;
+        STAGE_0,
+        //Preparatory changes
+        STAGE_1,
+        //Basic improvement
+        STAGE_2,
+        //Field lists improvement
+        STAGE_3,
+        //Unhidden reset
+        STAGE_4;
 
         private static UpdateStage latest = STAGE_0;
 
