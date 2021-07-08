@@ -149,7 +149,7 @@ public class SelectOneResetTest {
         STAGE_0.makeLatest();
         Timber.i("updateStage = " + UpdateStage.getLatest());
 
-        boolean testSelectedVariants = false;
+        boolean testSelectedVariants = true;
         boolean testBlockB = true;
         boolean testBlockA = testBlockB && false;
         boolean testBlockC = testBlockA && false;
