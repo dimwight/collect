@@ -24,7 +24,8 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColo
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_1;
 
 @SuppressLint("ViewConstructor")
-public class SelectOneMinimalWidget extends SelectMinimalWidget {
+public class
+SelectOneMinimalWidget extends SelectMinimalWidget {
     private Selection selectedItem;
     private final boolean autoAdvance;
     private AdvanceToNextListener autoAdvanceListener;

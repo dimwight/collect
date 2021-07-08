@@ -22,13 +22,15 @@ import java.util.function.Supplier;
 
 import timber.log.Timber;
 
-public class SelectOneWidgetUtils {
+public class
+SelectOneWidgetUtils {
 
     private SelectOneWidgetUtils() {
 
     }
 
     public enum UpdateStage {
+        //Current codebase
         STAGE_0,
         //Preparatory changes
         STAGE_1,

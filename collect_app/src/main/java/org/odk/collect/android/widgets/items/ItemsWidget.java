@@ -51,6 +51,7 @@ import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage
  */
 public abstract class ItemsWidget extends QuestionWidget {
 
+
     /**
      * If there are "fast external itemset" selects right after this select,
      * assume that they are linked to the current question and clear them.
