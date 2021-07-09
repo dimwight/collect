@@ -29,9 +29,9 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Asser
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC1h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC2h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC3h;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE1;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE2;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE3;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE1e;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE2e;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE3h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.A;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.B;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.C;
@@ -91,7 +91,7 @@ public class SelectOneResetTest {
         }
     }
 
-    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1, DE2, DE3}
+    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1e, DE2e, DE3h}
 
     enum Block {
         A, B, C, D, E;
@@ -150,8 +150,8 @@ public class SelectOneResetTest {
         STAGE_0.makeLatest();
         Timber.i("updateStage = " + UpdateStage.getLatest());
 
-        boolean testSelectedVariants = false;
-        boolean testBlockB = true;
+        boolean testSelectedVariants = true;
+        boolean testBlockB = false;
         boolean testBlockA = testBlockB && false;
         boolean testBlockC = testBlockA && false;
         boolean testBlocksDE = true;
@@ -167,7 +167,7 @@ public class SelectOneResetTest {
             if (ordinal > lastOrdinal) {
                 break;
             } else if (testSelectedVariants && !(
-                    ordinal > 1
+                    ordinal < 2
             )) {
                 continue;
             }
@@ -283,10 +283,9 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_BROWNSVILLE, 0)
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 0);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
-                entry.clickOnText(TEXT_SELECT_ANSWER)
-                ;
+            //DE1e
+            if (canAssertAtStage(DE1e, 0)) {
+                entry.clickOnText(TEXT_SELECT_ANSWER);
             } else {
                 entry.clickOnText(TEXT_NORTH, 0);
             }
@@ -294,8 +293,8 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN, 0)
                     .clickOnText(TEXT_BROWNSVILLE);
             minimalBrownsvilles++;
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
+            //DE2e
+            if (canAssertAtStage(DE2e, 0)) {
                 entry.clickOnText(TEXT_SELECT_ANSWER);
             } else {
                 entry.clickOnText(TEXT_EAST);
@@ -308,16 +307,16 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN, 0)
                     .scrollToAndClickText(TEXT_YES, 0)
                     .scrollToText(TEXT_WEST, 0);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
+            //DE1e
+            if (canAssertAtStage(DE1e, 0)) {
                 entry.assertTextIsNotChecked(TEXT_WEST, 0)
                         .assertTextIsNotChecked(TEXT_EAST, 0);
             }
             entry.clickOnText(TEXT_EAST, 0)
                     .clickOnText(TEXT_BROWNSVILLE, 0)
                     .scrollToText(TEXT_SOUTH, 0);
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
+            //DE2e
+            if (canAssertAtStage(DE2e, 0)) {
                 entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
                         .assertTextIsNotChecked(TEXT_NORTH, 0);
             }
@@ -325,8 +324,8 @@ public class SelectOneResetTest {
                     .scrollToAndClickText(TEXT_WASHINGTON, 0);
         }
         entry.clickGoToArrow();
-        //DE3
-        if (canAssertAtStage(DE3, 0)) {
+        //DE3h
+        if (canAssertAtStage(DE3h, 0)) {
             minimalBrownsvilles--;
             hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH);
@@ -349,8 +348,8 @@ public class SelectOneResetTest {
                     minimalBrownsvilles)
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 1);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
+            //DE1e
+            if (canAssertAtStage(DE1e, 0)) {
                 entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
             } else {
                 entry.scrollToAndClickText(TEXT_NORTH, 1);
@@ -358,8 +357,8 @@ public class SelectOneResetTest {
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_BROWNSVILLE);
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
+            //DE2e
+            if (canAssertAtStage(DE2e, 0)) {
                 entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
             } else {
                 entry.scrollToAndClickText(TEXT_EAST);
@@ -371,16 +370,16 @@ public class SelectOneResetTest {
             entry.clickOnText(TEXT_HARLINGEN)
                     .scrollToAndClickText(TEXT_YES, 1)
                     .scrollToText(TEXT_WEST, 0);
-            //DE1
-            if (canAssertAtStage(DE1, 0)) {
+            //DE1e
+            if (canAssertAtStage(DE1e, 0)) {
                 entry.assertTextIsNotChecked(TEXT_WEST, 0)
                         .assertTextIsNotChecked(TEXT_EAST, 0);
             }
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_BROWNSVILLE)
                     .scrollToText(TEXT_SOUTH, 0);
-            //DE2
-            if (canAssertAtStage(DE2, 0)) {
+            //DE2e
+            if (canAssertAtStage(DE2e, 0)) {
                 entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
                         .assertTextIsNotChecked(TEXT_NORTH, 0);
             }
@@ -389,8 +388,8 @@ public class SelectOneResetTest {
         }
         entry.clickGoToArrow()
                 .clickOnGroup(groupLabel);
-        //DE3
-        if (canAssertAtStage(DE3, 0)) {
+        //DE3h
+        if (canAssertAtStage(DE3h, 0)) {
             hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH);
         }
@@ -398,7 +397,7 @@ public class SelectOneResetTest {
     }
 
     private boolean canAssertAtStage(Assert asserty, int stage) {
-        return variantNow.ordinal() < 2 &&
+        return //variantNow.ordinal() < 2 &&
                 (UpdateStage.values()[stage].isApplied() ||
                         variantNow.canAlwaysAssert(asserty));
     }
