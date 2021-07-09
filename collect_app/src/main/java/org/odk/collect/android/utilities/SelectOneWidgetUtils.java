@@ -33,12 +33,12 @@ SelectOneWidgetUtils {
         //Current codebase
         STAGE_0,
         //Preparatory changes
-        STAGE_1,
+//        STAGE_1,
         //Basic improvement
         STAGE_2,
         //Field lists improvement
         STAGE_3,
-        //Unhidden reset
+        //Relevance reset (unhidr)
         STAGE_4;
 
         private static UpdateStage latest = STAGE_0;
