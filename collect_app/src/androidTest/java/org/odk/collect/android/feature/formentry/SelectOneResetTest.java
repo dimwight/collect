@@ -42,7 +42,6 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Items
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_0;
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_2;
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_3;
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_4;
 
 public class SelectOneResetTest {
 
@@ -150,7 +149,7 @@ public class SelectOneResetTest {
 
     @Test
     public void testAllVariants() {
-        STAGE_2.makeLatest();
+        STAGE_3.makeLatest();
         Timber.i(UpdateStage.getLatest().name());
         FormHierarchyPage hierarchy = new MainMenuPage()
                 .startBlankForm(TEXT_FORM)
@@ -163,7 +162,7 @@ public class SelectOneResetTest {
             boolean testBlockB = true;
             boolean testBlockA = testBlockB && false;
             boolean testBlockC = testBlockA && false;
-            boolean testBlocksDE = false &&
+            boolean testBlocksDE = true &&
                     (itemsetInternal
                             || STAGE_3.isApplied());
             boolean testBlockE = testBlocksDE && false;
@@ -171,7 +170,7 @@ public class SelectOneResetTest {
             if (ordinal > lastOrdinal) {
                 break;
             } else if (testSelectedVariants && !(
-                    ordinal > 1
+                    ordinal == 3
             )) {
                 continue;
             }
@@ -294,11 +293,12 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 0);
             //DE1e
-            if (canAssertAtStage(DE1e, STAGE_4)) {
+            if (false && canAssertAtStage(DE1e, STAGE_3)) {
                 entry.clickOnText(TEXT_SELECT_ANSWER);
                 assertInfo(DE1e);
             } else {
                 entry.clickOnText(TEXT_NORTH, 0);
+                assertInfo(DE1e, false);
             }
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_HARLINGEN, 0)
@@ -350,7 +350,7 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 1);
             //DE1e
-            if (canAssertAtStage(DE1e, STAGE_4)) {
+            if (canAssertAtStage(DE1e, STAGE_3)) {
                 entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
                 assertInfo(DE1e);
             } else {

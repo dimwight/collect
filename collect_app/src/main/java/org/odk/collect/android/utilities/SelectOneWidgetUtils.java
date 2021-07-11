@@ -18,6 +18,7 @@ import org.odk.collect.android.widgets.items.SelectOneMinimalWidget;
 import org.odk.collect.android.widgets.items.SelectOneWidget;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import timber.log.Timber;
@@ -38,8 +39,9 @@ SelectOneWidgetUtils {
         STAGE_2,
         //Field lists improvement
         STAGE_3,
-        //Relevance reset (unhidr)
-        STAGE_4;
+        //Relevance reset (unhide)
+//        STAGE_4
+        ;
 
         private static UpdateStage latest = STAGE_0;
 
@@ -91,18 +93,15 @@ SelectOneWidgetUtils {
             String queryName = getQueryName.get();
 
             //Loop until…
-            while (true) {
+            while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION
+                    //…past limit?
+                    && queryFollowers <= queryFollowersMax) {
                 //…non-question?
-                if (fc.stepToNextScreenEvent() != FormEntryController.EVENT_QUESTION
-                        //…past limit?
-                        || queryFollowers > queryFollowersMax) {
-                    break;
-                }
 
                 //Next question
                 FormEntryPrompt question = fc.getQuestionPrompt();
 
-                //Skip if not FEI…
+                //Skip if not FEI
                 String query = question.getFormElement()
                         .getAdditionalAttribute(null, "query");
                 if (query == null) {
@@ -112,7 +111,7 @@ SelectOneWidgetUtils {
                 //Otherwise reset any succeeding FEI (handles hiding!)
                 fc.saveAnswer(question.getIndex(), null);
 
-                //Update query - and count - for another member?
+                //Update query (and count) for another member?
                 if (query.matches(".*\\b" + queryName + "\\b.*")) {
                     queryName = getQueryName.get();
                     queryFollowers++;
@@ -127,8 +126,8 @@ SelectOneWidgetUtils {
         }
     }
 
-    public static void checkFastExternalCascadeInFieldList(FormIndex lastChangedIndex,
-                                                           FormEntryPrompt[] questionsAfterSave) {
+    private static void checkFastExternalCascadeInFieldList_(FormIndex lastChangedIndex,
+                                                             FormEntryPrompt[] questionsAfterSave) {
         FormController fc = Collect.getInstance().getFormController();
         //Formality
         if (fc == null) {
@@ -170,6 +169,85 @@ SelectOneWidgetUtils {
             //Ready for next question
             String matchQuestionLabel = ".+/([^/]+)$";
             checkName = question.getQuestion().getBind().getReference().toString().replaceAll(matchQuestionLabel, "$1");
+        }
+    }
+
+    public static void checkFastExternalCascadeInFieldList(FormIndex lastChangedIndex,
+                                                           FormEntryPrompt[] questionsBeforeSave, FormEntryPrompt[] questionsAfterSave) {
+        if (true) {
+            checkFastExternalCascadeInFieldList_(lastChangedIndex, questionsAfterSave);
+            return;
+        }
+        FormController fc = Collect.getInstance().getFormController();
+        //Formality
+        if (fc == null) {
+            return;
+        }
+        //Find the index in the field list, get its form label
+        FormIndex seekIndex = lastChangedIndex;
+        FormIndex nextLevel;
+        int offset = 1;
+        for (; (nextLevel = seekIndex.getNextLevel()) != null; offset++) {
+            seekIndex = nextLevel;
+        }
+        String matchIndexName = "(\\w+) .+";
+        String queryName = seekIndex.getReference()
+                .getSubReference(offset).toShortString()
+                .replaceAll(matchIndexName, "$1");
+
+        // Avoid going on for ever
+        int queryFollowers = 0;
+        int queryFollowersMax = 2;//Allows for 3 really
+
+        //Mini method
+        Function<FormEntryPrompt, String> getQuestionName =
+                q -> q.getQuestion().getBind().getReference().toString()
+                        .replaceAll(".+/([^/]+)$", "$1");
+        String questionName;
+
+        //Find first question after updated
+        int questionAt = 0;
+        for (; questionAt < questionsAfterSave.length; questionAt++) {
+            questionName = getQuestionName.apply(questionsAfterSave[questionAt]);
+            if (questionName.equals(queryName)) {
+                questionAt++;
+                break;
+            }
+        }
+
+        //Check each subsequent question in turn
+        for (; questionAt < questionsAfterSave.length; questionAt++) {
+            FormEntryPrompt question = questionsAfterSave[questionAt];
+            questionName = getQuestionName.apply(question);
+
+            //Skip if not FEI
+            String query = question.getFormElement()
+                    .getAdditionalAttribute(null, "query");
+            if (query == null) {
+                continue;
+            }
+
+            //Next cascade member?
+            boolean foundNextMember = query.matches(".*\\b" + queryName + "\\b.*");
+            if (!foundNextMember) {
+                continue;
+            }
+
+            //Reset any succeeding FEI (handles hiding!)
+            try {
+                fc.saveAnswer(question.getIndex(), null);
+            } catch (JavaRosaException e) {
+                Timber.d(e);
+            }
+
+            //Ready for next question
+            queryName = questionName;
+            queryFollowers++;
+
+            //Past limit?
+            if (queryFollowers > queryFollowersMax) {
+                break;
+            }
         }
     }
 
