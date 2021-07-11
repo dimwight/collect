@@ -150,7 +150,7 @@ public class SelectOneResetTest {
 
     @Test
     public void testAllVariants() {
-        STAGE_4.makeLatest();
+        STAGE_3.makeLatest();
         Timber.i(UpdateStage.getLatest().name());
 
         FormHierarchyPage hierarchy = new MainMenuPage()
@@ -161,12 +161,12 @@ public class SelectOneResetTest {
             int ordinal = variant.ordinal();
             boolean itemsetInternal = variant.itemsetType == Internal;
             boolean testSelectedVariants = false;
-            boolean testBlockB = true &&
+            boolean testBlockB = false &&
                     (itemsetInternal
                             || STAGE_2.isApplied());
             boolean testBlockA = testBlockB && false;
             boolean testBlockC = testBlockA && false;
-            boolean testBlocksDE = false &&
+            boolean testBlocksDE = true &&
                     (itemsetInternal
                             || STAGE_3.isApplied());
             boolean testBlockE = testBlocksDE && true;
@@ -227,11 +227,13 @@ public class SelectOneResetTest {
                 canAssertAtStage(BC1h, STAGE_0)
                 && !fastExternalStage2) {
             hierarchy.assertTextDoesNotExist(TEXT_NORTH);
+            assertInfo(BC1h);
         }
         hierarchy.clickOnQuestion(wardLabel);
         //ABC1e
         if (canAssertAtStage(ABC1e, STAGE_0)) {
             entry.assertTextDoesNotExist();
+            assertInfo(ABC1e);
         }
         if (minimal) {
             entry.openSelectMinimalDialog();
@@ -247,11 +249,13 @@ public class SelectOneResetTest {
         //BC2h
         if (block != A && canAssertAtStage(BC2h, STAGE_2)) {
             hierarchy.assertTextDoesNotExist(TEXT_EAST);
+            assertInfo(BC2h);
         }
         hierarchy.clickOnQuestion(wardLabel);
         //ABC2e
         if (canAssertAtStage(ABC2e, STAGE_2)) {
             entry.assertTextDoesNotExist(TEXT_EAST);
+            assertInfo(ABC2e);
         }
         if (minimal) {
             entry.openSelectMinimalDialog();
@@ -269,6 +273,7 @@ public class SelectOneResetTest {
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH)
                     .clickOnQuestion(stateLabel);
+            assertInfo(BC3h);
         }
         //ABC3e
         if (canAssertAtStage(ABC3e, STAGE_0)) {
@@ -279,6 +284,7 @@ public class SelectOneResetTest {
                     .swipeToNextQuestion(block.showWardLabel(variantNow))
                     .swipeToNextQuestion(block.wardLabel(variantNow))
                     .assertTextDoesNotExist();
+            assertInfo(ABC3e);
         }
         entry.clickGoToArrow();
 
@@ -298,6 +304,7 @@ public class SelectOneResetTest {
             //DE1e
             if (canAssertAtStage(DE1e, STAGE_4)) {
                 entry.clickOnText(TEXT_SELECT_ANSWER);
+                assertInfo(DE1e);
             } else {
                 entry.clickOnText(TEXT_NORTH, 0);
             }
@@ -306,6 +313,7 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_BROWNSVILLE);
             //DE2e
             entry.clickOnText(TEXT_SELECT_ANSWER);
+            assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH)
                     .scrollToAndClickText(TEXT_TEXAS, 0)
                     .clickOnText(TEXT_WASHINGTON);
@@ -315,18 +323,16 @@ public class SelectOneResetTest {
                     .scrollToAndClickText(TEXT_YES, 0)
                     .scrollToText(TEXT_WEST, 0);
             //DE1e
-            if (canAssertAtStage(DE1e, STAGE_0)) {
-                entry.assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0);
-            }
+            entry.assertTextIsNotChecked(TEXT_WEST, 0)
+                    .assertTextIsNotChecked(TEXT_EAST, 0);
+            assertInfo(DE1e);
             entry.clickOnText(TEXT_EAST, 0)
                     .clickOnText(TEXT_BROWNSVILLE, 0)
                     .scrollToText(TEXT_SOUTH, 0);
             //DE2e
-            if (canAssertAtStage(DE2e, STAGE_0)) {
-                entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0);
-            }
+            entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
+                    .assertTextIsNotChecked(TEXT_NORTH, 0);
+            assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH, 0)
                     .scrollToAndClickText(TEXT_WASHINGTON, 0);
         }
@@ -334,6 +340,7 @@ public class SelectOneResetTest {
         //DE3h
         hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
                 .assertTextDoesNotExist(TEXT_NORTH);
+        assertInfo(DE3h);
 
         if (!testBlockE) {
             return;
@@ -354,18 +361,17 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_YES, 1);
             //DE1e
             if (canAssertAtStage(DE1e, STAGE_4)) {
-                entry.scrollToAndClickText(TEXT_SELECT_ANSWER,
-                        3);
+                entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
+                assertInfo(DE1e);
             } else {
-                entry.scrollToAndClickText(TEXT_NORTH,
-                        0);
+                entry.scrollToAndClickText(TEXT_NORTH, 0);
             }
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_BROWNSVILLE);
             //DE2e
-            entry.scrollToAndClickText(TEXT_SELECT_ANSWER,
-                    3);
+            entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
+            assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH)
                     .scrollToAndClickText(TEXT_TEXAS, 0)
                     .clickOnText(TEXT_WASHINGTON);
@@ -374,18 +380,16 @@ public class SelectOneResetTest {
                     .scrollToAndClickText(TEXT_YES, 1)
                     .scrollToText(TEXT_WEST, 0);
             //DE1e
-            if (canAssertAtStage(DE1e, STAGE_0)) {
-                entry.assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0);
-            }
+            entry.assertTextIsNotChecked(TEXT_WEST, 0)
+                    .assertTextIsNotChecked(TEXT_EAST, 0);
+            assertInfo(DE1e);
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_BROWNSVILLE)
                     .scrollToText(TEXT_SOUTH, 0);
             //DE2e
-            if (canAssertAtStage(DE2e, STAGE_0)) {
-                entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0);
-            }
+            entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
+                    .assertTextIsNotChecked(TEXT_NORTH, 0);
+            assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH)
                     .scrollToAndClickText(TEXT_WASHINGTON, 1);
         }
@@ -394,6 +398,7 @@ public class SelectOneResetTest {
         //DE3h
         hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
                 .assertTextDoesNotExist(TEXT_NORTH);
+        assertInfo(DE3h);
         hierarchy.clickGoUpIcon();
     }
 
@@ -405,4 +410,9 @@ public class SelectOneResetTest {
     private String newBlockMsg(Block block, SectionVariant variant) {
         return "Block " + block.name() + "-" + variant.ordinal();
     }
+
+    private void assertInfo(Assert asserty) {
+        Timber.i("Asserted " + asserty);
+    }
+
 }
