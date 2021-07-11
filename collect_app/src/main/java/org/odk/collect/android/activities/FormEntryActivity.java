@@ -1890,12 +1890,18 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             backgroundLocationViewModel.locationPermissionChanged();
             locationPermissionsPreviouslyGranted = !locationPermissionsPreviouslyGranted;
         }
+        activityDisplayed();
+    }
+
+    @Override
+    protected void onStop() {
+        backgroundLocationViewModel.activityHidden();
+
+        super.onStop();
     }
 
     @Override
     protected void onPause() {
-        backgroundLocationViewModel.activityHidden();
-
         FormController formController = getFormController();
 
         // make sure we're not already saving to disk. if we are, currentPrompt
@@ -1913,8 +1919,6 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     @Override
     protected void onResume() {
         super.onResume();
-
-        activityDisplayed();
 
         String navigation = settingsProvider.getGeneralSettings().getString(KEY_NAVIGATION);
         showNavigationButtons = navigation.contains(GeneralKeys.NAVIGATION_BUTTONS);
@@ -2253,7 +2257,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             registerReceiver(locationProvidersReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
         }
 
-        // onResume ran before the form was loaded. Let the viewModel know that the activity
+        // onStart ran before the form was loaded. Let the viewModel know that the activity
         // is about to be displayed and configured. Do this before the refresh actually
         // happens because if audit logging is enabled, the refresh logs a question event
         // and we want that to show up after initialization events.
@@ -2568,7 +2572,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         }
 
         if (STAGE_3.isApplied()) {
-            checkFastExternalCascadeInFieldList(lastChangedIndex, questionsBeforeSave, questionsAfterSave);
+            checkFastExternalCascadeInFieldList(lastChangedIndex, questionsAfterSave);
         }
 
         for (int i = immutableQuestionsBeforeSave.size() - 1; i >= 0; i--) {
