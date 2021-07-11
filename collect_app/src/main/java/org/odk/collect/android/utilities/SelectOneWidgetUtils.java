@@ -64,32 +64,38 @@ SelectOneWidgetUtils {
         }
 
         FormController fc = Collect.getInstance().getFormController();
-        //Formality
-        if (fc == null) {
-            return;
-        }
-        //Abort in field list
-        else if (fc.indexIsInFieldList(fc.getFormIndex())) {
+        if (fc == null //Impossible?
+                || fc.indexIsInFieldList(fc.getFormIndex()) //In field list?
+                || fc.getQuestionPrompt() == null) { //In unit test?
             return;
         }
 
         //Mini method
-        Supplier<String> getCheckName = () -> {
-            String raw = fc.getQuestionPrompt().getFormElement().getBind().getReference().toString();
+        Supplier<String> getQueryName = () -> {
+            String raw = fc
+                    .getQuestionPrompt()
+                    .getFormElement()
+                    .getBind().getReference().toString();
             return raw.replaceAll(".+/([^/]+)$", "$1");
         };
+
+        // Avoid going on for ever
+        int queryFollowers = 0;
+        int queryFollowersMax = 2;//Allows for 3 really
 
         try {
             //Remember where we started
             FormIndex startIndex = fc.getFormIndex();
 
             //To search for in query string
-            String checkName = getCheckName.get();
+            String queryName = getQueryName.get();
 
-            //Loop until non-question
+            //Loop until…
             while (true) {
-                int event = fc.stepToNextScreenEvent();
-                if (event != FormEntryController.EVENT_QUESTION) {
+                //…non-question?
+                if (fc.stepToNextScreenEvent() != FormEntryController.EVENT_QUESTION
+                        //…past limit?
+                        || queryFollowers > queryFollowersMax) {
                     break;
                 }
 
@@ -103,16 +109,14 @@ SelectOneWidgetUtils {
                     continue;
                 }
 
-                //…or no match
-                if (!query.matches(".*\\b" + checkName + "\\b.*")) {
-                    continue;
-                }
-
-                //Otherwise reset
+                //Otherwise reset any succeeding FEI (handles hiding!)
                 fc.saveAnswer(question.getIndex(), null);
 
-                //Prepare to move down cascade
-                checkName = getCheckName.get();
+                //Update query - and count - for another member?
+                if (query.matches(".*\\b" + queryName + "\\b.*")) {
+                    queryName = getQueryName.get();
+                    queryFollowers++;
+                }
             }
 
             //Back to start

@@ -94,8 +94,6 @@ public class SelectOneResetTest {
         }
     }
 
-    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1e, DE2e, DE3h}
-
     enum Block {
         A, B, C, D, E;
 
@@ -148,11 +146,12 @@ public class SelectOneResetTest {
 
     private SectionVariant variantNow;
 
+    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1e, DE2e, DE3h}
+
     @Test
     public void testAllVariants() {
-        STAGE_3.makeLatest();
+        STAGE_2.makeLatest();
         Timber.i(UpdateStage.getLatest().name());
-
         FormHierarchyPage hierarchy = new MainMenuPage()
                 .startBlankForm(TEXT_FORM)
                 .clickGoToArrow();
@@ -160,16 +159,14 @@ public class SelectOneResetTest {
             variantNow = variant;
             int ordinal = variant.ordinal();
             boolean itemsetInternal = variant.itemsetType == Internal;
-            boolean testSelectedVariants = false;
-            boolean testBlockB = false &&
-                    (itemsetInternal
-                            || STAGE_2.isApplied());
+            boolean testSelectedVariants = true;
+            boolean testBlockB = true;
             boolean testBlockA = testBlockB && false;
             boolean testBlockC = testBlockA && false;
-            boolean testBlocksDE = true &&
+            boolean testBlocksDE = false &&
                     (itemsetInternal
                             || STAGE_3.isApplied());
-            boolean testBlockE = testBlocksDE && true;
+            boolean testBlockE = testBlocksDE && false;
             int lastOrdinal = 3;
             if (ordinal > lastOrdinal) {
                 break;
@@ -220,12 +217,7 @@ public class SelectOneResetTest {
                 .clickOnText(TEXT_YES)
                 .clickGoToArrow();
         //BC1h
-        boolean fastExternalStage2 =
-                variantNow.itemsetType == FastExternal &&
-                        STAGE_2.isApplied();
-        if (block != A &&
-                canAssertAtStage(BC1h, STAGE_0)
-                && !fastExternalStage2) {
+        if (block != A && canAssertAtStage(BC1h, STAGE_0)) {
             hierarchy.assertTextDoesNotExist(TEXT_NORTH);
             assertInfo(BC1h);
         }
@@ -310,9 +302,9 @@ public class SelectOneResetTest {
             }
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_HARLINGEN, 0)
-                    .clickOnText(TEXT_BROWNSVILLE);
-            //DE2e
-            entry.clickOnText(TEXT_SELECT_ANSWER);
+                    .clickOnText(TEXT_BROWNSVILLE)
+                    //DE2e
+                    .clickOnText(TEXT_SELECT_ANSWER);
             assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH)
                     .scrollToAndClickText(TEXT_TEXAS, 0)
@@ -321,16 +313,16 @@ public class SelectOneResetTest {
             entry.scrollToAndClickText(TEXT_NO, 0)
                     .clickOnText(TEXT_HARLINGEN, 0)
                     .scrollToAndClickText(TEXT_YES, 0)
-                    .scrollToText(TEXT_WEST, 0);
-            //DE1e
-            entry.assertTextIsNotChecked(TEXT_WEST, 0)
+                    .scrollToText(TEXT_WEST, 0)
+                    //DE1e
+                    .assertTextIsNotChecked(TEXT_WEST, 0)
                     .assertTextIsNotChecked(TEXT_EAST, 0);
             assertInfo(DE1e);
             entry.clickOnText(TEXT_EAST, 0)
                     .clickOnText(TEXT_BROWNSVILLE, 0)
-                    .scrollToText(TEXT_SOUTH, 0);
-            //DE2e
-            entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
+                    .scrollToText(TEXT_SOUTH, 0)
+                    //DE2e
+                    .assertTextIsNotChecked(TEXT_SOUTH, 0)
                     .assertTextIsNotChecked(TEXT_NORTH, 0);
             assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH, 0)
@@ -341,11 +333,9 @@ public class SelectOneResetTest {
         hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
                 .assertTextDoesNotExist(TEXT_NORTH);
         assertInfo(DE3h);
-
         if (!testBlockE) {
             return;
         }
-
         block = E;
         Timber.i(newBlockMsg(block, variantNow));
         String groupLabel = block.groupLabel(variantNow);
@@ -368,9 +358,9 @@ public class SelectOneResetTest {
             }
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_HARLINGEN)
-                    .clickOnText(TEXT_BROWNSVILLE);
-            //DE2e
-            entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
+                    .clickOnText(TEXT_BROWNSVILLE)
+                    //DE2e
+                    .scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
             assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH)
                     .scrollToAndClickText(TEXT_TEXAS, 0)
@@ -378,16 +368,16 @@ public class SelectOneResetTest {
         } else {
             entry.clickOnText(TEXT_HARLINGEN)
                     .scrollToAndClickText(TEXT_YES, 1)
-                    .scrollToText(TEXT_WEST, 0);
-            //DE1e
-            entry.assertTextIsNotChecked(TEXT_WEST, 0)
+                    .scrollToText(TEXT_WEST, 0)
+                    //DE1e
+                    .assertTextIsNotChecked(TEXT_WEST, 0)
                     .assertTextIsNotChecked(TEXT_EAST, 0);
             assertInfo(DE1e);
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_BROWNSVILLE)
-                    .scrollToText(TEXT_SOUTH, 0);
-            //DE2e
-            entry.assertTextIsNotChecked(TEXT_SOUTH, 0)
+                    .scrollToText(TEXT_SOUTH, 0)
+                    //DE2e
+                    .assertTextIsNotChecked(TEXT_SOUTH, 0)
                     .assertTextIsNotChecked(TEXT_NORTH, 0);
             assertInfo(DE2e);
             entry.clickOnText(TEXT_NORTH)
@@ -412,7 +402,11 @@ public class SelectOneResetTest {
     }
 
     private void assertInfo(Assert asserty) {
-        Timber.i("Asserted " + asserty);
+        assertInfo(asserty, true);
     }
 
+    private void assertInfo(Assert asserty, boolean didAssert) {
+        Timber.i((didAssert ? "Asserted " : "Did not assert ")
+                + asserty);
+    }
 }

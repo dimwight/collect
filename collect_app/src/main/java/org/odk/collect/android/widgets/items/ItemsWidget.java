@@ -57,7 +57,8 @@ public abstract class ItemsWidget extends QuestionWidget {
      * assume that they are linked to the current question and clear them.
      */
     final protected void clearFollowingItemsetWidgets() {
-        if (STAGE_2.isApplied()) {
+        if (true &&
+                STAGE_2.isApplied()) {
             SelectOneWidgetUtils.checkFastExternalCascade(this);
             return;
         }
