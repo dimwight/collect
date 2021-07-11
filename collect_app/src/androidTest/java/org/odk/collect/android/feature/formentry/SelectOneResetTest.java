@@ -160,7 +160,7 @@ public class SelectOneResetTest {
             variantNow = variant;
             int ordinal = variant.ordinal();
             boolean itemsetInternal = variant.itemsetType == Internal;
-            boolean testSelectedVariants = true;
+            boolean testSelectedVariants = false;
             boolean testBlockB = true &&
                     (itemsetInternal
                             || STAGE_2.isApplied());
@@ -220,9 +220,12 @@ public class SelectOneResetTest {
                 .clickOnText(TEXT_YES)
                 .clickGoToArrow();
         //BC1h
-        if (block != A && (
-                canAssertAtStage(BC1h, STAGE_0))
-        ) {
+        boolean fastExternalStage2 =
+                variantNow.itemsetType == FastExternal &&
+                        STAGE_2.isApplied();
+        if (block != A &&
+                canAssertAtStage(BC1h, STAGE_0)
+                && !fastExternalStage2) {
             hierarchy.assertTextDoesNotExist(TEXT_NORTH);
         }
         hierarchy.clickOnQuestion(wardLabel);
