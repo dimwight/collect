@@ -159,7 +159,7 @@ public class SelectOneResetTest {
             int ordinal = variant.ordinal();
             boolean itemsetInternal = variant.itemsetType == Internal;
             boolean testSelectedVariants = true;
-            boolean testBlockB = true;
+            boolean testBlockB = false;
             boolean testBlockA = testBlockB && false;
             boolean testBlockC = testBlockA && false;
             boolean testBlocksDE = true &&
