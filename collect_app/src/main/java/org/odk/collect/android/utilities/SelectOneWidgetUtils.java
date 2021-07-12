@@ -145,11 +145,7 @@ SelectOneWidgetUtils {
                 .getSubReference(offset).toShortString()
                 .replaceAll(matchIndexName, "$1");
 
-        // Avoid going on for ever
-        int queryFollowers = 0;
-        int queryFollowersMax = 2;//Allows for 3 really
-
-        //Mini method
+         //Mini method
         Function<FormEntryPrompt, String> getQuestionName =
                 q -> q.getQuestion().getBind().getReference().toString()
                         .replaceAll(".+/([^/]+)$", "$1");
@@ -167,10 +163,14 @@ SelectOneWidgetUtils {
 
         String updateName = getQuestionName.apply(
                 questionsAfterSave[questionAt - 1]);
-        if (!updateName.equals("city_D-3")) {
+        if (false && !updateName.equals("state_D-3")) {
             checkFastExternalCascadeInFieldList_(lastChangedIndex, questionsAfterSave);
             return;
         }
+
+        // Avoid going on for ever
+        int queryFollowers = 0;
+        int queryFollowersMax = 2;//Allows for 3 really
 
         //Check each subsequent question in turn
         for (; questionAt < questionsAfterSave.length; questionAt++) {
