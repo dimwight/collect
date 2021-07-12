@@ -111,7 +111,7 @@ SelectOneWidgetUtils {
                 //Otherwise reset any succeeding FEI (handles hiding!)
                 fc.saveAnswer(question.getIndex(), null);
 
-                //Update query - and count - for another member?
+                //Update query (and count) for another member?
                 if (query.matches(".*\\b" + queryName + "\\b.*")) {
                     queryName = getQueryName.get();
                     queryFollowers++;
