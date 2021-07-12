@@ -2572,7 +2572,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         }
 
         if (STAGE_3.isApplied()) {
-            checkFastExternalCascadeInFieldList(lastChangedIndex, questionsAfterSave);
+            checkFastExternalCascadeInFieldList(lastChangedIndex, questionsBeforeSave, questionsAfterSave);
         }
 
         for (int i = immutableQuestionsBeforeSave.size() - 1; i >= 0; i--) {

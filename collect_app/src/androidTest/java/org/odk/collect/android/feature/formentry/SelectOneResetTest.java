@@ -159,7 +159,7 @@ public class SelectOneResetTest {
             int ordinal = variant.ordinal();
             boolean itemsetInternal = variant.itemsetType == Internal;
             boolean testSelectedVariants = true;
-            boolean testBlockB = false;
+            boolean testBlockB = true;
             boolean testBlockA = testBlockB && false;
             boolean testBlockC = testBlockA && false;
             boolean testBlocksDE = true &&
@@ -293,11 +293,12 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 0);
             //DE1e
-            if (canAssertAtStage(DE1e, STAGE_3)) {
+            if (false && canAssertAtStage(DE1e, STAGE_3)) {
                 entry.clickOnText(TEXT_SELECT_ANSWER);
                 assertInfo(DE1e);
             } else {
                 entry.clickOnText(TEXT_NORTH, 0);
+                assertInfo(DE1e, false);
             }
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_HARLINGEN, 0)

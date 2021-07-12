@@ -93,13 +93,10 @@ SelectOneWidgetUtils {
             String queryName = getQueryName.get();
 
             //Loop until…
-            while (true) {
+            while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION
+                    //…past limit?
+                    && queryFollowers <= queryFollowersMax) {
                 //…non-question?
-                if (fc.stepToNextScreenEvent() != FormEntryController.EVENT_QUESTION
-                        //…past limit?
-                        || queryFollowers > queryFollowersMax) {
-                    break;
-                }
 
                 //Next question
                 FormEntryPrompt question = fc.getQuestionPrompt();
@@ -129,8 +126,58 @@ SelectOneWidgetUtils {
         }
     }
 
+    private static void checkFastExternalCascadeInFieldList_(FormIndex lastChangedIndex,
+                                                             FormEntryPrompt[] questionsAfterSave) {
+        FormController fc = Collect.getInstance().getFormController();
+        //Formality
+        if (fc == null) {
+            return;
+        }
+        //Find the index in the field list, get its form label
+        FormIndex seekIndex = lastChangedIndex;
+        FormIndex nextLevel;
+        int offset = 1;
+        for (; (nextLevel = seekIndex.getNextLevel()) != null; offset++) {
+            seekIndex = nextLevel;
+        }
+        String matchIndexLabel = "(\\w+) .+";
+        String checkName = seekIndex.getReference().getSubReference(offset).toShortString()
+                .replaceAll(matchIndexLabel, "$1");
+
+        //Check each current question in turn
+        for (FormEntryPrompt question : questionsAfterSave) {
+
+            //FEI?
+            String query = question.getFormElement().getAdditionalAttribute(null, "query");
+            if (query == null) {
+                continue;
+            }
+
+            //Next cascade member?
+            boolean matches = query.matches(".*\\b" + checkName + "\\b.*");
+            if (!matches) {
+                continue;
+            }
+
+            //Reset it
+            try {
+                fc.saveAnswer(question.getIndex(), null);
+            } catch (JavaRosaException e) {
+                Timber.d(e);
+            }
+
+            //Ready for next question
+            String matchQuestionLabel = ".+/([^/]+)$";
+            checkName = question.getQuestion().getBind().getReference().toString().replaceAll(matchQuestionLabel, "$1");
+        }
+    }
+
     public static void checkFastExternalCascadeInFieldList(FormIndex lastChangedIndex,
-                                                           FormEntryPrompt[] questionsAfterSave) {
+                                                           FormEntryPrompt[] questionsBeforeSave, FormEntryPrompt[] questionsAfterSave) {
+        if (true) {
+            checkFastExternalCascadeInFieldList_(lastChangedIndex, questionsAfterSave);
+            return;
+        }
         FormController fc = Collect.getInstance().getFormController();
         //Formality
         if (fc == null) {
