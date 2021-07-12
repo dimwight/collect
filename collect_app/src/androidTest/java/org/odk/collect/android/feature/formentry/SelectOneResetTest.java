@@ -159,13 +159,13 @@ public class SelectOneResetTest {
             int ordinal = variant.ordinal();
             boolean itemsetInternal = variant.itemsetType == Internal;
             boolean testSelectedVariants = true;
-            boolean testBlockB = true;
+            boolean testBlockB = false;
             boolean testBlockA = testBlockB && false;
             boolean testBlockC = testBlockA && false;
             boolean testBlocksDE = true &&
                     (itemsetInternal
                             || STAGE_3.isApplied());
-            boolean testBlockE = testBlocksDE && false;
+            boolean testBlockE = testBlocksDE && true;
             int lastOrdinal = 3;
             if (ordinal > lastOrdinal) {
                 break;
@@ -350,11 +350,12 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 1);
             //DE1e
-            if (canAssertAtStage(DE1e, STAGE_3)) {
+            if (false && canAssertAtStage(DE1e, STAGE_3)) {
                 entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
                 assertInfo(DE1e);
             } else {
                 entry.scrollToAndClickText(TEXT_NORTH, 0);
+                assertInfo(DE1e, false);
             }
             entry.clickOnText(TEXT_EAST)
                     .clickOnText(TEXT_HARLINGEN)
