@@ -23,6 +23,7 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appea
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Minimal;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.MinimalAutocomplete;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Plain;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.AA4e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC2e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC3e;
@@ -32,6 +33,7 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Asser
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE1e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE2e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE3h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.DE4h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.A;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.B;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.C;
@@ -104,8 +106,16 @@ public class SelectOneResetTest {
             return "state_" + name() + "-" + variant.ordinal();
         }
 
+        @NotNull String stateALabel(@NotNull SectionVariant variant) {
+            return "state_A" + name() + "-" + variant.ordinal();
+        }
+
         @NotNull String countyLabel(@NotNull SectionVariant variant) {
             return "county_" + name() + "-" + variant.ordinal();
+        }
+
+        @NotNull String countyALabel(@NotNull SectionVariant variant) {
+            return "county_A" + name() + "-" + variant.ordinal();
         }
 
         @NotNull String cityLabel(@NotNull SectionVariant variant) {
@@ -128,6 +138,7 @@ public class SelectOneResetTest {
     static final String TEXT_HARLINGEN = "Harlingen";
     static final String TEXT_BROWNSVILLE = "Brownsville";
     static final String TEXT_TEXAS = "Texas";
+    static final String TEXT_CAMERON = "Cameron";
     static final String TEXT_WASHINGTON = "Washington";
     static final String TEXT_NORTH = "North";
     static final String TEXT_SOUTH = "South";
@@ -145,8 +156,10 @@ public class SelectOneResetTest {
 
     private SectionVariant variantNow;
 
-    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1e, DE2e, DE3h}
+    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, AA4e, DE1e, DE2e, DE3h, DE4h}
+    private final boolean assertAA4e = false;
     private final boolean assertDE1e = false;
+    private final boolean assertDE4h = false;
 
     @Test
     public void testAllVariants() {
@@ -161,7 +174,7 @@ public class SelectOneResetTest {
             boolean itemsetInternal = variant.itemsetType == Internal;
             boolean testSelectedVariants = true;
             boolean testBlockB = false;
-            boolean testBlockA = testBlockB && false;
+            boolean testBlockA = !testBlockB && true;
             boolean testBlockC = testBlockA && false;
             boolean testBlocksDE = true &&
                     (itemsetInternal
@@ -278,8 +291,14 @@ public class SelectOneResetTest {
                     .assertTextDoesNotExist();
             assertInfo(ABC3e);
         }
+        if (assertAA4e && block == A) {
+            entry.swipeToNextQuestion(block.stateALabel(variantNow))
+                    .swipeToNextQuestion(block.countyALabel(variantNow))
+                    //AA4e
+                    .assertText(TEXT_CAMERON);
+        }
+        assertInfo(AA4e, assertAA4e);
         entry.clickGoToArrow();
-
     }
 
     void testBlocksDE(FormHierarchyPage hierarchy, boolean testBlockE) {
@@ -329,11 +348,16 @@ public class SelectOneResetTest {
             entry.clickOnText(TEXT_NORTH, 0)
                     .scrollToAndClickText(TEXT_WASHINGTON, 0);
         }
-        entry.clickGoToArrow();
-        //DE3h
-        hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
+        entry.clickGoToArrow()
+                //DE3h
+                .assertText(TEXT_WASHINGTON, TEXT_YES)
                 .assertTextDoesNotExist(TEXT_NORTH);
         assertInfo(DE3h);
+        if (assertDE4h) {
+            //DE4h
+            entry.assertText(TEXT_CAMERON);
+        }
+        assertInfo(DE4h, assertDE4h);
         if (!testBlockE) {
             return;
         }
@@ -386,12 +410,12 @@ public class SelectOneResetTest {
                     .scrollToAndClickText(TEXT_WASHINGTON, 1);
         }
         entry.clickGoToArrow()
-                .clickOnGroup(groupLabel);
-        //DE3h
-        hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
-                .assertTextDoesNotExist(TEXT_NORTH);
+                .clickOnGroup(groupLabel)
+                //DE3h
+                .assertText(TEXT_WASHINGTON, TEXT_YES)
+                .assertTextDoesNotExist(TEXT_NORTH)
+                .clickGoUpIcon();
         assertInfo(DE3h);
-        hierarchy.clickGoUpIcon();
     }
 
     private boolean canAssertAtStage(Assert asserty, UpdateStage stage) {
