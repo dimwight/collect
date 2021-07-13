@@ -146,6 +146,7 @@ public class SelectOneResetTest {
     private SectionVariant variantNow;
 
     enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, DE1e, DE2e, DE3h}
+    private final boolean assertDE1e = false;
 
     @Test
     public void testAllVariants() {
@@ -293,7 +294,7 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 0);
             //DE1e
-            if (false && canAssertAtStage(DE1e, STAGE_3)) {
+            if (assertDE1e) {
                 entry.clickOnText(TEXT_SELECT_ANSWER);
                 assertInfo(DE1e);
             } else {
@@ -350,7 +351,7 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_HARLINGEN)
                     .clickOnText(TEXT_YES, 1);
             //DE1e
-            if (false && canAssertAtStage(DE1e, STAGE_3)) {
+            if (assertDE1e) {
                 entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
                 assertInfo(DE1e);
             } else {
