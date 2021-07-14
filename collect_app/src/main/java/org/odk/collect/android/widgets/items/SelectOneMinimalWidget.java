@@ -21,6 +21,7 @@ import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 import java.util.List;
 
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
+import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_1;
 
 @SuppressLint("ViewConstructor")
 public class SelectOneMinimalWidget extends SelectMinimalWidget {
@@ -66,9 +67,7 @@ public class SelectOneMinimalWidget extends SelectMinimalWidget {
     public void clearAnswer() {
         selectedItem = null;
         super.clearAnswer();
-        if (true
-//                STAGE_1.isApplied()
-        ) {
+        if (STAGE_1.isApplied()) {
             clearFollowingItemsetWidgets();
         }
     }
@@ -78,6 +77,9 @@ public class SelectOneMinimalWidget extends SelectMinimalWidget {
         List<Selection> answers = (List<Selection>) answer;
         selectedItem = answers.isEmpty() ? null : answers.get(0);
         updateAnswer();
+        if (STAGE_1.isApplied()) {
+            clearFollowingItemsetWidgets();
+        }
         widgetValueChanged();
 
         if (autoAdvance && autoAdvanceListener != null) {
@@ -97,11 +99,6 @@ public class SelectOneMinimalWidget extends SelectMinimalWidget {
             binding.answer.setText(R.string.select_answer);
         } else {
             binding.answer.setText(StringUtils.textToHtml(getFormEntryPrompt().getSelectItemText(selectedItem)));
-        }
-        if (true
-//                STAGE_1.isApplied()
-        ) {
-            clearFollowingItemsetWidgets();
         }
     }
 

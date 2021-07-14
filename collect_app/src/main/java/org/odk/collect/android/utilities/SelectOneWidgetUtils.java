@@ -24,8 +24,9 @@ import java.util.function.Supplier;
 
 import timber.log.Timber;
 
-public class
-SelectOneWidgetUtils {
+public class SelectOneWidgetUtils {
+
+    public static final String SKIPPED_NONE = "________";
 
     private SelectOneWidgetUtils() {
 
@@ -35,7 +36,7 @@ SelectOneWidgetUtils {
         //Current codebase
         STAGE_0,
         //Preparatory changes
-//        STAGE_1,
+        STAGE_1,
         //Basic improvement
         STAGE_2,
         //Field lists improvement
@@ -44,7 +45,7 @@ SelectOneWidgetUtils {
 //        STAGE_4
         ;
 
-        private static UpdateStage latest = STAGE_0;
+        private static UpdateStage latest = STAGE_1;
 
         public static UpdateStage getLatest() {
             return latest;
@@ -89,7 +90,7 @@ SelectOneWidgetUtils {
             FormIndex startIndex = fc.getFormIndex();
             //Used across iterations
             String precedingMemberName = getQuestionName.get();
-            String skippedName = "";
+            String skippedName = SKIPPED_NONE;
             //Loop until non-question
             while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION) {
                 //Get question
