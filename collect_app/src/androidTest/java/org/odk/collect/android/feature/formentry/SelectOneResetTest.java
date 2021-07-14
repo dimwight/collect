@@ -157,18 +157,14 @@ public class SelectOneResetTest {
     private SectionVariant variantNow;
 
     enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, AA4e, DE1e, DE2e, DE3h, DE4h}
-
     private class Staged extends VariantTester {
-
         private final boolean assertAA4e = false;
         private final boolean assertDE1e = false;
-        private final boolean assertDE4h = false;
-
+        private final boolean assertDE4h = true;
         Staged(UpdateStage stage) {
             stage.makeLatest();
             Timber.i(UpdateStage.getLatest().name());
         }
-
         void testAllVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
@@ -178,7 +174,7 @@ public class SelectOneResetTest {
                 boolean testBlockB = false;
                 boolean testBlockA = !testBlockB && true;
                 boolean testBlockC = testBlockA && false;
-                boolean testBlocksDE = true &&
+                boolean testBlocksDE = false &&
                         (itemsetInternal
                                 || STAGE_3.isApplied());
                 boolean testBlockE = testBlocksDE && false;
@@ -293,7 +289,7 @@ public class SelectOneResetTest {
                         .assertTextDoesNotExist();
                 assertInfo(ABC3e);
             }
-            if (assertAA4e && block == A) {
+            if (block == A && assertAA4e) {
                 entry.swipeToNextQuestion(block.stateALabel(variantNow))
                         .swipeToNextQuestion(block.countyALabel(variantNow))
                         //AA4e
@@ -317,11 +313,10 @@ public class SelectOneResetTest {
                 //DE1e
                 if (assertDE1e) {
                     entry.clickOnText(TEXT_SELECT_ANSWER);
-                    assertInfo(DE1e);
                 } else {
                     entry.clickOnText(TEXT_NORTH, 0);
-                    assertInfo(DE1e, false);
                 }
+                assertInfo(DE1e, assertDE1e);
                 entry.clickOnText(TEXT_EAST)
                         .clickOnText(TEXT_HARLINGEN, 0)
                         .clickOnText(TEXT_BROWNSVILLE)
@@ -357,7 +352,9 @@ public class SelectOneResetTest {
             assertInfo(DE3h);
             if (assertDE4h) {
                 //DE4h
-                entry.assertText(TEXT_CAMERON);
+                hierarchy.clickOnGroup(E.groupLabel(variantNow))
+                        .assertText(TEXT_CAMERON)
+                        .clickGoUpIcon();
             }
             assertInfo(DE4h, assertDE4h);
             if (!testBlockE) {
