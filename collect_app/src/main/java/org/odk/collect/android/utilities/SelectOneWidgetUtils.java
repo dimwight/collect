@@ -18,6 +18,7 @@ import org.odk.collect.android.widgets.items.SelectOneMinimalWidget;
 import org.odk.collect.android.widgets.items.SelectOneWidget;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -72,49 +73,47 @@ SelectOneWidgetUtils {
             return;
         }
 
-        //Mini method
-        Supplier<String> getQueryName = () -> {
-            String raw = fc
-                    .getQuestionPrompt()
-                    .getFormElement()
+        //Mini methods
+        Supplier<String> getQuestionName = () -> {
+            String raw = fc.getQuestionPrompt().getFormElement()
                     .getBind().getReference().toString();
             return raw.replaceAll(".+/([^/]+)$", "$1");
         };
-
-        // Avoid going on for ever
-        int queryFollowers = 0;
-        int queryFollowersMax = 2;//Allows for 3 really
+        BiPredicate<String, String> queryMatchesName = (query, name) -> {
+            return query.matches(".*\\b" + name + "\\b.*");
+        };
 
         try {
             //Remember where we started
             FormIndex startIndex = fc.getFormIndex();
 
-            //To search for in query string
-            String queryName = getQueryName.get();
-
-            //Loop until…
-            while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION
-                    //…past limit?
-                    && queryFollowers <= queryFollowersMax) {
-                //…non-question?
-
-                //Next question
+            String precedingMemberName = getQuestionName.get();
+            String skippedName = "";
+            //Loop until non-question
+            while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION) {
+                //Get question
                 FormEntryPrompt question = fc.getQuestionPrompt();
-
-                //Skip if not FEI
+                //Read name
+                String questionName = getQuestionName.get();
+                //Check for query string
                 String query = question.getFormElement()
                         .getAdditionalAttribute(null, "query");
+                //No query?
                 if (query == null) {
+                    //Remember name for later - could be first member of next cascade
+                    skippedName = questionName;
                     continue;
                 }
-
-                //Otherwise reset any succeeding FEI (handles hiding!)
+                //Second member of next cascade?
+                if (queryMatchesName.test(query, skippedName)) {
+                    break;
+                }
+                //Reset anyway (could be about to be hidden)
                 fc.saveAnswer(question.getIndex(), null);
-
-                //Update query (and count) for another member?
-                if (query.matches(".*\\b" + queryName + "\\b.*")) {
-                    queryName = getQueryName.get();
-                    queryFollowers++;
+                //Found next member of cascade?
+                if (queryMatchesName.test(query, precedingMemberName)) {
+                    //Ready to carry on looking
+                    precedingMemberName = questionName;
                 }
             }
 
@@ -145,7 +144,7 @@ SelectOneWidgetUtils {
                 .getSubReference(offset).toShortString()
                 .replaceAll(matchIndexName, "$1");
 
-         //Mini method
+        //Mini method
         Function<FormEntryPrompt, String> getQuestionName =
                 q -> q.getQuestion().getBind().getReference().toString()
                         .replaceAll(".+/([^/]+)$", "$1");
