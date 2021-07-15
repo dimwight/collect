@@ -68,10 +68,10 @@ public class SelectOneResetTest {
         Internal_Minimal(Internal, Minimal),
         FastExternal_Plain(FastExternal, Plain),
         FastExternal_Minimal(FastExternal, Minimal),
-        Internal_MinimalAutocomplete(Internal, MinimalAutocomplete),
+        /*Internal_MinimalAutocomplete(Internal, MinimalAutocomplete),
         FastExternal_MinimalAutocomplete(FastExternal, MinimalAutocomplete),
         Internal_Autocomplete(Internal, Autocomplete),
-        FastExternal_Autocomplete(FastExternal, Autocomplete);
+        FastExternal_Autocomplete(FastExternal, Autocomplete)*/;
 
         final ItemsetType itemsetType;
         final Appearance appearance;
@@ -164,6 +164,26 @@ public class SelectOneResetTest {
         ForPr(UpdateStage stage) {
             super(stage);
         }
+
+        void testAllVariants(FormHierarchyPage hierarchy) {
+            for (SectionVariant variant : SectionVariant.values()) {
+                variantNow = variant;
+                int ordinal = variant.ordinal();
+                Timber.i("testing " + variant + "=" + ordinal);
+                testBlockABC(A, hierarchy);
+                hierarchy.clickOnGroup(B.groupLabel(variant));
+                testBlockABC(B, hierarchy);
+                hierarchy.clickOnGroup(C.groupLabel(variant));
+                testBlockABC(C, hierarchy);
+                hierarchy.clickGoUpIcon();
+                hierarchy.clickGoUpIcon();
+                hierarchy.clickOnGroup(D.groupLabel(variant));
+                testBlocksDE(hierarchy);
+                hierarchy.clickGoUpIcon();
+                Timber.i("passed " + variant + "=" + ordinal);
+            }
+        }
+
         void testBlockABC(Block block, FormHierarchyPage hierarchy) {
             Timber.i(newBlockMsg(block, variantNow));
             String showWardLabel = block.showWardLabel(variantNow);
@@ -241,7 +261,7 @@ public class SelectOneResetTest {
             entry.clickGoToArrow();
         }
 
-        void testBlocksDE(FormHierarchyPage hierarchy, boolean testBlockE) {
+        void testBlocksDE(FormHierarchyPage hierarchy) {
             Block block = D;
             Timber.i(newBlockMsg(block, variantNow));
             String wardLabel = block.wardLabel(variantNow);
@@ -287,9 +307,6 @@ public class SelectOneResetTest {
                     .clickOnGroup(E.groupLabel(variantNow))
                     .assertText(TEXT_CAMERON)
                     .clickGoUpIcon();
-            if (!testBlockE) {
-                return;
-            }
             block = E;
             Timber.i(newBlockMsg(block, variantNow));
             String groupLabel = block.groupLabel(variantNow);
@@ -354,7 +371,7 @@ public class SelectOneResetTest {
                 variantNow = variant;
                 int ordinal = variant.ordinal();
                 boolean itemsetInternal = variant.itemsetType == Internal;
-                boolean testSelectedVariants = true;
+                boolean testSelectedVariants = false;
                 boolean testBlockB = true;
                 boolean testBlockA = testBlockB && false;
                 boolean testBlockC = testBlockA && true;
