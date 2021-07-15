@@ -45,7 +45,8 @@ import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_2;
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_3;
 
-public class SelectOneResetTest {
+public class
+SelectOneResetTest {
 
     enum ItemsetType {
         Internal,

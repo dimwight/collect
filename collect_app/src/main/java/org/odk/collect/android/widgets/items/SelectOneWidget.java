@@ -46,7 +46,8 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColo
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
 @SuppressLint("ViewConstructor")
-public class SelectOneWidget extends BaseSelectListWidget {
+public class
+SelectOneWidget extends BaseSelectListWidget {
 
     @Nullable
     private AdvanceToNextListener listener;

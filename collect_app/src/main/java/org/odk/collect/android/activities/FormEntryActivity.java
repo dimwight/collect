@@ -207,7 +207,8 @@ import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
  */
 
 @SuppressWarnings("PMD.CouplingBetweenObjects")
-public class FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
+public class
+FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
         FormLoaderListener, AdvanceToNextListener, SwipeHandler.OnSwipeListener,
         SavePointListener, NumberPickerDialog.NumberPickerListener,
         RankingWidgetDialog.RankingListener, SaveFormIndexTask.SaveFormIndexListener,

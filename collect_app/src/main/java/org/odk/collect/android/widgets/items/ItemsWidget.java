@@ -49,7 +49,8 @@ import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage
  * Those choices might be read from a form (xml file) or an external csv file and used in questions
  * like: SelectOne, SelectMultiple, Ranking.
  */
-public abstract class ItemsWidget extends QuestionWidget {
+public abstract class
+ItemsWidget extends QuestionWidget {
 
 
     /**

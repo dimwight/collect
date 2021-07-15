@@ -28,7 +28,8 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.odk.collect.android.support.CustomMatchers.withIndex;
 import static org.odk.collect.android.support.actions.NestedScrollToAction.nestedScrollTo;
 
-public class FormEntryPage extends Page<FormEntryPage> {
+public class
+FormEntryPage extends Page<FormEntryPage> {
 
     private final String formName;
 

@@ -24,7 +24,8 @@ import java.util.function.Supplier;
 
 import timber.log.Timber;
 
-public class SelectOneWidgetUtils {
+public class
+SelectOneWidgetUtils {
 
     private SelectOneWidgetUtils() {
 
