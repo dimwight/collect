@@ -185,12 +185,10 @@ public class SelectOneResetTest {
             //BC1h
             if (block != A) {
                 hierarchy.assertTextDoesNotExist(TEXT_NORTH);
-                assertInfo(BC1h);
             }
-            hierarchy.clickOnQuestion(wardLabel);
-            //ABC1e
-            entry.assertTextDoesNotExist();
-            assertInfo(ABC1e);
+            hierarchy.clickOnQuestion(wardLabel)
+                    //ABC1e
+                    .assertTextDoesNotExist();
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
@@ -205,12 +203,10 @@ public class SelectOneResetTest {
             //BC2h
             if (block != A) {
                 hierarchy.assertTextDoesNotExist(TEXT_EAST);
-                assertInfo(BC2h);
             }
             hierarchy.clickOnQuestion(wardLabel)
                     //ABC2e
                     .assertTextDoesNotExist(TEXT_EAST);
-            assertInfo(ABC2e);
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
@@ -227,7 +223,6 @@ public class SelectOneResetTest {
                         .assertText(TEXT_WASHINGTON, TEXT_YES)
                         .assertTextDoesNotExist(TEXT_NORTH)
                         .clickOnQuestion(stateLabel);
-                assertInfo(BC3h);
             }
             //ABC3e
             entry.swipeToNextQuestion(block.countyLabel(variantNow))
@@ -237,14 +232,12 @@ public class SelectOneResetTest {
                     .swipeToNextQuestion(block.showWardLabel(variantNow))
                     .swipeToNextQuestion(block.wardLabel(variantNow))
                     .assertTextDoesNotExist();
-            assertInfo(ABC3e);
             if (block == B) {
                 entry.swipeToNextQuestion(block.stateAfterLabel(variantNow))
                         .swipeToNextQuestion(block.countyAfterLabel(variantNow))
                         //BB4e
                         .assertText(TEXT_CAMERON);
             }
-            assertInfo(BB4e, assertBB4e);
             entry.clickGoToArrow();
         }
 
@@ -260,15 +253,13 @@ public class SelectOneResetTest {
                         .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_YES, 0)
                         //DE1e
-                        .clickOnText(TEXT_SELECT_ANSWER);
-                assertInfo(DE1e, assertDE1e);
-                entry.clickOnText(TEXT_EAST)
+                        .clickOnText(TEXT_SELECT_ANSWER)
+                        .clickOnText(TEXT_EAST)
                         .clickOnText(TEXT_HARLINGEN, 0)
                         .clickOnText(TEXT_BROWNSVILLE)
                         //DE2e
-                        .clickOnText(TEXT_SELECT_ANSWER);
-                assertInfo(DE2e);
-                entry.clickOnText(TEXT_NORTH)
+                        .clickOnText(TEXT_SELECT_ANSWER)
+                        .clickOnText(TEXT_NORTH)
                         .scrollToAndClickText(TEXT_TEXAS, 0)
                         .clickOnText(TEXT_WASHINGTON);
             } else {
@@ -278,28 +269,24 @@ public class SelectOneResetTest {
                         .scrollToText(TEXT_WEST, 0)
                         //DE1e
                         .assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0);
-                assertInfo(DE1e);
-                entry.clickOnText(TEXT_EAST, 0)
+                        .assertTextIsNotChecked(TEXT_EAST, 0)
+                        .clickOnText(TEXT_EAST, 0)
                         .clickOnText(TEXT_BROWNSVILLE, 0)
                         .scrollToText(TEXT_SOUTH, 0)
                         //DE2e
                         .assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0);
-                assertInfo(DE2e);
-                entry.clickOnText(TEXT_NORTH, 0)
+                        .assertTextIsNotChecked(TEXT_NORTH, 0)
+                        .clickOnText(TEXT_NORTH, 0)
                         .scrollToAndClickText(TEXT_WASHINGTON, 0);
             }
             entry.clickGoToArrow()
                     //DE3h
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
-                    .assertTextDoesNotExist(TEXT_NORTH);
-            assertInfo(DE3h);
-            //DE4h
-            hierarchy.clickOnGroup(E.groupLabel(variantNow))
+                    .assertTextDoesNotExist(TEXT_NORTH)
+                    //DE4h
+                    .clickOnGroup(E.groupLabel(variantNow))
                     .assertText(TEXT_CAMERON)
                     .clickGoUpIcon();
-            assertInfo(DE4h, assertDE4h);
             if (!testBlockE) {
                 return;
             }
@@ -317,15 +304,13 @@ public class SelectOneResetTest {
                         .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_YES, 1)
                         //DE1e
-                        .scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
-                assertInfo(DE1e);
-                entry.clickOnText(TEXT_EAST)
+                        .scrollToAndClickText(TEXT_SELECT_ANSWER, 3)
+                        .clickOnText(TEXT_EAST)
                         .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_BROWNSVILLE)
                         //DE2e
-                        .scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
-                assertInfo(DE2e);
-                entry.clickOnText(TEXT_NORTH)
+                        .scrollToAndClickText(TEXT_SELECT_ANSWER, 3)
+                        .clickOnText(TEXT_NORTH)
                         .scrollToAndClickText(TEXT_TEXAS, 0)
                         .clickOnText(TEXT_WASHINGTON);
             } else {
@@ -334,16 +319,14 @@ public class SelectOneResetTest {
                         .scrollToText(TEXT_WEST, 0)
                         //DE1e
                         .assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0);
-                assertInfo(DE1e);
-                entry.clickOnText(TEXT_EAST)
+                        .assertTextIsNotChecked(TEXT_EAST, 0)
+                        .clickOnText(TEXT_EAST)
                         .clickOnText(TEXT_BROWNSVILLE)
                         .scrollToText(TEXT_SOUTH, 0)
                         //DE2e
                         .assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0);
-                assertInfo(DE2e);
-                entry.clickOnText(TEXT_NORTH)
+                        .assertTextIsNotChecked(TEXT_NORTH, 0)
+                        .clickOnText(TEXT_NORTH)
                         .scrollToAndClickText(TEXT_WASHINGTON, 1);
             }
             entry.clickGoToArrow()
@@ -352,7 +335,6 @@ public class SelectOneResetTest {
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH)
                     .clickGoUpIcon();
-            assertInfo(DE3h);
         }
 
     }
