@@ -159,7 +159,7 @@ public class SelectOneResetTest {
     enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, AA4e, DE1e, DE2e, DE3h, DE4h}
     private class Staged extends VariantTester {
         private final boolean assertAA4e = true;
-        private final boolean assertDE1e = false;
+        private final boolean assertDE1e = true;
         private final boolean assertDE4h = true;
         Staged(UpdateStage stage) {
             stage.makeLatest();
@@ -171,10 +171,10 @@ public class SelectOneResetTest {
                 int ordinal = variant.ordinal();
                 boolean itemsetInternal = variant.itemsetType == Internal;
                 boolean testSelectedVariants = true;
-                boolean testBlockB = false;
-                boolean testBlockA = !testBlockB && true;
+                boolean testBlockB = true;
+                boolean testBlockA = !testBlockB && false;
                 boolean testBlockC = testBlockA && false;
-                boolean testBlocksDE = false &&
+                boolean testBlocksDE = true &&
                         (itemsetInternal
                                 || STAGE_3.isApplied());
                 boolean testBlockE = testBlocksDE && false;
@@ -182,7 +182,7 @@ public class SelectOneResetTest {
                 if (ordinal > lastOrdinal) {
                     break;
                 } else if (testSelectedVariants && !(
-                        ordinal == 3
+                        ordinal > 1
                 )) {
                     continue;
                 }

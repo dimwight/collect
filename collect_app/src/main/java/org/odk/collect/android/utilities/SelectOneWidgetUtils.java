@@ -26,8 +26,6 @@ import timber.log.Timber;
 
 public class SelectOneWidgetUtils {
 
-    public static final String SKIPPED_NONE = "________";
-
     private SelectOneWidgetUtils() {
 
     }
@@ -45,7 +43,7 @@ public class SelectOneWidgetUtils {
 //        STAGE_4
         ;
 
-        private static UpdateStage latest = STAGE_1;
+        private static UpdateStage latest = STAGE_3;
 
         public static UpdateStage getLatest() {
             return latest;
@@ -59,6 +57,8 @@ public class SelectOneWidgetUtils {
             latest = this;
         }
     }
+
+    private static final String BAD_NAME = "123";
 
     final static BiPredicate<String, String> queryMatchesName = (query, name) -> {
         return query.matches(".*\\b" + name + "\\b.*");
@@ -90,7 +90,7 @@ public class SelectOneWidgetUtils {
             FormIndex startIndex = fc.getFormIndex();
             //Used across iterations
             String precedingMemberName = getQuestionName.get();
-            String skippedName = SKIPPED_NONE;
+            String skippedName = BAD_NAME;
             //Loop until non-question
             while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION) {
                 //Get question
@@ -155,7 +155,7 @@ public class SelectOneWidgetUtils {
         String precedingMemberName = seekIndex.getReference()
                 .getSubReference(offset).toShortString()
                 .replaceAll(matchIndexName, "$1");
-        String skippedName = "";
+        String skippedName = BAD_NAME;
 
         //Mini method
         Function<FormEntryPrompt, String> getQuestionName =
@@ -173,8 +173,10 @@ public class SelectOneWidgetUtils {
             }
         }
 
-        if (false && !getQuestionName.apply(questionsAfterSave[questionAt - 1])
-                .equals("state_D-3")) {
+        if (//true ||
+                false &&
+                        !getQuestionName.apply(questionsAfterSave[questionAt - 1])
+                                .equals("state_D-3")) {
             checkFastExternalCascadeInFieldList_(lastChangedIndex, questionsAfterSave);
             return;
         }
