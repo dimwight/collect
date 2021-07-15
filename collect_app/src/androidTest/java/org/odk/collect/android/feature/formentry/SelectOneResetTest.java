@@ -23,7 +23,7 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appea
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Minimal;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.MinimalAutocomplete;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Plain;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.AA4e;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BB4e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC2e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC3e;
@@ -156,15 +156,18 @@ public class SelectOneResetTest {
 
     private SectionVariant variantNow;
 
-    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, AA4e, DE1e, DE2e, DE3h, DE4h}
+    enum Assert {BC1h, ABC1e, BC2h, ABC2e, BC3h, ABC3e, BB4e, DE1e, DE2e, DE3h, DE4h}
+
     private class Staged extends VariantTester {
-        private final boolean assertAA4e = true;
+        private final boolean assertBB4e = true;
         private final boolean assertDE1e = true;
         private final boolean assertDE4h = true;
+
         Staged(UpdateStage stage) {
             stage.makeLatest();
             Timber.i(UpdateStage.getLatest().name());
         }
+
         void testAllVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
@@ -289,13 +292,13 @@ public class SelectOneResetTest {
                         .assertTextDoesNotExist();
                 assertInfo(ABC3e);
             }
-            if (block == A && assertAA4e) {
+            if (block == B && assertBB4e) {
                 entry.swipeToNextQuestion(block.stateALabel(variantNow))
                         .swipeToNextQuestion(block.countyALabel(variantNow))
-                        //AA4e
+                        //BB4e
                         .assertText(TEXT_CAMERON);
             }
-            assertInfo(AA4e, assertAA4e);
+            assertInfo(BB4e, assertBB4e);
             entry.clickGoToArrow();
         }
 
