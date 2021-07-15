@@ -53,15 +53,14 @@ public abstract class
 ItemsWidget extends QuestionWidget {
 
 
-    /**
-     * If there are "fast external itemset" selects right after this select,
-     * assume that they are linked to the current question and clear them.
-     */
-    final protected void clearFollowingItemsetWidgets() {
+    protected final void clearFollowingItemsetWidgets() {
         if (STAGE_2.isApplied()) {
             SelectOneWidgetUtils.checkFastExternalCascade(this);
             return;
         }
+        /* If there are "fast external itemset" selects right after this select,
+         * assume that they are linked to the current question and clear them.
+         */
         FormController formController = Collect.getInstance().getFormController();
         if (formController == null) {
             return;

@@ -61,7 +61,7 @@ SelectOneWidgetUtils {
 
     private static final String BAD_NAME = "123";
 
-    final static BiPredicate<String, String> queryMatchesName = (query, name) -> {
+    static final BiPredicate<String, String> queryMatchesName = (query, name) -> {
         return query.matches(".*\\b" + name + "\\b.*");
     };
 
