@@ -258,13 +258,9 @@ public class SelectOneResetTest {
                 entry.clickOnText(TEXT_NO, 0)
                         .clickOnText(TEXT_BROWNSVILLE, 0)
                         .clickOnText(TEXT_HARLINGEN)
-                        .clickOnText(TEXT_YES, 0);
-                //DE1e
-                if (assertDE1e) {
-                    entry.clickOnText(TEXT_SELECT_ANSWER);
-                } else {
-                    entry.clickOnText(TEXT_NORTH, 0);
-                }
+                        .clickOnText(TEXT_YES, 0)
+                        //DE1e
+                        .clickOnText(TEXT_SELECT_ANSWER);
                 assertInfo(DE1e, assertDE1e);
                 entry.clickOnText(TEXT_EAST)
                         .clickOnText(TEXT_HARLINGEN, 0)
@@ -299,12 +295,10 @@ public class SelectOneResetTest {
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH);
             assertInfo(DE3h);
-            if (assertDE4h) {
-                //DE4h
-                hierarchy.clickOnGroup(E.groupLabel(variantNow))
-                        .assertText(TEXT_CAMERON)
-                        .clickGoUpIcon();
-            }
+            //DE4h
+            hierarchy.clickOnGroup(E.groupLabel(variantNow))
+                    .assertText(TEXT_CAMERON)
+                    .clickGoUpIcon();
             assertInfo(DE4h, assertDE4h);
             if (!testBlockE) {
                 return;
@@ -321,15 +315,10 @@ public class SelectOneResetTest {
                 entry.scrollToAndClickText(TEXT_BROWNSVILLE,
                         0)
                         .clickOnText(TEXT_HARLINGEN)
-                        .clickOnText(TEXT_YES, 1);
-                //DE1e
-                if (assertDE1e) {
-                    entry.scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
-                    assertInfo(DE1e);
-                } else {
-                    entry.scrollToAndClickText(TEXT_NORTH, 0);
-                    assertInfo(DE1e, false);
-                }
+                        .clickOnText(TEXT_YES, 1)
+                        //DE1e
+                        .scrollToAndClickText(TEXT_SELECT_ANSWER, 3);
+                assertInfo(DE1e);
                 entry.clickOnText(TEXT_EAST)
                         .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_BROWNSVILLE)
@@ -641,7 +630,7 @@ public class SelectOneResetTest {
         FormHierarchyPage hierarchy = new MainMenuPage()
                 .startBlankForm(TEXT_FORM)
                 .clickGoToArrow();
-        (true ? new Staged(STAGE_3) : new ForPr(STAGE_3)).testAllVariants(hierarchy);
+        (false ? new Staged(STAGE_3) : new ForPr(STAGE_3)).testAllVariants(hierarchy);
     }
     private String newBlockMsg(Block block, SectionVariant variant) {
         return "Block " + block.name() + "-" + variant.ordinal();
