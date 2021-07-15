@@ -23,10 +23,10 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appea
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Minimal;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.MinimalAutocomplete;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Plain;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BB4e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC2e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC3e;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BB4e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC1h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC2h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BC3h;
@@ -106,16 +106,8 @@ public class SelectOneResetTest {
             return "state_" + name() + "-" + variant.ordinal();
         }
 
-        @NotNull String stateALabel(@NotNull SectionVariant variant) {
-            return "state_A" + name() + "-" + variant.ordinal();
-        }
-
         @NotNull String countyLabel(@NotNull SectionVariant variant) {
             return "county_" + name() + "-" + variant.ordinal();
-        }
-
-        @NotNull String countyALabel(@NotNull SectionVariant variant) {
-            return "county_A" + name() + "-" + variant.ordinal();
         }
 
         @NotNull String cityLabel(@NotNull SectionVariant variant) {
@@ -130,6 +122,15 @@ public class SelectOneResetTest {
             return "show-ward_" + name() + "-" + variant.ordinal();
         }
 
+        @NotNull String stateAfterLabel(@NotNull SectionVariant variant) {
+            String name = name();
+            return "state_" + name + name + "-" + variant.ordinal();
+        }
+
+        @NotNull String countyAfterLabel(@NotNull SectionVariant variant) {
+            String name = name();
+            return "county_" + name + name + "-" + variant.ordinal();
+        }
     }
 
     static final String TEXT_NO = "no";
@@ -175,7 +176,7 @@ public class SelectOneResetTest {
                 boolean itemsetInternal = variant.itemsetType == Internal;
                 boolean testSelectedVariants = true;
                 boolean testBlockB = true;
-                boolean testBlockA = !testBlockB && false;
+                boolean testBlockA = testBlockB && false;
                 boolean testBlockC = testBlockA && false;
                 boolean testBlocksDE = true &&
                         (itemsetInternal
@@ -293,8 +294,8 @@ public class SelectOneResetTest {
                 assertInfo(ABC3e);
             }
             if (block == B && assertBB4e) {
-                entry.swipeToNextQuestion(block.stateALabel(variantNow))
-                        .swipeToNextQuestion(block.countyALabel(variantNow))
+                entry.swipeToNextQuestion(block.stateAfterLabel(variantNow))
+                        .swipeToNextQuestion(block.countyAfterLabel(variantNow))
                         //BB4e
                         .assertText(TEXT_CAMERON);
             }

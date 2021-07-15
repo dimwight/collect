@@ -43,7 +43,7 @@ public class SelectOneWidgetUtils {
 //        STAGE_4
         ;
 
-        private static UpdateStage latest = STAGE_3;
+        private static UpdateStage latest = STAGE_2;
 
         public static UpdateStage getLatest() {
             return latest;
