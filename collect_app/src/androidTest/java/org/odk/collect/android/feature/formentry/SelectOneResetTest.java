@@ -164,7 +164,6 @@ public class SelectOneResetTest {
         ForPr(UpdateStage stage) {
             super(stage);
         }
-
         void testBlockABC(Block block, FormHierarchyPage hierarchy) {
             Timber.i(newBlockMsg(block, variantNow));
             String showWardLabel = block.showWardLabel(variantNow);
@@ -184,16 +183,14 @@ public class SelectOneResetTest {
                     .clickOnText(TEXT_YES)
                     .clickGoToArrow();
             //BC1h
-            if (block != A && canAssertAtStage(BC1h, STAGE_0)) {
+            if (block != A) {
                 hierarchy.assertTextDoesNotExist(TEXT_NORTH);
                 assertInfo(BC1h);
             }
             hierarchy.clickOnQuestion(wardLabel);
             //ABC1e
-            if (canAssertAtStage(ABC1e, STAGE_0)) {
-                entry.assertTextDoesNotExist();
-                assertInfo(ABC1e);
-            }
+            entry.assertTextDoesNotExist();
+            assertInfo(ABC1e);
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
@@ -206,16 +203,14 @@ public class SelectOneResetTest {
             entry.clickOnText(TEXT_BROWNSVILLE)
                     .clickGoToArrow();
             //BC2h
-            if (block != A && canAssertAtStage(BC2h, STAGE_2)) {
+            if (block != A) {
                 hierarchy.assertTextDoesNotExist(TEXT_EAST);
                 assertInfo(BC2h);
             }
-            hierarchy.clickOnQuestion(wardLabel);
-            //ABC2e
-            if (canAssertAtStage(ABC2e, STAGE_2)) {
-                entry.assertTextDoesNotExist(TEXT_EAST);
-                assertInfo(ABC2e);
-            }
+            hierarchy.clickOnQuestion(wardLabel)
+                    //ABC2e
+                    .assertTextDoesNotExist(TEXT_EAST);
+            assertInfo(ABC2e);
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
@@ -227,7 +222,7 @@ public class SelectOneResetTest {
             }
             entry.clickOnText(TEXT_WASHINGTON);
             //BC3h
-            if (block != A && canAssertAtStage(BC3h, STAGE_2)) {
+            if (block != A) {
                 entry.clickGoToArrow()
                         .assertText(TEXT_WASHINGTON, TEXT_YES)
                         .assertTextDoesNotExist(TEXT_NORTH)
@@ -235,17 +230,15 @@ public class SelectOneResetTest {
                 assertInfo(BC3h);
             }
             //ABC3e
-            if (canAssertAtStage(ABC3e, STAGE_0)) {
-                entry.swipeToNextQuestion(block.countyLabel(variantNow))
-                        .assertTextDoesNotExist()
-                        .swipeToNextQuestion(block.cityLabel(variantNow))
-                        .assertTextDoesNotExist()
-                        .swipeToNextQuestion(block.showWardLabel(variantNow))
-                        .swipeToNextQuestion(block.wardLabel(variantNow))
-                        .assertTextDoesNotExist();
-                assertInfo(ABC3e);
-            }
-            if (block == B && assertBB4e) {
+            entry.swipeToNextQuestion(block.countyLabel(variantNow))
+                    .assertTextDoesNotExist()
+                    .swipeToNextQuestion(block.cityLabel(variantNow))
+                    .assertTextDoesNotExist()
+                    .swipeToNextQuestion(block.showWardLabel(variantNow))
+                    .swipeToNextQuestion(block.wardLabel(variantNow))
+                    .assertTextDoesNotExist();
+            assertInfo(ABC3e);
+            if (block == B) {
                 entry.swipeToNextQuestion(block.stateAfterLabel(variantNow))
                         .swipeToNextQuestion(block.countyAfterLabel(variantNow))
                         //BB4e
@@ -390,9 +383,9 @@ public class SelectOneResetTest {
                 variantNow = variant;
                 int ordinal = variant.ordinal();
                 boolean itemsetInternal = variant.itemsetType == Internal;
-                boolean testSelectedVariants = false;
+                boolean testSelectedVariants = true;
                 boolean testBlockB = true;
-                boolean testBlockA = testBlockB && true;
+                boolean testBlockA = testBlockB && false;
                 boolean testBlockC = testBlockA && true;
                 boolean testBlocksDE = true &&
                         (itemsetInternal
@@ -650,7 +643,6 @@ public class SelectOneResetTest {
                 .clickGoToArrow();
         (true ? new Staged(STAGE_3) : new ForPr(STAGE_3)).testAllVariants(hierarchy);
     }
-
     private String newBlockMsg(Block block, SectionVariant variant) {
         return "Block " + block.name() + "-" + variant.ordinal();
     }
