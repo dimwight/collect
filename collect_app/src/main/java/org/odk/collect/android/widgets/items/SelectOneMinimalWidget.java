@@ -21,19 +21,14 @@ import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 import java.util.List;
 
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_1;
 
 @SuppressLint("ViewConstructor")
-public class
-SelectOneMinimalWidget extends SelectMinimalWidget {
+public class SelectOneMinimalWidget extends SelectMinimalWidget {
     private Selection selectedItem;
     private final boolean autoAdvance;
     private AdvanceToNextListener autoAdvanceListener;
 
-    public SelectOneMinimalWidget(Context context,
-                                  QuestionDetails prompt,
-                                  boolean autoAdvance,
-                                  WaitingForDataRegistry waitingForDataRegistry) {
+    public SelectOneMinimalWidget(Context context, QuestionDetails prompt, boolean autoAdvance, WaitingForDataRegistry waitingForDataRegistry) {
         super(context, prompt, waitingForDataRegistry);
         selectedItem = SelectOneWidgetUtils.getSelectedItem(prompt.getPrompt(), items);
         this.autoAdvance = autoAdvance;
@@ -68,9 +63,7 @@ SelectOneMinimalWidget extends SelectMinimalWidget {
     public void clearAnswer() {
         selectedItem = null;
         super.clearAnswer();
-        if (STAGE_1.isApplied()) {
-            clearFollowingItemsetWidgets();
-        }
+        clearFollowingItemsetWidgets();
     }
 
     @Override
@@ -78,9 +71,7 @@ SelectOneMinimalWidget extends SelectMinimalWidget {
         List<Selection> answers = (List<Selection>) answer;
         selectedItem = answers.isEmpty() ? null : answers.get(0);
         updateAnswer();
-        if (STAGE_1.isApplied()) {
-            clearFollowingItemsetWidgets();
-        }
+        clearFollowingItemsetWidgets();
         widgetValueChanged();
 
         if (autoAdvance && autoAdvanceListener != null) {

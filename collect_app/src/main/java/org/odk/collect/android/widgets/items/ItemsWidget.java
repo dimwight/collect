@@ -18,21 +18,17 @@ package org.odk.collect.android.widgets.items;
 
 import android.content.Context;
 
-import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.QuestionDef;
 import org.javarosa.core.model.SelectChoice;
 import org.javarosa.xpath.expr.XPathFuncExpr;
 import org.javarosa.xpath.parser.XPathSyntaxException;
 import org.odk.collect.android.R;
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.exception.ExternalDataException;
-import org.odk.collect.android.exception.JavaRosaException;
 import org.odk.collect.android.external.ExternalDataUtil;
 import org.odk.collect.android.fastexternalitemset.ItemsetDao;
 import org.odk.collect.android.fastexternalitemset.ItemsetDbAdapter;
 import org.odk.collect.android.fastexternalitemset.XPathParseTool;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
-import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.utilities.SelectOneWidgetUtils;
 import org.odk.collect.android.widgets.QuestionWidget;
 
@@ -40,47 +36,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import timber.log.Timber;
-
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_2;
-
 /**
  * ItemsWidget is an abstract class used by widgets containing a list of choices.
  * Those choices might be read from a form (xml file) or an external csv file and used in questions
  * like: SelectOne, SelectMultiple, Ranking.
  */
-public abstract class
-ItemsWidget extends QuestionWidget {
-
-
-    protected final void clearFollowingItemsetWidgets() {
-        if (STAGE_2.isApplied()) {
-            SelectOneWidgetUtils.checkFastExternalCascade(this);
-            return;
-        }
-        /* If there are "fast external itemset" selects right after this select,
-         * assume that they are linked to the current question and clear them.
-         */
-        FormController formController = Collect.getInstance().getFormController();
-        if (formController == null) {
-            return;
-        }
-
-        if (formController.currentCaptionPromptIsQuestion()) {
-            try {
-                FormIndex startFormIndex = formController.getQuestionPrompt().getIndex();
-                formController.stepToNextScreenEvent();
-                while (formController.currentCaptionPromptIsQuestion()
-                        && formController.getQuestionPrompt().getFormElement().getAdditionalAttribute(null, "query") != null) {
-                    formController.saveAnswer(formController.getQuestionPrompt().getIndex(), null);
-                    formController.stepToNextScreenEvent();
-                }
-                formController.jumpToIndex(startFormIndex);
-            } catch (JavaRosaException e) {
-                Timber.d(e);
-            }
-        }
-    }
+public abstract class ItemsWidget extends QuestionWidget {
 
     List<SelectChoice> items = new ArrayList<>();
 
@@ -129,5 +90,9 @@ ItemsWidget extends QuestionWidget {
     @Override
     @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
     public void setOnLongClickListener(OnLongClickListener l) {
+    }
+
+    protected void clearFollowingItemsetWidgets() {
+        SelectOneWidgetUtils.checkFastExternalCascade(this);
     }
 }
