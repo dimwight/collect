@@ -286,10 +286,10 @@ SelectOneResetTest {
             //BC3h
             if (block != A && canAssertAtStage(BC3h, STAGE_2)) {
                 hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
-                        .assertTextDoesNotExist(TEXT_NORTH)
-                        .clickOnQuestion(stateLabel);
+                        .assertTextDoesNotExist(TEXT_NORTH);
                 assertInfo(BC3h);
             }
+            hierarchy.clickOnQuestion(stateLabel);
             //ABC3e
             if (canAssertAtStage(ABC3e, STAGE_0)) {
                 entry.swipeToNextQuestion(block.countyLabel(variantNow))
@@ -434,7 +434,7 @@ SelectOneResetTest {
     }
 
     private class ForPr extends Staged {
-        void testVariants_(FormHierarchyPage hierarchy) {
+        void testVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
                 int ordinal = variant.ordinal();
@@ -510,11 +510,10 @@ SelectOneResetTest {
             //BC3h
             if (block != A) {
                 hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
-                        .assertTextDoesNotExist(TEXT_NORTH)
-                        .clickOnQuestion(stateLabel);
+                        .assertTextDoesNotExist(TEXT_NORTH);
             }
             //ABC3e
-            entry.swipeToNextQuestion(block.countyLabel(variantNow))
+            hierarchy.clickOnQuestion(stateLabel).swipeToNextQuestion(block.countyLabel(variantNow))
                     .assertTextDoesNotExist()
                     .swipeToNextQuestion(block.cityLabel(variantNow))
                     .assertTextDoesNotExist()
@@ -684,11 +683,10 @@ SelectOneResetTest {
             //BC3h
             if (false && block != A) {
                 hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
-                        .assertTextDoesNotExist(TEXT_NORTH)
-                        .clickOnQuestion(stateLabel);
+                        .assertTextDoesNotExist(TEXT_NORTH);
             }
             //ABC3e
-            entry.swipeToNextQuestion(block.countyLabel(variantNow))
+            hierarchy.clickOnQuestion(stateLabel).swipeToNextQuestion(block.countyLabel(variantNow))
                     .assertTextDoesNotExist()
                     .swipeToNextQuestion(block.cityLabel(variantNow))
                     .assertTextDoesNotExist()
