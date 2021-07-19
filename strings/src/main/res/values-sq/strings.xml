@@ -136,6 +136,7 @@
   <!--Text displayed when user tries to start recording while the mic is already in use-->
   <!--Error message displayed when copying media from a temporary directory fails-->
   <!--Text displayed in the audio bar when background audio recording is explicitly disabled from the options menu. Should be as short as possible. The inserted string is ⋮ which indicates the options menu.-->
+  <!--Error displayed when opened filled form has been deleted on disk-->
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -344,17 +345,27 @@
   <!--##############################################
     # GENERAL SETTINGS
     ##############################################-->
-  <string name="general_preferences">Parametrat e përgjithshëm</string>
   <!--Title of a settings section-->
   <string name="server_settings_title">Server</string>
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="client">Fasada e përdoruesit</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="form_management_preferences">Administrimi i formularëve</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="user_and_device_identity_title">Identiteti i përdoruesit dhe aparatit</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section only available in beta or development builds.-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <string name="server_preferences">Parametrat e serverit</string>
   <!--Label for server type setting-->
   <string name="type">Tipi</string>
@@ -464,8 +475,6 @@
   <!--##############################################
      # ADMIN SETTINGS
      ##############################################-->
-  <string name="admin_preferences">Parametrat e Administratorit</string>
-  <string name="admin_access_settings">Akseso parametrat si administrator</string>
   <string name="enter_new_password">Vendos fjalëkalim të ri</string>
   <string name="admin_password">Fjalëkalimi i Administratorit</string>
   <string name="admin_password_changed">Fjalëkalimi i Administratorit u ndryshua me sukses</string>
@@ -477,7 +486,7 @@
   <string name="found_in_main">Hiq përzgjedhjen për ta fshehur nga Menuja Kryesore</string>
   <string name="found_in_settings">Hiq përzgjedhjen për ta fshehur nga Parametrat e Përgjithshëm</string>
   <string name="form_entry">Hiq përzgjedhjen për ta fshehur nga Form Entry</string>
-  <string name="reset_settings_dialog">Rivendos aplikacionin…</string>
+  <string name="reset_project_settings_title">Rivendos</string>
   <string name="select_all">Zgjidh të gjitha</string>
   <string name="clear_all">Pastro të gjitha</string>
   <string name="reset_settings">Të gjithë parametrat (paramterat e brendshëm, parametrat e ruajtur)</string>
@@ -485,7 +494,6 @@
   <string name="reset_blank_forms">Formularë bosh (dosja e formularëve, baza e të dhënave të formave, baza e të dhënave itemsets)</string>
   <string name="reset_layers">Shtrasat e hartës (dosja e shtresave)</string>
   <string name="reset_cache">Cache e ngarkimit të formularëve (.dosja e cache)</string>
-  <string name="reset_osm_tiles">Cache e kuadrateve OSM (dosja osmdroid)</string>
   <string name="reset_settings_dialog_title">Zgjidh çfarë do të rivendoset</string>
   <string name="reset_settings_button_reset">Rivendos</string>
   <string name="reset_in_progress">Duke rivendosur…</string>
@@ -496,14 +504,9 @@
   <string name="reset_blank_forms_result">Formularë bosh :: %s</string>
   <string name="reset_layers_result">Shtresat e hartës :: %s</string>
   <string name="reset_cache_result">Cache ngarkimi i formularëve :: %s</string>
-  <string name="reset_osm_tiles_result">Cache e kuadratëve OSM ::%s</string>
-  <string name="user_access_control">Kontrolli i aksesi të përdoruesit</string>
   <string name="main_menu_settings">Parametrat e Menusë Kryesore</string>
-  <string name="main_menu_settings_summary">Administro elementët e menusë kryesore</string>
   <string name="user_settings">Parametrat e përdoruesit</string>
-  <string name="user_setting_summary">Administro elementët e parametrave të përgjithshëm</string>
   <string name="form_entry_setting">Parametrat e plotësimit të formularëve</string>
-  <string name="form_entry_settings_summary">Administro elementët e plotësimit të formularëve</string>
   <!--Name of a setting that determines whether users can navigate backwards in a form-->
   <string name="moving_backwards_title">Shko mbrapsht</string>
   <string name="moving_backwards_disabled_title">Të shkuarit mbrapsht është ç\'aktivizuar</string>
@@ -586,6 +589,8 @@
     select the wording and where to put the \n for maximum impact in your language.-->
   <!--Text for the button that allows for configuring a project by scanning a QR code. Should be short-->
   <!--Text for the button that allows for manually entering project details. Should be short-->
+  <!--Immediately followed by "Configure" which is a link to configure a Google Drive project-->
+  <!--Preceded by "My project uses Google Drive." Tapping opens a dialog to configure a Google Drive Project-->
   <!--Immediately followed by "Try Collect" which is a link to create a demo project-->
   <!--Preceded by "Don't have a project yet?" question-->
 </resources>

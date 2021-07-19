@@ -119,6 +119,7 @@
   <!--Text displayed when user tries to start recording while the mic is already in use-->
   <!--Error message displayed when copying media from a temporary directory fails-->
   <!--Text displayed in the audio bar when background audio recording is explicitly disabled from the options menu. Should be as short as possible. The inserted string is ⋮ which indicates the options menu.-->
+  <!--Error displayed when opened filled form has been deleted on disk-->
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -309,13 +310,23 @@
   <!--##############################################
     # GENERAL SETTINGS
     ##############################################-->
-  <string name="general_preferences">Üldseaded</string>
   <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section only available in beta or development builds.-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <string name="server_preferences">Serveri seaded</string>
   <!--Label for server type setting-->
   <string name="server_url">Veebiaadress</string>
@@ -384,8 +395,6 @@
   <!--##############################################
      # ADMIN SETTINGS
      ##############################################-->
-  <string name="admin_preferences">Administraatori seaded</string>
-  <string name="admin_access_settings">Administraatori seadetele ligipääsuks puudutage</string>
   <string name="enter_new_password">Sisesta uus salasõna</string>
   <string name="admin_password">Administraatori salasõna</string>
   <string name="admin_password_changed">Administraatori salasõna muutmine õnnestus</string>
@@ -395,7 +404,7 @@
   <string name="change_admin_password">Muuda administraatori salasõna</string>
   <string name="found_in_main">Peamenüüst eemaldamiseks puhasta väli</string>
   <string name="found_in_settings">Üldseadetest eemaldamiseks puhasta väli </string>
-  <string name="reset_settings_dialog">Rakenduse lähtestamine…</string>
+  <string name="reset_project_settings_title">Lähtesta</string>
   <string name="select_all">Vali kõik</string>
   <string name="clear_all">Eemalda kõik</string>
   <string name="reset_settings">Kõik seaded (sisemised seaded, salvestatud seaded)</string>
@@ -403,7 +412,6 @@
   <string name="reset_blank_forms">Sisestusvormid (vormide kaust, vormide andmebaas, andmekogud)</string>
   <string name="reset_layers">Kaardikihid (kihtide kaust)</string>
   <string name="reset_cache">Vormi laadimise vahemälu (.cache kaust)</string>
-  <string name="reset_osm_tiles">OSM kaardikihi vahemälu (osmdroid kaust)</string>
   <string name="reset_settings_dialog_title">Vali mida lähtestada</string>
   <string name="reset_settings_button_reset">Lähtesta</string>
   <string name="reset_in_progress">Lähtestamine…</string>
@@ -414,7 +422,6 @@
   <string name="reset_blank_forms_result">Tühjad vormid :: %s</string>
   <string name="reset_layers_result">Kaardikihid :: %s</string>
   <string name="reset_cache_result">Vormi laadimise vahemälu :: %s</string>
-  <string name="reset_osm_tiles_result">OSM kaardikihi vahemälu :: %s</string>
   <!--Name of a setting that determines whether users can navigate backwards in a form-->
   <!--Admin setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
   <string name="save_mid">Salvesta vorm</string>
@@ -471,6 +478,8 @@
     select the wording and where to put the \n for maximum impact in your language.-->
   <!--Text for the button that allows for configuring a project by scanning a QR code. Should be short-->
   <!--Text for the button that allows for manually entering project details. Should be short-->
+  <!--Immediately followed by "Configure" which is a link to configure a Google Drive project-->
+  <!--Preceded by "My project uses Google Drive." Tapping opens a dialog to configure a Google Drive Project-->
   <!--Immediately followed by "Try Collect" which is a link to create a demo project-->
   <!--Preceded by "Don't have a project yet?" question-->
 </resources>

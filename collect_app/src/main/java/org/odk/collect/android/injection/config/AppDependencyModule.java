@@ -82,6 +82,7 @@ import org.odk.collect.android.openrosa.okhttp.OkHttpConnection;
 import org.odk.collect.android.openrosa.okhttp.OkHttpOpenRosaServerClientProvider;
 import org.odk.collect.android.permissions.PermissionsChecker;
 import org.odk.collect.android.permissions.PermissionsProvider;
+import org.odk.collect.android.preferences.ProjectPreferencesViewModel;
 import org.odk.collect.android.preferences.keys.AdminKeys;
 import org.odk.collect.android.preferences.keys.GeneralKeys;
 import org.odk.collect.android.preferences.keys.MetaKeys;
@@ -107,9 +108,11 @@ import org.odk.collect.android.utilities.ExternalWebPageHelper;
 import org.odk.collect.android.utilities.FileProvider;
 import org.odk.collect.android.utilities.FormsDirDiskFormsSynchronizer;
 import org.odk.collect.android.utilities.FormsRepositoryProvider;
+import org.odk.collect.android.utilities.IconUtils;
 import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.android.utilities.LaunchState;
 import org.odk.collect.android.utilities.MediaUtils;
+import org.odk.collect.android.utilities.ProjectResetter;
 import org.odk.collect.android.utilities.ScreenUtils;
 import org.odk.collect.android.utilities.SoftKeyboardController;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
@@ -120,6 +123,8 @@ import org.odk.collect.async.Scheduler;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.recording.AudioRecorderFactory;
 import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.location.tracker.ForegroundServiceLocationTracker;
+import org.odk.collect.location.tracker.LocationTracker;
 import org.odk.collect.projects.ProjectsRepository;
 import org.odk.collect.projects.SharedPreferencesProjectsRepository;
 import org.odk.collect.shared.strings.UUIDGenerator;
@@ -523,6 +528,11 @@ public class AppDependencyModule {
     }
 
     @Provides
+    public ProjectPreferencesViewModel.Factory providesProjectPreferencesViewModel(AdminPasswordProvider adminPasswordProvider) {
+        return new ProjectPreferencesViewModel.Factory(adminPasswordProvider);
+    }
+
+    @Provides
     public ProjectImporter providesProjectImporter(ProjectsRepository projectsRepository, StoragePathProvider storagePathProvider) {
         return new ProjectImporter(storagePathProvider, projectsRepository);
     }
@@ -594,7 +604,18 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public ProjectDeleter providesProjectDeleter(ProjectsRepository projectsRepository, CurrentProjectProvider currentProjectProvider, FormUpdateScheduler formUpdateScheduler, InstanceSubmitScheduler instanceSubmitScheduler, InstancesRepositoryProvider instancesRepositoryProvider, StoragePathProvider storagePathProvider) {
-        return new ProjectDeleter(projectsRepository, currentProjectProvider, formUpdateScheduler, instanceSubmitScheduler, instancesRepositoryProvider.get(), storagePathProvider.getProjectRootDirPath(currentProjectProvider.getCurrentProject().getUuid()));
+    public ProjectDeleter providesProjectDeleter(ProjectsRepository projectsRepository, CurrentProjectProvider currentProjectProvider, FormUpdateScheduler formUpdateScheduler, InstanceSubmitScheduler instanceSubmitScheduler, InstancesRepositoryProvider instancesRepositoryProvider, StoragePathProvider storagePathProvider, ChangeLockProvider changeLockProvider) {
+        return new ProjectDeleter(projectsRepository, currentProjectProvider, formUpdateScheduler, instanceSubmitScheduler, instancesRepositoryProvider.get(), storagePathProvider.getProjectRootDirPath(currentProjectProvider.getCurrentProject().getUuid()), changeLockProvider);
+    }
+
+    @Provides
+    public ProjectResetter providesProjectResetter(StoragePathProvider storagePathProvider, PropertyManager propertyManager, SettingsProvider settingsProvider, InstancesRepositoryProvider instancesRepositoryProvider, FormsRepositoryProvider formsRepositoryProvider) {
+        return new ProjectResetter(storagePathProvider, propertyManager, settingsProvider, instancesRepositoryProvider, formsRepositoryProvider);
+    }
+
+    @Provides
+    public LocationTracker providesLocationTracker(Application application) {
+        ForegroundServiceLocationTracker.setNotificationIcon(IconUtils.getNotificationAppIcon());
+        return new ForegroundServiceLocationTracker(application);
     }
 }

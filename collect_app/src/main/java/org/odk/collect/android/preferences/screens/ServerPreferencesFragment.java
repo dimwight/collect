@@ -24,46 +24,42 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
 import org.jetbrains.annotations.NotNull;
-import org.odk.collect.android.R;
 import org.odk.collect.analytics.Analytics;
+import org.odk.collect.android.R;
 import org.odk.collect.android.backgroundwork.FormUpdateScheduler;
 import org.odk.collect.android.gdrive.GoogleAccountsManager;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.OnBackPressedListener;
 import org.odk.collect.android.listeners.PermissionListener;
-import org.odk.collect.android.preferences.AggregatePreferencesAdder;
-import org.odk.collect.android.preferences.keys.GeneralKeys;
-import org.odk.collect.android.preferences.Protocol;
+import org.odk.collect.android.permissions.PermissionsProvider;
+import org.odk.collect.android.preferences.ServerPreferencesAdder;
 import org.odk.collect.android.preferences.filters.ControlCharacterFilter;
 import org.odk.collect.android.preferences.filters.WhitespaceFilter;
+import org.odk.collect.android.preferences.keys.GeneralKeys;
 import org.odk.collect.android.utilities.MultiClickGuard;
-import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 import org.odk.collect.android.utilities.ToastUtils;
-import org.odk.collect.shared.strings.Validator;
 import org.odk.collect.shared.strings.Md5;
+import org.odk.collect.shared.strings.Validator;
 
 import java.io.ByteArrayInputStream;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SET_FALLBACK_SHEETS_URL;
-import static org.odk.collect.android.analytics.AnalyticsEvents.SET_SERVER;
 import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_FORMLIST_URL;
 import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_PROTOCOL;
 import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_SELECTED_GOOGLE_ACCOUNT;
 import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_SUBMISSION_URL;
 import static org.odk.collect.android.utilities.DialogUtils.showDialog;
 
-public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment implements OnBackPressedListener {
+public class ServerPreferencesFragment extends BaseProjectPreferencesFragment implements OnBackPressedListener {
 
     private static final int REQUEST_ACCOUNT_PICKER = 1000;
 
@@ -89,7 +85,7 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
         super.onAttach(context);
         DaggerUtils.getComponent(context).inject(this);
 
-        ((GeneralPreferencesActivity) context).setOnBackPressedListener(this);
+        ((ProjectPreferencesActivity) context).setOnBackPressedListener(this);
     }
 
     @Override
@@ -118,24 +114,20 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
             return true;
         });
 
-        String value = protocolPref.getValue();
-        switch (Protocol.parse(getActivity(), value)) {
-            case ODK:
-                addAggregatePreferences();
-                break;
-            case GOOGLE:
-                addGooglePreferences();
-                break;
+        if (GeneralKeys.PROTOCOL_GOOGLE_SHEETS.equals(protocolPref.getValue())) {
+            addGooglePreferences();
+        } else {
+            addServerPreferences();
         }
     }
 
-    public void addAggregatePreferences() {
-        if (!new AggregatePreferencesAdder(this).add()) {
+    public void addServerPreferences() {
+        if (!new ServerPreferencesAdder(this).add()) {
             return;
         }
-        EditTextPreference serverUrlPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_SERVER_URL);
-        EditTextPreference usernamePreference = (EditTextPreference) findPreference(GeneralKeys.KEY_USERNAME);
-        passwordPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_PASSWORD);
+        EditTextPreference serverUrlPreference = findPreference(GeneralKeys.KEY_SERVER_URL);
+        EditTextPreference usernamePreference = findPreference(GeneralKeys.KEY_USERNAME);
+        passwordPreference = findPreference(GeneralKeys.KEY_PASSWORD);
 
         serverUrlPreference.setOnPreferenceChangeListener(createChangeListener());
         serverUrlPreference.setSummary(serverUrlPreference.getText());
@@ -156,12 +148,7 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
 
         findPreference("custom_server_paths").setOnPreferenceClickListener(preference -> {
             if (MultiClickGuard.allowClick(getClass().getName())) {
-                Fragment fragment = new CustomServerPathsPreferencesFragment();
-                getActivity().getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.preferences_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
+                displayPreferences(new CustomServerPathsPreferencesFragment());
                 return true;
             } else {
                 return false;
@@ -220,17 +207,9 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
         return (preference, newValue) -> {
             switch (preference.getKey()) {
                 case GeneralKeys.KEY_SERVER_URL:
-
                     String url = newValue.toString();
 
-                    // remove all trailing "/"s
-                    while (url.endsWith("/")) {
-                        url = url.substring(0, url.length() - 1);
-                    }
-
                     if (Validator.isUrlValid(url)) {
-                        sendAnalyticsEvent(url);
-
                         preference.setSummary(newValue.toString());
                     } else {
                         ToastUtils.showShortToast(R.string.url_error);
@@ -265,11 +244,6 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
                 case GeneralKeys.KEY_GOOGLE_SHEETS_URL:
                     url = newValue.toString();
 
-                    // remove all trailing "/"s
-                    while (url.endsWith("/")) {
-                        url = url.substring(0, url.length() - 1);
-                    }
-
                     if (Validator.isUrlValid(url)) {
                         preference.setSummary(url + "\n\n" + getString(R.string.google_sheets_url_hint));
 
@@ -289,32 +263,6 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
             }
             return true;
         };
-    }
-
-    /**
-     * Remotely log the URL scheme, whether the URL is on one of 3 common hosts, and a URL hash.
-     * This will help inform decisions on whether or not to allow insecure server configurations
-     * (HTTP) and on which hosts to strengthen support for.
-     *
-     * @param url the URL that the server setting has just been set to
-     */
-    private void sendAnalyticsEvent(String url) {
-        String upperCaseURL = url.toUpperCase(Locale.ENGLISH);
-        String scheme = upperCaseURL.split(":")[0];
-
-        String host = "Other";
-        if (upperCaseURL.contains("APPSPOT")) {
-            host = "Appspot";
-        } else if (upperCaseURL.contains("KOBOTOOLBOX.ORG") ||
-                upperCaseURL.contains("HUMANITARIANRESPONSE.INFO")) {
-            host = "Kobo";
-        } else if (upperCaseURL.contains("ONA.IO")) {
-            host = "Ona";
-        }
-
-        String urlHash = Md5.getMd5Hash(new ByteArrayInputStream(url.getBytes()));
-
-        analytics.logEvent(SET_SERVER, scheme + " " + host, urlHash);
     }
 
     private void maskPasswordSummary(String password) {
@@ -342,7 +290,7 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
         String account = settingsProvider.getGeneralSettings().getString(KEY_SELECTED_GOOGLE_ACCOUNT);
         String protocol = settingsProvider.getGeneralSettings().getString(KEY_PROTOCOL);
 
-        if (TextUtils.isEmpty(account) && protocol.equals(getString(R.string.protocol_google_sheets))) {
+        if (TextUtils.isEmpty(account) && protocol.equals(GeneralKeys.PROTOCOL_GOOGLE_SHEETS)) {
 
             AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                     .setIcon(android.R.drawable.ic_dialog_info)
@@ -358,7 +306,7 @@ public class ServerPreferencesFragment extends BaseGeneralPreferencesFragment im
     }
 
     private void continueOnBackPressed() {
-        ((GeneralPreferencesActivity) getActivity()).setOnBackPressedListener(null);
+        ((ProjectPreferencesActivity) getActivity()).setOnBackPressedListener(null);
         getActivity().onBackPressed();
     }
 

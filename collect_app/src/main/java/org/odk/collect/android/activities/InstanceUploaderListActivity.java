@@ -42,7 +42,8 @@ import org.odk.collect.android.dao.CursorLoaderFactory;
 import org.odk.collect.android.gdrive.GoogleSheetsUploaderActivity;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.network.NetworkStateProvider;
-import org.odk.collect.android.preferences.screens.GeneralPreferencesActivity;
+import org.odk.collect.android.preferences.keys.GeneralKeys;
+import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity;
 import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PlayServicesChecker;
@@ -214,7 +215,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
 
         String server = settingsProvider.getGeneralSettings().getString(KEY_PROTOCOL);
 
-        if (server.equalsIgnoreCase(getString(R.string.protocol_google_sheets))) {
+        if (server.equalsIgnoreCase(GeneralKeys.PROTOCOL_GOOGLE_SHEETS)) {
             // if it's Sheets, start the Sheets uploader
             // first make sure we have a google account selected
             if (new PlayServicesChecker().isGooglePlayServicesAvailable(this)) {
@@ -256,7 +257,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
     }
 
     private void createPreferencesMenu() {
-        Intent i = new Intent(this, GeneralPreferencesActivity.class);
+        Intent i = new Intent(this, ProjectPreferencesActivity.class);
         startActivity(i);
     }
 

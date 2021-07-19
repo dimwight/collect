@@ -157,6 +157,7 @@
   <!--Text displayed when user tries to start recording while the mic is already in use-->
   <!--Error message displayed when copying media from a temporary directory fails-->
   <!--Text displayed in the audio bar when background audio recording is explicitly disabled from the options menu. Should be as short as possible. The inserted string is ⋮ which indicates the options menu.-->
+  <!--Error displayed when opened filled form has been deleted on disk-->
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -499,18 +500,28 @@
   <!--##############################################
     # GENERAL SETTINGS
     ##############################################-->
-  <string name="general_preferences">Ustawienia Ogólne</string>
   <!--Title of a settings section-->
   <string name="server_settings_title">Serwer</string>
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="client">Interfejs użytkownika</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="maps">Mapy</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="form_management_preferences">Zarządzanie formularzem</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="user_and_device_identity_title">Tożsamość użytkownika i urządzenia</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section only available in beta or development builds.-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <string name="server_preferences">Ustawienia Serwera</string>
   <!--Label for server type setting-->
   <string name="type">Typ</string>
@@ -631,8 +642,6 @@
   <!--##############################################
      # ADMIN SETTINGS
      ##############################################-->
-  <string name="admin_preferences">Ustawienia Administratora</string>
-  <string name="admin_access_settings">Naciśnij aby mieć dostęp do ustawień administratora</string>
   <string name="enter_new_password">Wprowadź nowe hasło</string>
   <string name="admin_password">Hasło Administratora</string>
   <string name="admin_password_changed">Hasło administratora zostało zmienione</string>
@@ -644,7 +653,7 @@
   <string name="found_in_main">Odznacz aby ukryć w Głównym Menu</string>
   <string name="found_in_settings">Odznacz aby ukryć w Ogólnych Ustawieniach</string>
   <string name="form_entry">Odznacz aby ukryć z Wypełniania Formularza</string>
-  <string name="reset_settings_dialog">Resetuj aplikację…</string>
+  <string name="reset_project_settings_title">Reset</string>
   <string name="select_all">Zaznacz Wszystkie</string>
   <string name="clear_all">Odznacz Wszystkie</string>
   <string name="reset_settings">Wszystkie ustawienia (ustawienia wewnętrzne, ustawienia zapisane)</string>
@@ -652,7 +661,6 @@
   <string name="reset_blank_forms">Czyste formularze (folder formularzy, baza danych formularzy, baza danych zbiorów pozycji) </string>
   <string name="reset_layers">Warstwy mapy (folder warstw)</string>
   <string name="reset_cache">Pamięć podręczna załadowanego formularza (folder cache)</string>
-  <string name="reset_osm_tiles">Pamięć podręczna kafelka tytułowego OSM (folder osmdroid)</string>
   <string name="reset_settings_dialog_title">Wybierz co zresetować</string>
   <string name="reset_settings_button_reset">Reset</string>
   <string name="reset_in_progress">Resetowanie…</string>
@@ -663,14 +671,9 @@
   <string name="reset_blank_forms_result">Puste formularze :: %s</string>
   <string name="reset_layers_result">Warstwy mapy :: %s</string>
   <string name="reset_cache_result">Pamięć podręczna załadowanego formularza :: %s</string>
-  <string name="reset_osm_tiles_result">Pamięć podręczna kafelka tytułowego OSM :: %s</string>
-  <string name="user_access_control">Kontrola dostępu użytkownika</string>
   <string name="main_menu_settings">Ustawienia Menu Głównego</string>
-  <string name="main_menu_settings_summary">Dotknij, by zarządzać elementami menu głównego</string>
   <string name="user_settings">Ustawienia użytkownika</string>
-  <string name="user_setting_summary">Dotknij, by zarządzać elementami ustawień ogólnych</string>
   <string name="form_entry_setting">Ustawienia Wprowadzania Formularza</string>
-  <string name="form_entry_settings_summary">Dotknij, by zarządzać elementami wprowadzania formularza</string>
   <!--Name of a setting that determines whether users can navigate backwards in a form-->
   <string name="moving_backwards_title">Cofanie się</string>
   <string name="moving_backwards_disabled_title">Cofanie się nie jest możliwe</string>
@@ -771,6 +774,8 @@
     select the wording and where to put the \n for maximum impact in your language.-->
   <!--Text for the button that allows for configuring a project by scanning a QR code. Should be short-->
   <!--Text for the button that allows for manually entering project details. Should be short-->
+  <!--Immediately followed by "Configure" which is a link to configure a Google Drive project-->
+  <!--Preceded by "My project uses Google Drive." Tapping opens a dialog to configure a Google Drive Project-->
   <!--Immediately followed by "Try Collect" which is a link to create a demo project-->
   <!--Preceded by "Don't have a project yet?" question-->
 </resources>

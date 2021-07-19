@@ -36,6 +36,7 @@ import timber.log.Timber;
 
 import static org.odk.collect.android.analytics.AnalyticsEvents.CUSTOM_ENDPOINT_SUB;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SUBMISSION;
+import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_GOOGLE_SHEETS_URL;
 import static org.odk.collect.android.utilities.InstanceUploaderUtils.SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE;
 
 public class InstanceSubmitter {
@@ -71,7 +72,7 @@ public class InstanceSubmitter {
         String deviceId = null;
         boolean anyFailure = false;
 
-        if (protocol.equals(TranslationHandler.getString(Collect.getInstance(), R.string.protocol_google_sheets))) {
+        if (protocol.equals(GeneralKeys.PROTOCOL_GOOGLE_SHEETS)) {
             if (permissionsProvider.isGetAccountsPermissionGranted()) {
                 String googleUsername = googleAccountsManager.getLastSelectedAccountIfValid();
                 if (googleUsername.isEmpty()) {
@@ -90,13 +91,19 @@ public class InstanceSubmitter {
 
         for (Instance instance : toUpload) {
             try {
-                String destinationUrl = uploader.getUrlToSubmitTo(instance, deviceId, null, null);
-                if (protocol.equals(TranslationHandler.getString(Collect.getInstance(), R.string.protocol_google_sheets))
-                        && !InstanceUploaderUtils.doesUrlRefersToGoogleSheetsFile(destinationUrl)) {
-                    anyFailure = true;
-                    resultMessagesByInstanceId.put(instance.getDbId().toString(), SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE);
-                    continue;
+                String destinationUrl;
+                if (protocol.equals(GeneralKeys.PROTOCOL_GOOGLE_SHEETS)) {
+                    destinationUrl = uploader.getUrlToSubmitTo(instance, null, null, generalSettings.getString(KEY_GOOGLE_SHEETS_URL));
+
+                    if (!InstanceUploaderUtils.doesUrlRefersToGoogleSheetsFile(destinationUrl)) {
+                        anyFailure = true;
+                        resultMessagesByInstanceId.put(instance.getDbId().toString(), SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE);
+                        continue;
+                    }
+                } else {
+                    destinationUrl = uploader.getUrlToSubmitTo(instance, deviceId, null, null);
                 }
+
                 String customMessage = uploader.uploadOneSubmission(instance, destinationUrl);
                 resultMessagesByInstanceId.put(instance.getDbId().toString(), customMessage != null ? customMessage : TranslationHandler.getString(Collect.getInstance(), R.string.success));
 
@@ -110,7 +117,7 @@ public class InstanceSubmitter {
                     new InstanceDeleter(new InstancesRepositoryProvider(Collect.getInstance()).get(), new FormsRepositoryProvider(Collect.getInstance()).get()).delete(instance.getDbId());
                 }
 
-                String action = protocol.equals(TranslationHandler.getString(Collect.getInstance(), R.string.protocol_google_sheets)) ?
+                String action = protocol.equals(GeneralKeys.PROTOCOL_GOOGLE_SHEETS) ?
                         "HTTP-Sheets auto" : "HTTP auto";
                 String label = Collect.getFormIdentifierHash(instance.getFormId(), instance.getFormVersion());
                 analytics.logEvent(SUBMISSION, action, label);

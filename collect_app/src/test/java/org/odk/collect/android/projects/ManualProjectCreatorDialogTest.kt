@@ -31,6 +31,7 @@ import org.odk.collect.fragmentstest.DialogFragmentTest
 import org.odk.collect.fragmentstest.DialogFragmentTest.onViewInDialog
 import org.odk.collect.projects.Project
 import org.odk.collect.projects.ProjectsRepository
+import org.robolectric.shadows.ShadowToast
 
 @RunWith(AndroidJUnit4::class)
 class ManualProjectCreatorDialogTest {
@@ -86,7 +87,20 @@ class ManualProjectCreatorDialogTest {
     }
 
     @Test
-    fun `Project creation should be triggered after clicking on the 'Add' button`() {
+    fun `When URL has no protocol, a toast is displayed`() {
+        val scenario = DialogFragmentTest.launchDialogFragment(ManualProjectCreatorDialog::class.java)
+        scenario.onFragment {
+            onViewInDialog(withHint(R.string.server_url)).perform(replaceText("demo.getodk.org"))
+            onViewInDialog(withText(R.string.add)).perform(click())
+            assertThat(it.isVisible, `is`(true))
+
+            val toastText = ShadowToast.getTextOfLatestToast()
+            assertThat(toastText, `is`(it.getString(R.string.url_error)))
+        }
+    }
+
+    @Test
+    fun `Server project creation should be triggered after clicking on the 'Add' button`() {
         val projectCreator = mock<ProjectCreator> {}
         val currentProjectProvider = mock<CurrentProjectProvider> {
             on { getCurrentProject() } doReturn Project.DEMO_PROJECT
@@ -123,7 +137,7 @@ class ManualProjectCreatorDialogTest {
     }
 
     @Test
-    fun `Project creation goes to main menu`() {
+    fun `Server project creation goes to main menu`() {
         val scenario = DialogFragmentTest.launchDialogFragment(ManualProjectCreatorDialog::class.java)
         scenario.onFragment {
             onViewInDialog(withHint(R.string.server_url)).perform(replaceText("https://my-server.com"))

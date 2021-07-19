@@ -13,12 +13,15 @@ public final class GeneralKeys {
     // server_preferences.xml
     public static final String KEY_PROTOCOL = "protocol";
 
-    // odk_server_preferences.xmll
+    // project_display.xml
+    public static final String KEY_PROJECT_DISPLAY = "project_display";
+
+    // odk_server_preferences.xml
     public static final String KEY_SERVER_URL = "server_url";
     public static final String KEY_USERNAME = "username";
     public static final String KEY_PASSWORD = "password";
 
-    // custom_server_paths_preferences.xmlreferences.xml
+    // custom_server_paths_preferences.xml
     public static final String KEY_FORMLIST_URL = "formlist_url";
     public static final String KEY_SUBMISSION_URL = "submission_url";
 
@@ -58,6 +61,7 @@ public final class GeneralKeys {
     public static final String KEY_GUIDANCE_HINT = "guidance_hint";
     public static final String KEY_INSTANCE_SYNC = "instance_sync";
     public static final String KEY_FORM_UPDATE_MODE = "form_update_mode";
+    public static final String KEY_EXTERNAL_APP_RECORDING = "external_app_recording";
 
     // identity_preferences.xml
     public static final String KEY_ANALYTICS = "analytics";
@@ -73,6 +77,9 @@ public final class GeneralKeys {
     public static final String KEY_BACKGROUND_RECORDING = "background_recording";
 
     // values
+    public static final String PROTOCOL_SERVER = "odk_default";
+    public static final String PROTOCOL_GOOGLE_SHEETS = "google_sheets";
+
     public static final String NAVIGATION_SWIPE = "swipe";
     public static final String NAVIGATION_BUTTONS = "buttons";
     public static final String NAVIGATION_BOTH = "swipe_buttons";
@@ -93,7 +100,6 @@ public final class GeneralKeys {
 
     // experimental
     public static final String KEY_MAGENTA_THEME = "magenta";
-    public static final String KEY_EXTERNAL_APP_RECORDING = "external_app_recording";
 
     public static HashMap<String, Object> getDefaults() {
         HashMap<String, Object> hashMap = new HashMap<>();
@@ -129,7 +135,7 @@ public final class GeneralKeys {
         hashMap.put(KEY_FORMLIST_URL, Collect.getInstance().getString(R.string.default_odk_formlist));
         hashMap.put(KEY_SUBMISSION_URL, Collect.getInstance().getString(R.string.default_odk_submission));
         // server_preferences.xml
-        hashMap.put(KEY_PROTOCOL, Collect.getInstance().getString(R.string.protocol_odk_default));
+        hashMap.put(KEY_PROTOCOL, PROTOCOL_SERVER);
         // user_interface_preferences.xml
         hashMap.put(KEY_APP_THEME, Collect.getInstance().getString(R.string.app_theme_light));
         hashMap.put(KEY_APP_LANGUAGE, "");
