@@ -74,6 +74,8 @@ import org.odk.collect.android.dao.helpers.InstancesDaoHelper;
 import org.odk.collect.android.events.ReadPhoneStatePermissionRxEvent;
 import org.odk.collect.android.events.RxEventBus;
 import org.odk.collect.android.exception.JavaRosaException;
+import org.odk.collect.android.external.FormsContract;
+import org.odk.collect.android.external.InstancesContract;
 import org.odk.collect.android.formentry.BackgroundAudioPermissionDialogFragment;
 import org.odk.collect.android.formentry.BackgroundAudioViewModel;
 import org.odk.collect.android.formentry.FormEndView;
@@ -124,8 +126,6 @@ import org.odk.collect.android.permissions.PermissionsChecker;
 import org.odk.collect.android.preferences.keys.AdminKeys;
 import org.odk.collect.android.preferences.keys.GeneralKeys;
 import org.odk.collect.android.projects.CurrentProjectProvider;
-import org.odk.collect.android.provider.FormsProviderAPI;
-import org.odk.collect.android.provider.InstanceProviderAPI;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.tasks.FormLoaderTask;
@@ -375,7 +375,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
         setContentView(R.layout.form_entry);
         setupViewModels();
-        swipeHandler = new SwipeHandler(this, settingsProvider.getGeneralSettings().getString(KEY_NAVIGATION));
+        swipeHandler = new SwipeHandler(this, settingsProvider.getGeneralSettings());
 
         compositeDisposable.add(eventBus
                 .register(ReadPhoneStatePermissionRxEvent.class)
@@ -597,7 +597,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             uriMimeType = getContentResolver().getType(uri);
         }
 
-        if (uriMimeType != null && uriMimeType.equals(InstanceProviderAPI.CONTENT_ITEM_TYPE)) {
+        if (uriMimeType != null && uriMimeType.equals(InstancesContract.CONTENT_ITEM_TYPE)) {
             Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().get(ContentUriHelper.getIdFromUri(uri));
 
             if (instance == null) {
@@ -629,9 +629,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
 
             formPath = candidateForms.get(0).getFormFilePath();
-        } else if (uriMimeType != null && uriMimeType.equals(FormsProviderAPI.CONTENT_ITEM_TYPE)) {
-            String projectId = uri.getQueryParameter("projectId");
-            Form form = formsRepositoryProvider.get(projectId).get(ContentUriHelper.getIdFromUri(uri));
+        } else if (uriMimeType != null && uriMimeType.equals(FormsContract.CONTENT_ITEM_TYPE)) {
+            Form form = formsRepositoryProvider.get().get(ContentUriHelper.getIdFromUri(uri));
             if (form != null) {
                 formPath = form.getFormFilePath();
             }
@@ -1222,7 +1221,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
 
             if (saveName == null && uriMimeType != null
-                    && uriMimeType.equals(InstanceProviderAPI.CONTENT_ITEM_TYPE)) {
+                    && uriMimeType.equals(InstancesContract.CONTENT_ITEM_TYPE)) {
                 Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().get(ContentUriHelper.getIdFromUri(instanceUri));
                 if (instance != null) {
                     saveName = instance.getDisplayName();
@@ -2311,7 +2310,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             if (path != null) {
                 Instance instance = new InstancesRepositoryProvider(this).get().getOneByPath(path);
                 if (instance != null) {
-                    uri = InstanceProviderAPI.getUri(currentProjectProvider.getCurrentProject().getUuid(), instance.getDbId());
+                    uri = InstancesContract.getUri(currentProjectProvider.getCurrentProject().getUuid(), instance.getDbId());
                 }
             }
 

@@ -18,11 +18,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.odk.collect.analytics.Analytics
+import org.odk.collect.android.external.FormsContract
 import org.odk.collect.android.formmanagement.matchexactly.SyncStatusAppState
 import org.odk.collect.android.injection.DaggerUtils
 import org.odk.collect.android.notifications.Notifier
 import org.odk.collect.android.preferences.keys.GeneralKeys
-import org.odk.collect.android.provider.FormsProviderAPI
 import org.odk.collect.android.storage.StorageSubdirectory
 import org.odk.collect.android.utilities.ChangeLockProvider
 import org.odk.collect.forms.FormListItem
@@ -80,14 +80,14 @@ class FormsUpdaterTest {
 
         val contentObserver = mock<ContentObserver>()
         application.contentResolver.registerContentObserver(
-            FormsProviderAPI.getUri(project.uuid),
+            FormsContract.getUri(project.uuid),
             false,
             contentObserver
         )
 
         updateManager.downloadUpdates(project.uuid)
 
-        verify(contentObserver).dispatchChange(false, FormsProviderAPI.getUri(project.uuid))
+        verify(contentObserver).dispatchChange(false, FormsContract.getUri(project.uuid))
     }
 
     @Test

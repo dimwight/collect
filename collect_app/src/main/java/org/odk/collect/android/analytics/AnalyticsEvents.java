@@ -85,19 +85,6 @@ public class AnalyticsEvents {
     public static final String MATCH_EXACTLY_SYNC_COMPLETED = "MatchExactlySyncCompleted";
 
     /**
-     * Track the outcome of a QR code scan. Used to see whether changes in UX or documentation are
-     * needed to get users to a successful state. The action should be the outcome. The label should
-     * be a hash of the settings represented by the code.
-     */
-    public static final String SETTINGS_IMPORT_QR = "SettingsImportQr";
-
-    /**
-     * Track the outcome of a QR code read from image. The action should be the outcome. The label should
-     * be a hash of the settings represented by the code.
-     */
-    public static final String SETTINGS_IMPORT_QR_IMAGE = "SettingsImportQrImage";
-
-    /**
      * Track submissions to a URL with a custom submission endpoint configured in settings. The action
      * should be a hash of the endpoint setting.
      */
@@ -164,6 +151,11 @@ public class AnalyticsEvents {
     public static final String IMPORT_AND_ENCRYPT_INSTANCE = "ImportAndEncryptInstance";
 
     /**
+     * Tracks how often forms are added using disk sync rather than from a server
+     */
+    public static final String IMPORT_FORM = "ImportForm";
+
+    /**
      * Tracks responses from OpenMapKit to the OSMWidget
      */
     public static final String OPEN_MAP_KIT_RESPONSE = "OpenMapKitResponse";
@@ -177,4 +169,59 @@ public class AnalyticsEvents {
      * Tracks how often instances that have been deleted on disk are opened for editing/viewing
      */
     public static final String OPEN_DELETED_INSTANCE = "OpenDeletedInstance";
+
+    /**
+     * Tracks how often users switch between projects
+     */
+    public static final String SWITCH_PROJECT = "ProjectSwitch";
+
+    /**
+     * Tracks how often users choose to try the demo project
+     */
+    public static final String TRY_DEMO = "ProjectCreateDemo";
+
+    /**
+     * Tracks how often projects are created using QR codes.
+     **/
+    public static final String QR_CREATE_PROJECT = "ProjectCreateQR";
+
+    /**
+     * Tracks how often projects are created by manually entering details.
+     */
+    public static final String MANUAL_CREATE_PROJECT = "ProjectCreateManual";
+
+    /**
+     * Tracks how often a Google account is used to configure a manually created project
+     */
+    public static final String GOOGLE_ACCOUNT_PROJECT = "ProjectCreateGoogle";
+
+    /**
+     * Tracks how often projects with the same connection settings as an existing one are attempted
+     * to be created.
+     */
+    public static final String DUPLICATE_PROJECT = "ProjectCreateDuplicate";
+
+    /**
+     * Tracks how often users try to create projects with the same connection settings but then decide
+     * to switch to an existing project instead. This will give us a sense of whether users are getting
+     * confused about project identity and trying to recreate the same one multiple times.
+     */
+    public static final String DUPLICATE_PROJECT_SWITCH = "ProjectCreateDuplicateSwitch";
+
+    /**
+     * Tracks how often users delete projects
+     */
+    public static final String DELETE_PROJECT = "ProjectDelete";
+
+    /**
+     * These events track how often users change project display settings
+     **/
+    public static final String CHANGE_PROJECT_NAME = "ProjectChangeName";
+    public static final String CHANGE_PROJECT_ICON = "ProjectChangeIcon";
+    public static final String CHANGE_PROJECT_COLOR = "ProjectChangeColor";
+
+    /**
+     * Tracks how often users reconfigure a project using QR codes
+     */
+    public static final String RECONFIGURE_PROJECT = "ProjectReconfigure";
 }

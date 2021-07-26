@@ -1,10 +1,8 @@
 package org.odk.collect.android.injection.config;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.telephony.TelephonyManager;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
@@ -27,6 +25,7 @@ import org.odk.collect.android.activities.viewmodels.CurrentProjectViewModel;
 import org.odk.collect.android.activities.viewmodels.MainMenuViewModel;
 import org.odk.collect.android.activities.viewmodels.SplashScreenViewModel;
 import org.odk.collect.android.application.CollectSettingsChangeHandler;
+import org.odk.collect.android.application.initialization.AnalyticsInitializer;
 import org.odk.collect.android.application.initialization.ApplicationInitializer;
 import org.odk.collect.android.application.initialization.CollectSettingsMigrator;
 import org.odk.collect.android.application.initialization.ExistingProjectMigrator;
@@ -115,6 +114,7 @@ import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.ProjectResetter;
 import org.odk.collect.android.utilities.ScreenUtils;
 import org.odk.collect.android.utilities.SoftKeyboardController;
+import org.odk.collect.android.utilities.StaticCachingDeviceDetailsProvider;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 import org.odk.collect.android.version.VersionInformation;
 import org.odk.collect.android.views.BarcodeViewDecoder;
@@ -245,21 +245,7 @@ public class AppDependencyModule {
 
     @Provides
     public DeviceDetailsProvider providesDeviceDetailsProvider(Context context, InstallIDProvider installIDProvider) {
-        return new DeviceDetailsProvider() {
-
-            @Override
-            @SuppressLint({"MissingPermission", "HardwareIds"})
-            public String getDeviceId() {
-                return installIDProvider.getInstallID();
-            }
-
-            @Override
-            @SuppressLint({"MissingPermission", "HardwareIds"})
-            public String getLine1Number() {
-                TelephonyManager telMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                return telMgr.getLine1Number();
-            }
-        };
+        return new StaticCachingDeviceDetailsProvider(installIDProvider, context);
     }
 
     @Provides
@@ -481,8 +467,9 @@ public class AppDependencyModule {
 
     @Provides
     public ProjectCreator providesProjectCreator(ProjectImporter projectImporter, ProjectsRepository projectsRepository,
-                                                 CurrentProjectProvider currentProjectProvider, SettingsImporter settingsImporter, Context context) {
-        return new ProjectCreator(projectImporter, projectsRepository, currentProjectProvider, settingsImporter);
+                                                 CurrentProjectProvider currentProjectProvider, SettingsImporter settingsImporter,
+                                                 Context context, StoragePathProvider storagePathProvider) {
+        return new ProjectCreator(projectImporter, projectsRepository, currentProjectProvider, settingsImporter, storagePathProvider);
     }
 
     @Provides
@@ -550,8 +537,13 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public CurrentProjectViewModel.Factory providesCurrentProjectViewModel(CurrentProjectProvider currentProjectProvider) {
-        return new CurrentProjectViewModel.Factory(currentProjectProvider);
+    public AnalyticsInitializer providesAnalyticsInitializer(Analytics analytics, VersionInformation versionInformation, SettingsProvider settingsProvider) {
+        return new AnalyticsInitializer(analytics, versionInformation, settingsProvider);
+    }
+
+    @Provides
+    public CurrentProjectViewModel.Factory providesCurrentProjectViewModel(CurrentProjectProvider currentProjectProvider, AnalyticsInitializer analyticsInitializer) {
+        return new CurrentProjectViewModel.Factory(currentProjectProvider, analyticsInitializer);
     }
 
     @Provides
@@ -599,13 +591,13 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public ApplicationInitializer providesApplicationInitializer(Application context, UserAgentProvider userAgentProvider, PropertyManager propertyManager, Analytics analytics, StorageInitializer storageInitializer, LaunchState launchState, AppUpgrader appUpgrader, VersionInformation versionInformation) {
-        return new ApplicationInitializer(context, userAgentProvider, propertyManager, analytics, storageInitializer, launchState, appUpgrader, versionInformation);
+    public ApplicationInitializer providesApplicationInitializer(Application context, UserAgentProvider userAgentProvider, PropertyManager propertyManager, Analytics analytics, StorageInitializer storageInitializer, LaunchState launchState, AppUpgrader appUpgrader, AnalyticsInitializer analyticsInitializer, ProjectsRepository projectsRepository) {
+        return new ApplicationInitializer(context, userAgentProvider, propertyManager, analytics, storageInitializer, launchState, appUpgrader, analyticsInitializer, projectsRepository);
     }
 
     @Provides
-    public ProjectDeleter providesProjectDeleter(ProjectsRepository projectsRepository, CurrentProjectProvider currentProjectProvider, FormUpdateScheduler formUpdateScheduler, InstanceSubmitScheduler instanceSubmitScheduler, InstancesRepositoryProvider instancesRepositoryProvider, StoragePathProvider storagePathProvider, ChangeLockProvider changeLockProvider) {
-        return new ProjectDeleter(projectsRepository, currentProjectProvider, formUpdateScheduler, instanceSubmitScheduler, instancesRepositoryProvider.get(), storagePathProvider.getProjectRootDirPath(currentProjectProvider.getCurrentProject().getUuid()), changeLockProvider);
+    public ProjectDeleter providesProjectDeleter(ProjectsRepository projectsRepository, CurrentProjectProvider currentProjectProvider, FormUpdateScheduler formUpdateScheduler, InstanceSubmitScheduler instanceSubmitScheduler, InstancesRepositoryProvider instancesRepositoryProvider, StoragePathProvider storagePathProvider, ChangeLockProvider changeLockProvider, SettingsProvider settingsProvider) {
+        return new ProjectDeleter(projectsRepository, currentProjectProvider, formUpdateScheduler, instanceSubmitScheduler, instancesRepositoryProvider.get(), storagePathProvider.getProjectRootDirPath(currentProjectProvider.getCurrentProject().getUuid()), changeLockProvider, settingsProvider);
     }
 
     @Provides
@@ -618,4 +610,5 @@ public class AppDependencyModule {
         ForegroundServiceLocationTracker.setNotificationIcon(IconUtils.getNotificationAppIcon());
         return new ForegroundServiceLocationTracker(application);
     }
+
 }
