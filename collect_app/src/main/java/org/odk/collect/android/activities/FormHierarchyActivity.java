@@ -596,13 +596,20 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
                         break;
                     }
                     case FormEntryController.EVENT_REPEAT: {
+                        FormEntryCaption fc = formController.getCaptionPrompt();
                         if (!formController.isGroupRelevant()) {
-                            break;
+                            //Handles #4570 - ensure repeats are accessible
+                            boolean firstRepeat = fc.getMultiplicity() == 0;
+                            //But not if starting a list
+                            boolean listingRepeats = shouldShowRepeatGroupPicker();
+                            if (!firstRepeat
+                                    || listingRepeats) {
+                                break;
+                            }
                         }
 
                         visibleGroupRef = currentRef;
 
-                        FormEntryCaption fc = formController.getCaptionPrompt();
 
                         // Don't render other groups' children.
                         if (contextGroupRef != null && !contextGroupRef.isParentOf(currentRef, false)) {
