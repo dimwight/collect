@@ -1123,14 +1123,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                             .getGroupsForCurrentIndex();
                     FormEntryPrompt[] prompts = formController.getQuestionPrompts();
                     //Retrieve and store flag
-                    FormIndex focusIndex = formController.getIndexWaitingForData();
+                    FormIndex focusIndex = formController.getFieldlistFocusIndex();
                     for (FormEntryPrompt p : prompts) {
                         String focusValue = p.getIndex() == focusIndex ? "" : null;
                         p.getQuestion().setAdditionalAttribute(
                                 null, ODKView.FOCUS_KEY, focusValue);
                     }
-                    //Clear dummy
-                    formController.setIndexWaitingForData(null);
+                    //Clear flag
+                    formController.setFieldlistFocusIndex(null);
 
                     odkView = createODKView(advancingPage, prompts, groups);
                     odkView.setWidgetValueChangedListener(this);

@@ -120,6 +120,16 @@ public class FormController {
     private final FormEntryController formEntryController;
     private FormIndex indexWaitingForData;
 
+    public FormIndex getFieldlistFocusIndex() {
+        return fieldlistFocusIndex;
+    }
+
+    public void setFieldlistFocusIndex(FormIndex fieldlistFocusIndex) {
+        this.fieldlistFocusIndex = fieldlistFocusIndex;
+    }
+
+    private FormIndex fieldlistFocusIndex;
+
     public FormController(File mediaFolder, FormEntryController fec, File instanceFile) {
         this.mediaFolder = mediaFolder;
         formEntryController = fec;

@@ -720,7 +720,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
         formController.jumpToIndex(index);
         if (formController.indexIsInFieldList()) {
             //Record the index whose question will need focus
-            formController.setIndexWaitingForData(index);
+            formController.setFieldlistFocusIndex(index);
             try {
                 formController.stepToPreviousScreenEvent();
             } catch (JavaRosaException e) {
