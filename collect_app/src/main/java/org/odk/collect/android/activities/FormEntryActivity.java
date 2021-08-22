@@ -14,6 +14,24 @@
 
 package org.odk.collect.android.activities;
 
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+import static android.view.animation.AnimationUtils.loadAnimation;
+import static org.javarosa.form.api.FormEntryController.EVENT_PROMPT_NEW_REPEAT;
+import static org.odk.collect.android.analytics.AnalyticsEvents.OPEN_MAP_KIT_RESPONSE;
+import static org.odk.collect.android.analytics.AnalyticsEvents.SAVE_INCOMPLETE;
+import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.BACKWARDS;
+import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.FORWARDS;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_COMPLETED_DEFAULT;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_NAVIGATION;
+import static org.odk.collect.android.preferences.keys.ProtectedProjectKeys.KEY_MOVING_BACKWARDS;
+import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnabled;
+import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
+import static org.odk.collect.android.utilities.DialogUtils.getDialog;
+import static org.odk.collect.android.utilities.DialogUtils.showIfNotShowing;
+import static org.odk.collect.android.utilities.ToastUtils.showLongToast;
+import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -124,8 +142,8 @@ import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.logic.ImmutableDisplayableQuestion;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.permissions.PermissionsChecker;
-import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
 import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
 import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
@@ -176,24 +194,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
-
-import static android.content.DialogInterface.BUTTON_NEGATIVE;
-import static android.content.DialogInterface.BUTTON_POSITIVE;
-import static android.view.animation.AnimationUtils.loadAnimation;
-import static org.javarosa.form.api.FormEntryController.EVENT_PROMPT_NEW_REPEAT;
-import static org.odk.collect.android.analytics.AnalyticsEvents.OPEN_MAP_KIT_RESPONSE;
-import static org.odk.collect.android.analytics.AnalyticsEvents.SAVE_INCOMPLETE;
-import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.BACKWARDS;
-import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.FORWARDS;
-import static org.odk.collect.android.preferences.keys.ProtectedProjectKeys.KEY_MOVING_BACKWARDS;
-import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_COMPLETED_DEFAULT;
-import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_NAVIGATION;
-import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnabled;
-import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
-import static org.odk.collect.android.utilities.DialogUtils.getDialog;
-import static org.odk.collect.android.utilities.DialogUtils.showIfNotShowing;
-import static org.odk.collect.android.utilities.ToastUtils.showLongToast;
-import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
 
 /**
  * FormEntryActivity is responsible for displaying questions, animating
@@ -1122,6 +1122,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                     FormEntryCaption[] groups = formController
                             .getGroupsForCurrentIndex();
                     FormEntryPrompt[] prompts = formController.getQuestionPrompts();
+                    //Retrieve and clear dummy
+                    FormIndex focusIndex = formController.getIndexWaitingForData();
+                    for (FormEntryPrompt p : prompts) {
+                        String focusValue = p.getIndex() == focusIndex ? "" : null;
+                        p.getQuestion().setAdditionalAttribute(
+                                null, "focus", focusValue);
+                    }
+                    formController.setIndexWaitingForData(null);
 
                     odkView = createODKView(advancingPage, prompts, groups);
                     odkView.setWidgetValueChangedListener(this);

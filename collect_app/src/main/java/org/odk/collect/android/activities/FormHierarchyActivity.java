@@ -715,17 +715,14 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
      * If the selected question is in a field list, show the entire field list.
      */
     void onQuestionClicked(FormIndex index) {
+        Timber.i("onQuestionClicked:+ index = " + index);
         FormController formController = Collect.getInstance().getFormController();
-        FormIndex fi0 = formController.getFormIndex();
         formController.jumpToIndex(index);
-        FormIndex fi1 = formController.getFormIndex();
         if (formController.indexIsInFieldList()) {
+            //Record the index whose question will need focus
+            formController.setIndexWaitingForData(index);
             try {
                 formController.stepToPreviousScreenEvent();
-                FormIndex fi2 = formController.getFormIndex();
-                if (true) formController.jumpToIndex(index);
-                FormIndex fi3 = formController.getFormIndex();
-                fi3.toString();
             } catch (JavaRosaException e) {
                 Timber.d(e);
                 createErrorDialog(e.getCause().getMessage());

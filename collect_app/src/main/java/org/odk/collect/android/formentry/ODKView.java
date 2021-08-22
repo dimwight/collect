@@ -14,6 +14,10 @@
 
 package org.odk.collect.android.formentry;
 
+import static org.odk.collect.android.injection.DaggerUtils.getComponent;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
+import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
+
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -98,10 +102,6 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.injection.DaggerUtils.getComponent;
-import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
-import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 
 /**
  * Contains either one {@link QuestionWidget} if the current form element is a question or
@@ -458,9 +458,20 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     }
 
     public void setFocus(Context context) {
-        if (!widgets.isEmpty()) {
-            widgets.get(0).setFocus(context);
+        if (widgets.isEmpty()) {
+            return;
         }
+        int focusAt = true ? 0 : widgets.size() == 1 ? 0 : 1;
+        for (int at = 0; at < widgets.size(); at++) {
+            boolean focus = "true".equals(
+                    widgets.get(at)
+                            .getQuestionDetails()
+                            .getPrompt()
+                            .getQuestion()
+                            .getAdditionalAttribute(null, "focus"));
+            if (focus) focusAt = at;
+        }
+        widgets.get(focusAt).setFocus(context);
     }
 
     /**
