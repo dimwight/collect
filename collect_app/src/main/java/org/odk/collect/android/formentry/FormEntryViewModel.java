@@ -1,5 +1,7 @@
 package org.odk.collect.android.formentry;
 
+import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -23,8 +25,6 @@ import org.odk.collect.androidshared.livedata.NonNullLiveData;
 import org.odk.collect.utilities.Clock;
 
 import java.util.Objects;
-
-import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
 
 public class FormEntryViewModel extends ViewModel implements RequiresFormController {
 
@@ -151,10 +151,24 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
         formController.getAuditEventLogger().flush(); // Close events waiting for an end time
     }
 
+    private void checkState(boolean back) {
+        int event;
+        try {
+            event = back ? (true ?
+                    formController.stepToPreviousEvent()
+                    : formController.stepToPreviousScreenEvent())
+                    : formController.stepToNextEvent(true);
+        } catch (JavaRosaException e) {
+            e.printStackTrace();
+        }
+        FormIndex index = formController.getFormIndex();
+        boolean inList = formController.indexIsInFieldList();
+    }
+
     public void moveBackward() {
+        checkState(true);
         try {
             int event = formController.stepToPreviousScreenEvent();
-
             // If we are the beginning of the form we need to move back to the first actual screen
             if (event == FormEntryController.EVENT_BEGINNING_OF_FORM) {
                 formController.stepToNextScreenEvent();

@@ -121,7 +121,7 @@ public class FormController {
     private FormIndex indexWaitingForData;
 
     //To transfer flag #3027
-    private FormIndex fieldlistFocusIndex;
+    private FormIndex fieldListFocusIndex;
 
     public FormController(File mediaFolder, FormEntryController fec, File instanceFile) {
         this.mediaFolder = mediaFolder;
@@ -1306,11 +1306,11 @@ public class FormController {
         return getFormDef().getMainInstance().resolveReference(treeReference).getValue();
     }
 
-    public FormIndex getFieldlistFocusIndex() {
-        return fieldlistFocusIndex;
+    public FormIndex getFieldListFocusIndex() {
+        return fieldListFocusIndex;
     }
 
-    public void setFieldlistFocusIndex(FormIndex fieldlistFocusIndex) {
-        this.fieldlistFocusIndex = fieldlistFocusIndex;
+    public void setFieldListFocusIndex(FormIndex fieldListFocusIndex) {
+        this.fieldListFocusIndex = fieldListFocusIndex;
     }
 }

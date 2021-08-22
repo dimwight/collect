@@ -463,8 +463,8 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
             return;
         }
         //Retrieve and clear marker, assign focus #3027
-        FormIndex focusIndex = formController.getFieldlistFocusIndex();
-        formController.setFieldlistFocusIndex(null);
+        FormIndex focusIndex = formController.getFieldListFocusIndex();
+        formController.setFieldListFocusIndex(null);
         int focusAt = 0;
         for (int at = 0; at < widgets.size(); at++) {
             FormEntryPrompt prompt = widgets.get(at)
