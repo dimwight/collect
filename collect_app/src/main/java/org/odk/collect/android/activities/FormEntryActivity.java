@@ -1123,15 +1123,6 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                             .getGroupsForCurrentIndex();
                     FormEntryPrompt[] prompts = formController.getQuestionPrompts();
 
-                    //Retrieve, clear and assign focus marker #3027
-                    FormIndex focusIndex = formController.getFieldlistFocusIndex();
-                    formController.setFieldlistFocusIndex(null);
-                    for (FormEntryPrompt p : prompts) {
-                        String focusValue = p.getIndex().equals(focusIndex) ? "" : null;
-                        p.getQuestion().setAdditionalAttribute(
-                                null, ODKView.FOCUS_KEY, focusValue);
-                    }
-
                     odkView = createODKView(advancingPage, prompts, groups);
                     odkView.setWidgetValueChangedListener(this);
                     Timber.i("Created view for group %s %s",

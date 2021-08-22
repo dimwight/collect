@@ -111,7 +111,6 @@ import timber.log.Timber;
 @SuppressLint("ViewConstructor")
 public class ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedListener {
 
-    public static final String FOCUS_KEY = "focus";
     private final LinearLayout widgetsList;
     private final LinearLayout.LayoutParams layout;
     private final ArrayList<QuestionWidget> widgets;
@@ -459,26 +458,26 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     }
 
     public void setFocus(Context context) {
-        if (widgets.isEmpty()) {
+        FormController formController = Collect.getInstance().getFormController();
+        if (widgets.isEmpty() || formController == null) {
             return;
         }
-        //For #3027
+        //Retrieve and clear marker, assign focus #3027
+        FormIndex focusIndex = formController.getFieldlistFocusIndex();
+        formController.setFieldlistFocusIndex(null);
         int focusAt = 0;
         for (int at = 0; at < widgets.size(); at++) {
-            QuestionDef question = widgets.get(at)
-                    .getFormEntryPrompt().getQuestion();
-            String focusValue = question.getAdditionalAttribute(
-                    null, FOCUS_KEY);
-            if (focusValue != null) {
-                question.setAdditionalAttribute(null,
-                        FOCUS_KEY, null);
+            FormEntryPrompt prompt = widgets.get(at)
+                    .getFormEntryPrompt();
+            //Only set index >=0 if match found
+            if (prompt.getIndex().equals(focusIndex)) {
                 focusAt = at;
                 break;
             }
         }
-        QuestionWidget focussed = widgets.get(focusAt);
-        focussed.setFocus(context);
-        scrollTo(focussed);
+        QuestionWidget hasFocus = widgets.get(focusAt);
+        hasFocus.setFocus(context);
+        scrollTo(hasFocus);
     }
 
     /**
