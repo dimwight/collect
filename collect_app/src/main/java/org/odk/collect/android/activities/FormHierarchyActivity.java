@@ -14,6 +14,9 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
+
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -58,8 +61,7 @@ import javax.inject.Inject;
 
 import timber.log.Timber;
 
-import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
-
+@SuppressLint("BinaryOperationInTimber")
 public class FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
 
     public static final int RESULT_ADD_REPEAT = 2;
@@ -713,10 +715,17 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
      * If the selected question is in a field list, show the entire field list.
      */
     void onQuestionClicked(FormIndex index) {
-        Collect.getInstance().getFormController().jumpToIndex(index);
-        if (Collect.getInstance().getFormController().indexIsInFieldList()) {
+        FormController formController = Collect.getInstance().getFormController();
+        FormIndex fi0 = formController.getFormIndex();
+        formController.jumpToIndex(index);
+        FormIndex fi1 = formController.getFormIndex();
+        if (formController.indexIsInFieldList()) {
             try {
-                Collect.getInstance().getFormController().stepToPreviousScreenEvent();
+                formController.stepToPreviousScreenEvent();
+                FormIndex fi2 = formController.getFormIndex();
+                if (true) formController.jumpToIndex(index);
+                FormIndex fi3 = formController.getFormIndex();
+                fi3.toString();
             } catch (JavaRosaException e) {
                 Timber.d(e);
                 createErrorDialog(e.getCause().getMessage());

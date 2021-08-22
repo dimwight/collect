@@ -42,7 +42,7 @@ import timber.log.Timber;
 /**
  * The most basic widget that allows for entry of any text.
  */
-@SuppressLint("ViewConstructor")
+@SuppressLint("ViewConstructor,BinaryOperationInTimber")
 public class StringWidget extends QuestionWidget {
     public final EditText answerText;
 
@@ -77,6 +77,7 @@ public class StringWidget extends QuestionWidget {
 
     @Override
     public void setFocus(Context context) {
+        String details = getQuestionDetails().toString();
         if (!questionDetails.isReadOnly()) {
             softKeyboardController.showSoftKeyboard(answerText);
             /*
