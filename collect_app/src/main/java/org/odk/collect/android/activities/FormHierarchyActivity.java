@@ -713,13 +713,13 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
     /**
      * Handles clicks on a question. Jumps to the form filling view with the selected question shown.
      * If the selected question is in a field list, show the entire field list.
+     * For #3027, prepare to set the appropriate focus.
      */
     void onQuestionClicked(FormIndex index) {
-        Timber.i("onQuestionClicked:+ index = " + index);
         FormController formController = Collect.getInstance().getFormController();
         formController.jumpToIndex(index);
         if (formController.indexIsInFieldList()) {
-            //Record the index whose question will need focus
+            //Record the index whose question will want focus
             formController.setFieldlistFocusIndex(index);
             try {
                 formController.stepToPreviousScreenEvent();

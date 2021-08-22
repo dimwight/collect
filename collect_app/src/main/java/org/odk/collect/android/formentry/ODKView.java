@@ -467,14 +467,18 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         for (int at = 0; at < widgets.size(); at++) {
             QuestionDef question = widgets.get(at)
                     .getFormEntryPrompt().getQuestion();
-            if (question.getAdditionalAttribute(
-                    null, FOCUS_KEY) != null) {
+            String focusValue = question.getAdditionalAttribute(
+                    null, FOCUS_KEY);
+            if (focusValue != null) {
+                question.setAdditionalAttribute(null,
+                        FOCUS_KEY, null);
                 focusAt = at;
+                break;
             }
-            question.setAdditionalAttribute(null,
-                    FOCUS_KEY, null);
         }
-        widgets.get(focusAt).setFocus(context);
+        QuestionWidget focussed = widgets.get(focusAt);
+        focussed.setFocus(context);
+        scrollTo(focussed);
     }
 
     /**
@@ -485,6 +489,7 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         findViewById(R.id.odk_view_container).getHitRect(scrollBounds);
         return qw.getLocalVisibleRect(scrollBounds);
     }
+
 
     public void scrollTo(@Nullable QuestionWidget qw) {
         if (qw != null && widgets.contains(qw)) {
