@@ -111,6 +111,7 @@ import timber.log.Timber;
 @SuppressLint("ViewConstructor")
 public class ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedListener {
 
+    public static final String FOCUS_KEY = "focus";
     private final LinearLayout widgetsList;
     private final LinearLayout.LayoutParams layout;
     private final ArrayList<QuestionWidget> widgets;
@@ -461,15 +462,16 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         if (widgets.isEmpty()) {
             return;
         }
-        int focusAt = true ? 0 : widgets.size() == 1 ? 0 : 1;
+        int focusAt = 0;
         for (int at = 0; at < widgets.size(); at++) {
-            boolean focus = "true".equals(
-                    widgets.get(at)
-                            .getQuestionDetails()
-                            .getPrompt()
-                            .getQuestion()
-                            .getAdditionalAttribute(null, "focus"));
-            if (focus) focusAt = at;
+            QuestionDef question = widgets.get(at)
+                    .getFormEntryPrompt().getQuestion();
+            if (question.getAdditionalAttribute(
+                    null, FOCUS_KEY) != null) {
+                focusAt = at;
+            }
+            question.setAdditionalAttribute(null,
+                    FOCUS_KEY, null);
         }
         widgets.get(focusAt).setFocus(context);
     }

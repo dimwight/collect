@@ -1122,13 +1122,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                     FormEntryCaption[] groups = formController
                             .getGroupsForCurrentIndex();
                     FormEntryPrompt[] prompts = formController.getQuestionPrompts();
-                    //Retrieve and clear dummy
+                    //Retrieve and store flag
                     FormIndex focusIndex = formController.getIndexWaitingForData();
                     for (FormEntryPrompt p : prompts) {
                         String focusValue = p.getIndex() == focusIndex ? "" : null;
                         p.getQuestion().setAdditionalAttribute(
-                                null, "focus", focusValue);
+                                null, ODKView.FOCUS_KEY, focusValue);
                     }
+                    //Clear dummy
                     formController.setIndexWaitingForData(null);
 
                     odkView = createODKView(advancingPage, prompts, groups);
