@@ -12,6 +12,7 @@ import org.junit.runner.RunWith
 import org.odk.collect.android.injection.DaggerUtils
 import org.odk.collect.android.preferences.keys.MetaKeys
 import org.odk.collect.android.preferences.keys.ProjectKeys
+import org.odk.collect.android.storage.StorageSubdirectory
 import org.odk.collect.shared.TempFiles
 import java.io.File
 
@@ -67,7 +68,7 @@ class ExistingProjectMigratorTest {
             assertThat(it.exists(), `is`(false))
         }
 
-        storagePathProvider.getProjectDirPaths(existingProject.uuid).forEach {
+        getProjectDirPaths(existingProject.uuid).forEach {
             val dir = File(it)
             assertThat(dir.exists(), `is`(true))
             assertThat(dir.isDirectory, `is`(true))
@@ -88,7 +89,25 @@ class ExistingProjectMigratorTest {
 
         assertThat(cacheDir.exists(), `is`(false))
 
-        storagePathProvider.getProjectDirPaths(existingProject.uuid).forEach {
+        getProjectDirPaths(existingProject.uuid).forEach {
+            val dir = File(it)
+            assertThat(dir.exists(), `is`(true))
+            assertThat(dir.isDirectory, `is`(true))
+            assertThat(dir.listFiles()!!.isEmpty(), `is`(true))
+        }
+    }
+
+    @Test
+    fun `if cache dir can not be deleted the app does not crash`() {
+        val cacheDir = File(rootDir, ".cache")
+        cacheDir.createNewFile()
+
+        existingProjectMigrator.run()
+        val existingProject = currentProjectProvider.getCurrentProject()
+
+        assertThat(cacheDir.exists(), `is`(true))
+
+        getProjectDirPaths(existingProject.uuid).forEach {
             val dir = File(it)
             assertThat(dir.exists(), `is`(true))
             assertThat(dir.isDirectory, `is`(true))
@@ -112,7 +131,7 @@ class ExistingProjectMigratorTest {
 
         existingProjectMigrator.run()
         val existingProject = currentProjectProvider.getCurrentProject()
-        storagePathProvider.getProjectDirPaths(existingProject.uuid).forEach {
+        getProjectDirPaths(existingProject.uuid).forEach {
             val dir = File(it)
             assertThat(dir.exists(), `is`(true))
             assertThat(dir.isDirectory, `is`(true))
@@ -147,5 +166,16 @@ class ExistingProjectMigratorTest {
     @Test
     fun `has key`() {
         assertThat(existingProjectMigrator.key(), `is`(MetaKeys.EXISTING_PROJECT_IMPORTED))
+    }
+
+    private fun getProjectDirPaths(projectId: String): Array<String> {
+        return arrayOf(
+            storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS, projectId),
+            storagePathProvider.getOdkDirPath(StorageSubdirectory.INSTANCES, projectId),
+            storagePathProvider.getOdkDirPath(StorageSubdirectory.CACHE, projectId),
+            storagePathProvider.getOdkDirPath(StorageSubdirectory.METADATA, projectId),
+            storagePathProvider.getOdkDirPath(StorageSubdirectory.LAYERS, projectId),
+            storagePathProvider.getOdkDirPath(StorageSubdirectory.SETTINGS, projectId)
+        )
     }
 }
