@@ -16,6 +16,9 @@
 
 package org.javarosa.core.model;
 
+import static org.javarosa.core.model.instance.DataInstance.newTreeText;
+import static org.javarosa.form.api.FormEntryModel.newDebugMsg;
+
 import android.annotation.SuppressLint;
 
 import org.javarosa.core.log.WrappedException;
@@ -79,9 +82,6 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import timber.log.Timber;
-
-import static org.javarosa.core.model.instance.DataInstance.newTreeText;
-import static org.javarosa.form.api.FormEntryModel.newDebugMsg;
 
 /**
  * Definition of a form. This has some meta data about the form definition and a
@@ -461,7 +461,7 @@ public class FormDef implements IFormElement, Localizable, Persistable, IMetaDat
 
     public void setValue(IAnswerData data, TreeReference ref, TreeElement node,
                          boolean midSurvey) {
-        if (true) throw new RuntimeException("Trying to save!");
+        if (false) throw new RuntimeException("Trying to save!");
         IAnswerData oldValue = node.getValue();
         IAnswerDataSerializer answerDataSerializer = new XFormAnswerDataSerializer();
 
