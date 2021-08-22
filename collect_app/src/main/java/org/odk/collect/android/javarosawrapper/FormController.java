@@ -120,14 +120,7 @@ public class FormController {
     private final FormEntryController formEntryController;
     private FormIndex indexWaitingForData;
 
-    public FormIndex getFieldlistFocusIndex() {
-        return fieldlistFocusIndex;
-    }
-
-    public void setFieldlistFocusIndex(FormIndex fieldlistFocusIndex) {
-        this.fieldlistFocusIndex = fieldlistFocusIndex;
-    }
-
+    //To transfer flag #3027
     private FormIndex fieldlistFocusIndex;
 
     public FormController(File mediaFolder, FormEntryController fec, File instanceFile) {
@@ -1311,5 +1304,13 @@ public class FormController {
 
     public IAnswerData getAnswer(TreeReference treeReference) {
         return getFormDef().getMainInstance().resolveReference(treeReference).getValue();
+    }
+
+    public FormIndex getFieldlistFocusIndex() {
+        return fieldlistFocusIndex;
+    }
+
+    public void setFieldlistFocusIndex(FormIndex fieldlistFocusIndex) {
+        this.fieldlistFocusIndex = fieldlistFocusIndex;
     }
 }

@@ -462,6 +462,7 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         if (widgets.isEmpty()) {
             return;
         }
+        //For #3027
         int focusAt = 0;
         for (int at = 0; at < widgets.size(); at++) {
             QuestionDef question = widgets.get(at)
