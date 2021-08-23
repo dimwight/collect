@@ -258,7 +258,9 @@ public class FormController {
      * returns the event for the given FormIndex.
      */
     public int getEvent(FormIndex index) {
-        return formEntryController.getModel().getEvent(index);
+        return formEntryController.
+                getModel()
+                .getEvent(index);
     }
 
     /**

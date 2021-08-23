@@ -1,7 +1,6 @@
 package org.odk.collect.android.formentry;
 
 import static org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM;
-import static org.javarosa.form.api.FormEntryController.EVENT_END_OF_FORM;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
 
 import androidx.annotation.NonNull;
@@ -154,30 +153,34 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
 
     public void moveBackward() {
          try {
+             //Never scan past current index
+             FormIndex focusStopIndex = formController.getFormIndex();
+             //Back up to previous
              int event = formController.stepToPreviousScreenEvent();
              // If we are the beginning of the form we need to move back to the first actual screen
              if (event == EVENT_BEGINNING_OF_FORM) {
                  formController.stepToNextScreenEvent();
-             } else if (formController.indexIsInFieldList()) {//#3027
-                 boolean inList = true;
-                 //Record index for whole field list
-                 FormIndex listIndex = formController.getFormIndex();
-                 //Find last question in list
-                 FormIndex focusIndex = null;
-                 while ((event = formController.stepToNextEvent(true))
-                         != EVENT_END_OF_FORM) {
-                     inList = formController.indexIsInFieldList();
-                     if (!inList) {
-                         break;
-                     }
-                     focusIndex = formController.getFormIndex();
-                 }
-                 //Record for later focus setting
-                 formController.setFieldListFocusIndex(focusIndex);
-                 //Ready to display list
-                 formController.jumpToIndex(listIndex);
+                 //#3027 Field lists?
+             } else if (!formController.indexIsInFieldList()) {
+                 return;
              }
-        } catch (JavaRosaException e) {
+             //Record start of preceding list
+             FormIndex listBeforeIndex = formController.getFormIndex();
+             //Scan to last question in list
+             FormIndex focusIndex = null;
+             while (formController.indexIsInFieldList()) {
+                 focusIndex = formController.getFormIndex();
+                 formController.stepToNextEvent(true);
+                 //Don't overshoot starting point
+                 if (formController.getFormIndex().equals(focusStopIndex)) {
+                     break;
+                 }
+             }
+             //Record for focus setting
+             formController.setFieldListFocusIndex(focusIndex);
+             //Ready to display preceding list
+             formController.jumpToIndex(listBeforeIndex);
+         } catch (JavaRosaException e) {
             error.setValue(new NonFatal(e.getCause().getMessage()));
             return;
         }
