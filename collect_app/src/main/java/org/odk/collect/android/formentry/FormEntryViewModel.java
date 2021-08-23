@@ -1,7 +1,7 @@
 package org.odk.collect.android.formentry;
 
 import static org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM;
-import static org.javarosa.form.api.FormEntryController.EVENT_QUESTION;
+import static org.javarosa.form.api.FormEntryController.EVENT_END_OF_FORM;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
 
 import androidx.annotation.NonNull;
@@ -159,18 +159,24 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
              if (event == EVENT_BEGINNING_OF_FORM) {
                  formController.stepToNextScreenEvent();
              } else if (formController.indexIsInFieldList()) {//#3027
+                 boolean inList = true;
                  //Record index for whole field list
                  FormIndex listIndex = formController.getFormIndex();
                  //Find last question in list
                  FormIndex focusIndex = null;
-                 while (formController.stepToNextEvent(true) == EVENT_QUESTION) {
+                 while ((event = formController.stepToNextEvent(true))
+                         != EVENT_END_OF_FORM) {
+                     inList = formController.indexIsInFieldList();
+                     if (!inList) {
+                         break;
+                     }
                      focusIndex = formController.getFormIndex();
                  }
                  //Record for later focus setting
                  formController.setFieldListFocusIndex(focusIndex);
                  //Ready to display list
                  formController.jumpToIndex(listIndex);
-            }
+             }
         } catch (JavaRosaException e) {
             error.setValue(new NonFatal(e.getCause().getMessage()));
             return;
