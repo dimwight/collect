@@ -1,24 +1,5 @@
 package org.odk.collect.android.feature.formentry;
 
-import org.jetbrains.annotations.NotNull;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
-import org.odk.collect.android.support.pages.FormEntryPage;
-import org.odk.collect.android.support.pages.FormHierarchyPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
-import org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import timber.log.Timber;
-
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Minimal;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Plain;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.ABC1e;
@@ -40,9 +21,27 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.ItemsetType.FastExternal;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.ItemsetType.Internal;
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_0;
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_1;
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_2;
 import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_3;
+
+import org.jetbrains.annotations.NotNull;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.odk.collect.android.support.CollectTestRule;
+import org.odk.collect.android.support.CopyFormRule;
+import org.odk.collect.android.support.ResetStateRule;
+import org.odk.collect.android.support.pages.FormEntryPage;
+import org.odk.collect.android.support.pages.FormHierarchyPage;
+import org.odk.collect.android.support.pages.MainMenuPage;
+import org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import timber.log.Timber;
 
 public class
 SelectOneResetTest {
@@ -171,7 +170,7 @@ SelectOneResetTest {
         boolean before = false;
         (before ? STAGE_0 : STAGE_3).makeLatest();
         Timber.i(UpdateStage.getLatest().name());
-        (false ? new Staged()
+        (true ? new Staged()
                 : before ? new ForPrBefore()
                 : new ForPr()).testVariants(hierarchy);
     }
