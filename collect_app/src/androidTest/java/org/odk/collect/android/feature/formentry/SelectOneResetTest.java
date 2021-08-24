@@ -180,7 +180,7 @@ SelectOneResetTest {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
                 boolean testSelectedVariants = true;
-                boolean testBlockB = true;
+                boolean testBlockB = false;
                 boolean testBlockA = testBlockB && false;
                 boolean testBlockC = testBlockA && true;
                 boolean testBlocksDE = true &&

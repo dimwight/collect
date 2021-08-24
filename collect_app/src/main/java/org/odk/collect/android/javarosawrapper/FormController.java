@@ -14,6 +14,10 @@
 
 package org.odk.collect.android.javarosawrapper;
 
+import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
+import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
+import static org.odk.collect.android.utilities.ApplicationConstants.Namespaces.XML_OPENDATAKIT_NAMESPACE;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -61,10 +65,6 @@ import java.util.List;
 import java.util.Locale;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
-import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
-import static org.odk.collect.android.utilities.ApplicationConstants.Namespaces.XML_OPENDATAKIT_NAMESPACE;
 
 /**
  * This class is a wrapper for Javarosa's FormEntryController. In theory, if you wanted to replace
@@ -992,7 +992,9 @@ public class FormController {
     }
 
     public FormEntryPrompt getQuestionPrompt() {
-        return formEntryController.getModel().getQuestionPrompt();
+        return formEntryController
+                .getModel()
+                .getQuestionPrompt();
     }
 
     public String getQuestionPromptConstraintText(FormIndex index) {

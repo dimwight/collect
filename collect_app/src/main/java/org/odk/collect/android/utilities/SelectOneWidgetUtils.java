@@ -44,7 +44,7 @@ SelectOneWidgetUtils {
 //        STAGE_4
         ;
 
-        private static UpdateStage latest = STAGE_2;
+        private static UpdateStage latest = STAGE_3;
 
         public static UpdateStage getLatest() {
             return latest;
@@ -79,16 +79,28 @@ SelectOneWidgetUtils {
             return;
         }
 
-        //Mini method
-        Supplier<String> getQuestionName = () -> {
-            String raw = fc.getQuestionPrompt().getFormElement()
-                    .getBind().getReference().toString();
-            return raw.replaceAll(".+/([^/]+)$", "$1");
-        };
+        //Where to start checking?
+        FormIndex startIndex = fc.getFormIndex();
 
+        //Do checks
+        resetCascadeFollowers(fc);
+
+        //Back to start
+        fc.jumpToIndex(startIndex);
+    }
+
+    private static void resetCascadeFollowers(FormController fc) {
         try {
-            //Remember where we started
-            FormIndex startIndex = fc.getFormIndex();
+            //Mini method
+            Supplier<String> getQuestionName = () -> {
+                String raw = fc.getQuestionPrompt()
+                        .getFormElement()
+                        .getBind()
+                        .getReference()
+                        .toString();
+                return raw.replaceAll(".+/([^/]+)$", "$1");
+            };
+
             //Used across iterations
             String precedingMemberName = getQuestionName.get();
             String skippedName = BAD_NAME;
@@ -120,9 +132,6 @@ SelectOneWidgetUtils {
                 }
             }
 
-            //Back to start
-            fc.jumpToIndex(startIndex);
-
         } catch (JavaRosaException e) {
             Timber.d(e);
         }
@@ -142,6 +151,13 @@ SelectOneWidgetUtils {
         FormController fc = Collect.getInstance().getFormController();
         //Formality
         if (fc == null) {
+            return;
+        }
+        if (true) {
+            FormIndex thenIndex = fc.getFormIndex();
+            fc.jumpToIndex(lastChangedIndex);
+            resetCascadeFollowers(fc);
+            fc.jumpToIndex(thenIndex);
             return;
         }
         //Find the index in the field list, get its form label
