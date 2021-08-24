@@ -2572,7 +2572,7 @@ FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
         }
 
         if (STAGE_3.isApplied()) {
-            checkFastExternalCascadeInFieldList(lastChangedIndex, questionsBeforeSave, questionsAfterSave);
+            checkFastExternalCascadeInFieldList(lastChangedIndex, questionsAfterSave);
         }
 
         for (int i = immutableQuestionsBeforeSave.size() - 1; i >= 0; i--) {
