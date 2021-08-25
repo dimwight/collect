@@ -474,7 +474,6 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         }
         //Retrieve and clear marker, assign focus #3027
         FormIndex focusIndex = formController.getFieldListFocusIndex();
-        formController.setFieldListFocusIndex(null);
         int focusAt = 0;
         for (int at = 0; at < widgets.size(); at++) {
             //Only set index >=0 if match found
@@ -483,9 +482,9 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
                 break;
             }
         }
-        QuestionWidget hasFocus = widgets.get(focusAt);
-        hasFocus.setFocus(context);
-        scrollTo(hasFocus);
+        QuestionWidget setFocus = widgets.get(focusAt);
+        setFocus.setFieldListFocus(context);
+        scrollTo(setFocus);
     }
 
     /**
@@ -623,6 +622,7 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
             qw.setOnFocusChangeListener(l);
         }
     }
+
 
     @Override
     public boolean onLongClick(View v) {

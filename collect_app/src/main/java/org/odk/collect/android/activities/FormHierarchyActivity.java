@@ -414,7 +414,11 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
      */
     private void jumpToHierarchyStartIndex() {
         FormController formController = Collect.getInstance().getFormController();
-        FormIndex startIndex = formController.getFormIndex();
+
+        FormIndex focusIndex = formController.getFieldListFocusIndex();
+        FormIndex startIndex = focusIndex != null ? focusIndex :
+                formController.getFormIndex();
+        formController.setFieldListFocusIndex(null);
 
         // If we're not at the first level, we're inside a repeated group so we want to only
         // display everything enclosed within that group.
