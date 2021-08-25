@@ -450,17 +450,12 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         }
     }
 
-    public void setFieldListFocus() {
-        setFieldListFocus(null);
-    }
-
-    public void setFieldListFocus(Context context) {
-        if (context != null) {
-            setFocus(context);
-        }
+    public void setFieldListActive() {
         FormController formController = Collect.getInstance().getFormController();
-        formController.setFieldListFocusIndex(
+        formController.setFieldListActiveIndex(
                 getQuestionDetails().getPrompt().getIndex()
         );
+        if (true)
+            Timber.i(":%s", formController.getFieldListActiveIndex());
     }
 }

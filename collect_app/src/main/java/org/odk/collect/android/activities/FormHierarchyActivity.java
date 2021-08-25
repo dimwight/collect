@@ -415,10 +415,10 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
     private void jumpToHierarchyStartIndex() {
         FormController formController = Collect.getInstance().getFormController();
 
-        FormIndex focusIndex = formController.getFieldListFocusIndex();
-        FormIndex startIndex = focusIndex != null ? focusIndex :
+        FormIndex activeIndex = formController.getFieldListActiveIndex();
+        FormIndex startIndex = activeIndex != null ? activeIndex :
                 formController.getFormIndex();
-        formController.setFieldListFocusIndex(null);
+        formController.setFieldListActiveIndex(null);
 
         // If we're not at the first level, we're inside a repeated group so we want to only
         // display everything enclosed within that group.
@@ -723,8 +723,8 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
         FormController formController = Collect.getInstance().getFormController();
         formController.jumpToIndex(index);
         if (formController.indexIsInFieldList()) {
-            //Record the index whose question will want focus
-            formController.setFieldListFocusIndex(index);
+            //Record which question should be active
+            formController.setFieldListActiveIndex(index);
             try {
                 formController.stepToPreviousScreenEvent();
             } catch (JavaRosaException e) {

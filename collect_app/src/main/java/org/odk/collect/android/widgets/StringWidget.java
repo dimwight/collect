@@ -138,11 +138,19 @@ public class StringWidget extends QuestionWidget {
         EditText answerEditText = new EditText(getContext());
         answerEditText.setId(View.generateViewId());
         answerEditText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, getAnswerFontSize());
-        answerEditText.setKeyListener(new TextKeyListener(TextKeyListener.Capitalize.SENTENCES, false));
+        answerEditText.setKeyListener(new TextKeyListener(TextKeyListener.Capitalize.SENTENCES,
+                false));
 
         // needed to make long read only text scroll
         answerEditText.setHorizontallyScrolling(false);
         answerEditText.setSingleLine(false);
+
+        answerEditText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setFieldListActive();
+            }
+        });
 
         if (readOnly) {
             answerEditText.setBackground(null);
@@ -152,6 +160,9 @@ public class StringWidget extends QuestionWidget {
         }
 
         answerEditText.addTextChangedListener(new TextWatcher() {
+            private boolean creating = true;
+            String textThen = "";
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -165,6 +176,14 @@ public class StringWidget extends QuestionWidget {
             @Override
             public void afterTextChanged(Editable s) {
                 widgetValueChanged();
+                String label = getFormEntryPrompt().getFormElement().getLabelInnerText();
+                String textNow = s.toString();
+                if (!(creating
+                        || textThen.equals(textNow))) {
+                    setFieldListActive();
+                }
+                creating = false;
+                textThen = textNow;
             }
         });
 

@@ -472,19 +472,20 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         if (widgets.isEmpty() || formController == null) {
             return;
         }
-        //Retrieve and clear marker, assign focus #3027
-        FormIndex focusIndex = formController.getFieldListFocusIndex();
-        int focusAt = 0;
+        //Retrieve and clear marker, set active #3027
+        FormIndex activeIndex = formController.getFieldListActiveIndex();
+        int activeAt = 0;
         for (int at = 0; at < widgets.size(); at++) {
             //Only set index >=0 if match found
-            if (widgets.get(at).getFormEntryPrompt().getIndex().equals(focusIndex)) {
-                focusAt = at;
+            if (widgets.get(at).getFormEntryPrompt().getIndex().equals(activeIndex)) {
+                activeAt = at;
                 break;
             }
         }
-        QuestionWidget setFocus = widgets.get(focusAt);
-        setFocus.setFieldListFocus(context);
-        scrollTo(setFocus);
+        QuestionWidget setActive = widgets.get(activeAt);
+        setActive.setFieldListActive();
+        setActive.setFocus(context);
+        scrollTo(setActive);
     }
 
     /**

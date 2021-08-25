@@ -154,7 +154,7 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
     public void moveBackward() {
          try {
              //Never scan past current index
-             FormIndex focusStopIndex = formController.getFormIndex();
+             FormIndex activeStopIndex = formController.getFormIndex();
              //Back up to previous
              int event = formController.stepToPreviousScreenEvent();
              // If we are the beginning of the form we need to move back to the first actual screen
@@ -167,17 +167,17 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
              //Record start of preceding list
              FormIndex listBeforeIndex = formController.getFormIndex();
              //Scan to last question in list
-             FormIndex focusIndex = null;
+             FormIndex activeIndex = null;
              while (formController.indexIsInFieldList()) {
-                 focusIndex = formController.getFormIndex();
+                 activeIndex = formController.getFormIndex();
                  formController.stepToNextEvent(true);
                  //Don't overshoot starting point
-                 if (formController.getFormIndex().equals(focusStopIndex)) {
+                 if (formController.getFormIndex().equals(activeStopIndex)) {
                      break;
                  }
              }
              //Record for focus setting
-             formController.setFieldListFocusIndex(focusIndex);
+             formController.setFieldListActiveIndex(activeIndex);
              //Ready to display preceding list
              formController.jumpToIndex(listBeforeIndex);
          } catch (JavaRosaException e) {

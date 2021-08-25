@@ -14,11 +14,13 @@
 
 package org.odk.collect.android.widgets.items;
 
+import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
-import androidx.annotation.Nullable;
-
 import android.widget.RadioButton;
+
+import androidx.annotation.Nullable;
 
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.data.IAnswerData;
@@ -29,14 +31,12 @@ import org.odk.collect.android.adapters.SelectOneListAdapter;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.exception.JavaRosaException;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
-import org.odk.collect.android.listeners.AdvanceToNextListener;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.utilities.SelectOneWidgetUtils;
+import org.odk.collect.android.listeners.AdvanceToNextListener;
 import org.odk.collect.android.utilities.Appearances;
+import org.odk.collect.android.utilities.SelectOneWidgetUtils;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 
 /**
  * SelectOneWidgets handles select-one fields using radio buttons.
@@ -101,6 +101,7 @@ public class SelectOneWidget extends BaseSelectListWidget {
 
         clearFollowingItemsetWidgets();
         widgetValueChanged();
+        setFieldListActive();
     }
 
     @Override
