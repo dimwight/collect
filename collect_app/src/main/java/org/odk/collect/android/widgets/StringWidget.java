@@ -160,7 +160,7 @@ public class StringWidget extends QuestionWidget {
         }
 
         answerEditText.addTextChangedListener(new TextWatcher() {
-            private boolean creating = true;
+            private int ignores = 5;
             String textThen = "";
 
             @Override
@@ -178,11 +178,11 @@ public class StringWidget extends QuestionWidget {
                 widgetValueChanged();
                 String label = getFormEntryPrompt().getFormElement().getLabelInnerText();
                 String textNow = s.toString();
-                if (!(creating
+                if (!(ignores-- >= 0
                         || textThen.equals(textNow))) {
                     setFieldListActive();
                 }
-                creating = false;
+                if (ignores < 0) ignores = -1;
                 textThen = textNow;
             }
         });

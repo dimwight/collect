@@ -456,6 +456,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
                 getQuestionDetails().getPrompt().getIndex()
         );
         if (true)
-            Timber.i(":%s", formController.getFieldListActiveIndex());
+            Timber.i(formController.getFieldListActiveIndex().toString()
+                    .replaceAll(".*/([^/]+$)", "$1"));
     }
 }
