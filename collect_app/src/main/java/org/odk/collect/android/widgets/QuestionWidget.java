@@ -77,6 +77,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
     private final View guidanceTextLayout;
     private final View textLayout;
     private final TextView warningText;
+    protected final String label;
     private AtomicBoolean expanded;
     protected final ThemeUtils themeUtils;
     protected AudioHelper audioHelper;
@@ -139,6 +140,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
             registerToClearAnswerOnLongPress((FormEntryActivity) context, this);
         }
         hideAnswerContainerIfNeeded();
+        label = getQuestionDetails().getPrompt().getQuestion().getLabelInnerText();
     }
 
     /**
@@ -450,7 +452,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         }
     }
 
-    public void setFieldListActive() {
+    public void setFieldListActiveIndex() {
         FormController formController = Collect.getInstance().getFormController();
         formController.setFieldListActiveIndex(
                 getQuestionDetails().getPrompt().getIndex()
@@ -459,4 +461,5 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
             Timber.i(formController.getFieldListActiveIndex().toString()
                     .replaceAll(".*/([^/]+$)", "$1"));
     }
+
 }

@@ -148,7 +148,7 @@ public class StringWidget extends QuestionWidget {
         answerEditText.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFieldListActive();
+                setFieldListActiveIndex();
             }
         });
 
@@ -180,7 +180,7 @@ public class StringWidget extends QuestionWidget {
                 String textNow = s.toString();
                 if (!(ignores-- >= 0
                         || textThen.equals(textNow))) {
-                    setFieldListActive();
+                    setFieldListActiveIndex();
                 }
                 if (ignores < 0) ignores = -1;
                 textThen = textNow;

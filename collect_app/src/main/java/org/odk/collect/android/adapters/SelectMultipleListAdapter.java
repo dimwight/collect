@@ -35,6 +35,7 @@ import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
 import org.odk.collect.android.formentry.questions.NoButtonsItem;
 import org.odk.collect.android.listeners.SelectItemClickListener;
+import org.odk.collect.android.widgets.items.SelectMultiWidget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,15 +98,16 @@ public class SelectMultipleListAdapter extends AbstractSelectListAdapter {
         checkCheckBoxIfNeeded(checkBox, index); // perform before setting onCheckedChangeListener to avoid redundant calls of its body
 
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                addItem(filteredItems.get(index).selection());
-            } else {
-                removeItem(filteredItems.get(index).selection());
-            }
-            if (listener != null) {
-                listener.onItemClicked();
-            }
-        });
+                    if (isChecked) {
+                        addItem(filteredItems.get(index).selection());
+                    } else {
+                        removeItem(filteredItems.get(index).selection());
+                    }
+                    if (listener != null) {
+                        listener.onItemClicked();
+                    }
+                }
+        );
 
         return checkBox;
     }
@@ -135,6 +137,7 @@ public class SelectMultipleListAdapter extends AbstractSelectListAdapter {
             }
             playAudio(selection.choice);
         }
+        ((SelectMultiWidget) listener).setFieldListActiveIndex();
     }
 
     public void addItem(Selection item) {

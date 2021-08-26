@@ -485,7 +485,7 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
             }
         }
         QuestionWidget setActive = widgets.get(activeAt);
-        setActive.setFieldListActive();
+        setActive.setFieldListActiveIndex();
         setActive.setFocus(context);
         scrollTo(setActive);
     }
