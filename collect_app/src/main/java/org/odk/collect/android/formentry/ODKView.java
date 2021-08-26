@@ -708,16 +708,25 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     }
 
     Timer timer;
+    int calls;
 
     public void monitorScrollY(MotionEvent e1, MotionEvent e2,
                                float distanceY) {
-        if (timer != null) timer.cancel();
+        if (timer != null) {
+            timer.cancel();
+        }
         timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                Timber.i("run:+ %s", (int) distanceY);
+                calls++;
+                ArrayList<QuestionWidget> notShown = new ArrayList<>();
+                for (QuestionWidget widget :
+                        widgets) {
+                    if (widget.getClipBounds() == null)
+                        notShown.add(widget);
+                }
             }
-        }, 500);
+        }, 1000);
     }
 }
