@@ -72,6 +72,7 @@ public class SwipeHandler {
             // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
             if (odkView != null) {
                 odkView.cancelLongPress();
+                odkView.monitorScrollY(e1, e2, distanceY);
             }
             return false;
         }

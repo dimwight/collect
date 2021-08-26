@@ -98,6 +98,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.inject.Inject;
 
@@ -703,5 +705,19 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
             widgetValueChangedListener.widgetValueChanged(changedWidget);
         }
 
+    }
+
+    Timer timer;
+
+    public void monitorScrollY(MotionEvent e1, MotionEvent e2,
+                               float distanceY) {
+        if (timer != null) timer.cancel();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Timber.i("run:+ %s", (int) distanceY);
+            }
+        }, 500);
     }
 }
