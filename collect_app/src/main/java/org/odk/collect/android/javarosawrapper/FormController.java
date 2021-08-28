@@ -1313,6 +1313,6 @@ public class FormController {
     }
 
     public void setFieldListActiveIndex(FormIndex index) {
-        this.fieldListActiveIndex = index;
+        if (true) this.fieldListActiveIndex = index;
     }
 }
