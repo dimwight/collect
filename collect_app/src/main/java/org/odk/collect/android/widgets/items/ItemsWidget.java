@@ -92,7 +92,10 @@ public abstract class ItemsWidget extends QuestionWidget {
     public void setOnLongClickListener(OnLongClickListener l) {
     }
 
-    protected void clearFollowingItemsetWidgets() {
+    /**
+     * If there are "fast external itemset" selects right after this select, assume that they are linked to the current question and clear them.
+     */
+    protected final void clearFollowingItemsetWidgets() {
         SelectOneWidgetUtils.checkFastExternalCascade(this);
     }
 }

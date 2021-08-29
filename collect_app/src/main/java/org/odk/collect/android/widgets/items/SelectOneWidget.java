@@ -14,6 +14,8 @@
 
 package org.odk.collect.android.widgets.items;
 
+import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.widget.RadioButton;
@@ -30,8 +32,6 @@ import org.odk.collect.android.listeners.AdvanceToNextListener;
 import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.utilities.SelectOneWidgetUtils;
 
-import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
-
 /**
  * SelectOneWidgets handles select-one fields using radio buttons.
  *
@@ -39,8 +39,7 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColo
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
 @SuppressLint("ViewConstructor")
-public class
-SelectOneWidget extends BaseSelectListWidget {
+public class SelectOneWidget extends BaseSelectListWidget {
 
     @Nullable
     private AdvanceToNextListener listener;

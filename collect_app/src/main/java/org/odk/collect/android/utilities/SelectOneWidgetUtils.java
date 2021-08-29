@@ -24,8 +24,7 @@ import java.util.function.Supplier;
 
 import timber.log.Timber;
 
-public class
-SelectOneWidgetUtils {
+public class SelectOneWidgetUtils {
 
     private SelectOneWidgetUtils() {
 
@@ -85,8 +84,8 @@ SelectOneWidgetUtils {
         fc.jumpToIndex(thenIndex);
     }
 
-    public static void checkFastExternalCascadeInFieldList(FormIndex lastChangedIndex,
-                                                           FormEntryPrompt[] questionsAfterSave) {
+    public static void checkFastExternalCascadeInFieldList(FormEntryPrompt[] questionsAfterSave,
+                                                           FormIndex lastChangedIndex) {
         //Quit immediately if no FEI questions
         boolean hasFastExternal = false;
         for (FormEntryPrompt question : questionsAfterSave) {

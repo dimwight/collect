@@ -14,6 +14,26 @@
 
 package org.odk.collect.android.activities;
 
+import static android.content.DialogInterface.BUTTON_NEGATIVE;
+import static android.content.DialogInterface.BUTTON_POSITIVE;
+import static android.view.animation.AnimationUtils.loadAnimation;
+import static org.javarosa.form.api.FormEntryController.EVENT_PROMPT_NEW_REPEAT;
+import static org.odk.collect.android.analytics.AnalyticsEvents.OPEN_MAP_KIT_RESPONSE;
+import static org.odk.collect.android.analytics.AnalyticsEvents.SAVE_INCOMPLETE;
+import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.BACKWARDS;
+import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.FORWARDS;
+import static org.odk.collect.android.preferences.keys.AdminKeys.KEY_MOVING_BACKWARDS;
+import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_COMPLETED_DEFAULT;
+import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_NAVIGATION;
+import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnabled;
+import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
+import static org.odk.collect.android.utilities.DialogUtils.getDialog;
+import static org.odk.collect.android.utilities.DialogUtils.showIfNotShowing;
+import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_3;
+import static org.odk.collect.android.utilities.SelectOneWidgetUtils.checkFastExternalCascadeInFieldList;
+import static org.odk.collect.android.utilities.ToastUtils.showLongToast;
+import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -176,26 +196,6 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
-import static android.content.DialogInterface.BUTTON_NEGATIVE;
-import static android.content.DialogInterface.BUTTON_POSITIVE;
-import static android.view.animation.AnimationUtils.loadAnimation;
-import static org.javarosa.form.api.FormEntryController.EVENT_PROMPT_NEW_REPEAT;
-import static org.odk.collect.android.analytics.AnalyticsEvents.OPEN_MAP_KIT_RESPONSE;
-import static org.odk.collect.android.analytics.AnalyticsEvents.SAVE_INCOMPLETE;
-import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.BACKWARDS;
-import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.FORWARDS;
-import static org.odk.collect.android.preferences.keys.AdminKeys.KEY_MOVING_BACKWARDS;
-import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_COMPLETED_DEFAULT;
-import static org.odk.collect.android.preferences.keys.GeneralKeys.KEY_NAVIGATION;
-import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnabled;
-import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
-import static org.odk.collect.android.utilities.DialogUtils.getDialog;
-import static org.odk.collect.android.utilities.DialogUtils.showIfNotShowing;
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.UpdateStage.STAGE_3;
-import static org.odk.collect.android.utilities.SelectOneWidgetUtils.checkFastExternalCascadeInFieldList;
-import static org.odk.collect.android.utilities.ToastUtils.showLongToast;
-import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
-
 /**
  * FormEntryActivity is responsible for displaying questions, animating
  * transitions between questions, and allowing the user to enter data.
@@ -206,8 +206,7 @@ import static org.odk.collect.android.utilities.ToastUtils.showShortToast;
  */
 
 @SuppressWarnings("PMD.CouplingBetweenObjects")
-public class
-FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
+public class FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
         FormLoaderListener, AdvanceToNextListener, SwipeHandler.OnSwipeListener,
         SavePointListener, NumberPickerDialog.NumberPickerListener,
         RankingWidgetDialog.RankingListener, SaveFormIndexTask.SaveFormIndexListener,
@@ -2572,7 +2571,7 @@ FormEntryActivity extends CollectAbstractActivity implements AnimationListener,
         }
 
         if (STAGE_3.isApplied()) {
-            checkFastExternalCascadeInFieldList(lastChangedIndex, questionsAfterSave);
+            checkFastExternalCascadeInFieldList(questionsAfterSave, lastChangedIndex);
         }
 
         for (int i = immutableQuestionsBeforeSave.size() - 1; i >= 0; i--) {
