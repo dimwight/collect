@@ -108,7 +108,7 @@ public class FormIndex implements Serializable {
             b.append(", ");
             lowest = lowest.nextLevel;
         }
-        return !path.isEmpty() ? path.replaceAll("[1]", "")
+        return !path.isEmpty() ? path.replace("[1]", "")
                 : b.toString();
     }
 

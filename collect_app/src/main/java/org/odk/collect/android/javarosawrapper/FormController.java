@@ -404,7 +404,8 @@ public class FormController {
      */
     public boolean indexIsInFieldList(FormIndex index) {
         int event = getEvent(index);
-        if (event == FormEntryController.EVENT_QUESTION) {
+        if (false ||
+                event == FormEntryController.EVENT_QUESTION) {
             // caption[0..len-1]
             // caption[len-1] == the question itself
             // caption[len-2] == the first group it is contained in.

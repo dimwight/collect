@@ -162,7 +162,8 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
              if (event == EVENT_BEGINNING_OF_FORM) {
                  formController.stepToNextScreenEvent();
                  //#3027 Field lists?
-             } else if (!formController.indexIsInFieldList()) {
+             } else if (true ||
+                     !formController.indexIsInFieldList()) {
                  return;
              }
              //Record start of preceding list
@@ -175,7 +176,8 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
                  SactiveIndex = activeIndex.toString();
                  formController.stepToNextEvent(true);
                  //Don't overshoot starting point
-                 if (formController.getFormIndex().equals(activeStopIndex)) {
+                 FormIndex formIndex = formController.getFormIndex();
+                 if (formIndex.equals(activeStopIndex)) {
                      break;
                  }
              }
