@@ -155,9 +155,10 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
          try {
              //Never scan past current index
              FormIndex activeStopIndex = formController.getFormIndex();
-             //Back up to previous
+             //Back up to previous screen
              int event = formController.stepToPreviousScreenEvent();
-             // If we are the beginning of the form we need to move back to the first actual screen
+             // If we are the beginning of the form we need to move forward
+             // to the first actual screen - most unlikely?
              if (event == EVENT_BEGINNING_OF_FORM) {
                  formController.stepToNextScreenEvent();
                  //#3027 Field lists?
@@ -168,8 +169,10 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
              FormIndex listBeforeIndex = formController.getFormIndex();
              //Scan to last question in list
              FormIndex activeIndex = null;
+             String SactiveIndex;
              while (formController.indexIsInFieldList()) {
                  activeIndex = formController.getFormIndex();
+                 SactiveIndex = activeIndex.toString();
                  formController.stepToNextEvent(true);
                  //Don't overshoot starting point
                  if (formController.getFormIndex().equals(activeStopIndex)) {
