@@ -35,7 +35,7 @@ class DeleteProjectTest {
 
             // Assert switching to Turtle nesting
             .checkIsToastWithMessageDisplayed(R.string.switched_project, "Demo project")
-            .assertProjectIcon("D")
+            .assertProjectIcon("B")
 
             // Delete Demo project
             .openProjectSettings()

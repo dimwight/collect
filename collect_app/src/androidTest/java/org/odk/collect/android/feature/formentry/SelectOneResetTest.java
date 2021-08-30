@@ -16,7 +16,6 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Asser
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.A;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.B;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.C;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.D;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.E;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.ItemsetType.FastExternal;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.ItemsetType.Internal;
@@ -95,7 +94,7 @@ SelectOneResetTest {
     }
 
     enum Block {
-        A, B, C, D, E;
+        A, B;
 
         @NotNull String groupLabel(@NotNull SectionVariant variant) {
             return "group_" + name() + "-" + variant.ordinal();
@@ -180,14 +179,11 @@ SelectOneResetTest {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
                 boolean testSelectedVariants = true;
-                boolean testBlockB = false;
-                boolean testBlockA = testBlockB && false;
-                boolean testBlockC = testBlockA && true;
-                boolean testBlocksDE = true &&
+                boolean testBlockA = false;
+                boolean testBlockB = false &&
                         (this instanceof ForPr ||
                                 variant.itemsetType == Internal
                                 || STAGE_3.isApplied());
-                boolean testBlockE = testBlocksDE && true;
                 int lastOrdinal = 3;
                 int ordinal = variant.ordinal();
                 if (ordinal > lastOrdinal) {
@@ -201,19 +197,11 @@ SelectOneResetTest {
                 if (testBlockA) {
                     testBlockABC(A, hierarchy);
                 }
+                hierarchy.clickGoUpIcon();
+                hierarchy.clickGoUpIcon();
                 hierarchy.clickOnGroup(B.groupLabel(variant));
                 if (testBlockB) {
-                    testBlockABC(B, hierarchy);
-                }
-                hierarchy.clickOnGroup(C.groupLabel(variant));
-                if (testBlockC) {
-                    testBlockABC(C, hierarchy);
-                }
-                hierarchy.clickGoUpIcon();
-                hierarchy.clickGoUpIcon();
-                hierarchy.clickOnGroup(D.groupLabel(variant));
-                if (testBlocksDE) {
-                    testBlocksDE(hierarchy, testBlockE);
+                    testBlockB(hierarchy);
                 }
                 hierarchy.clickGoUpIcon();
                 Timber.i("passed " + variant + "=" + ordinal);
@@ -311,8 +299,8 @@ SelectOneResetTest {
             return hierarchy;
         }
 
-        FormHierarchyPage testBlocksDE(FormHierarchyPage hierarchy, boolean testBlockE) {
-            Block block = D;
+        FormHierarchyPage testBlockB(FormHierarchyPage hierarchy) {
+            Block block = B;
             Timber.i(newBlockMsg(block, variantNow));
             String wardLabel = block.wardLabel(variantNow);
             FormEntryPage entry = hierarchy.clickOnQuestion(wardLabel);
@@ -445,8 +433,8 @@ SelectOneResetTest {
                 testBlockABC(C, hierarchy)
                         .clickGoUpIcon()
                         .clickGoUpIcon()
-                        .clickOnGroup(D.groupLabel(variant));
-                testBlocksDE(hierarchy, true)
+                        .clickOnGroup(B.groupLabel(variant));
+                testBlockB(hierarchy)
                         .clickGoUpIcon();
                 Timber.i("passed " + variant + "=" + ordinal);
             }
@@ -528,8 +516,8 @@ SelectOneResetTest {
             return entry.clickGoToArrow();
         }
 
-        FormHierarchyPage testBlocksDE(FormHierarchyPage hierarchy, boolean testBlockE) {
-            Block block = D;
+        FormHierarchyPage testBlockB(FormHierarchyPage hierarchy) {
+            Block block = B;
             Timber.i(newBlockMsg(block, variantNow));
             String wardLabel = block.wardLabel(variantNow);
             FormEntryPage entry = hierarchy.clickOnQuestion(wardLabel);
@@ -701,8 +689,8 @@ SelectOneResetTest {
             return entry.clickGoToArrow();
         }
 
-        FormHierarchyPage testBlocksDE(FormHierarchyPage hierarchy, boolean testBlockE) {
-            Block block = D;
+        FormHierarchyPage testBlockB(FormHierarchyPage hierarchy) {
+            Block block = B;
             Timber.i(newBlockMsg(block, variantNow));
             String wardLabel = block.wardLabel(variantNow);
             FormEntryPage entry = hierarchy.clickOnQuestion(wardLabel);
