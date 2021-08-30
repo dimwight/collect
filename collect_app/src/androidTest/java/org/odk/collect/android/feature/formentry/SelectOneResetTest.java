@@ -50,9 +50,10 @@ SelectOneResetTest {
 
     enum Appearance {
         Plain,
-        Autocomplete,
         Minimal,
-        MinimalAutocomplete;
+        MinimalAutocomplete,
+//        Autocomplete
+        ;
 
         public boolean isMinimal() {
             return this == Minimal || this == MinimalAutocomplete;
@@ -289,7 +290,7 @@ SelectOneResetTest {
                         //AA4e
                         .assertText(TEXT_CAMERON);
             }
-            assertInfo(AA4e, assertAA4e);
+            assertInfo(AA4e);
             entry.clickGoToArrow();
             return hierarchy;
         }
@@ -310,7 +311,7 @@ SelectOneResetTest {
                 } else {
                     entry.clickOnText(TEXT_NORTH);
                 }
-                assertInfo(B1e, assertB1e);
+                assertInfo(B1e);
                 entry.clickOnText(TEXT_EAST)
                         .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_BROWNSVILLE)
@@ -348,7 +349,7 @@ SelectOneResetTest {
                 //BB4h
                 hierarchy.assertText(TEXT_TEXAS, TEXT_CAMERON);
             }
-            assertInfo(BB4h, assertBB4h);
+            assertInfo(BB4h);
 
             return hierarchy;
         }
@@ -482,8 +483,7 @@ SelectOneResetTest {
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH)
                     //BB4h
-                    .assertText(TEXT_TEXAS, TEXT_CAMERON)
-                    .clickGoUpIcon();
+                    .assertText(TEXT_TEXAS, TEXT_CAMERON);
         }
 
     }
@@ -498,11 +498,6 @@ SelectOneResetTest {
     }
 
     private void assertInfo(Assert asserty) {
-        assertInfo(asserty, true);
-    }
-
-    private void assertInfo(Assert asserty, boolean didAssert) {
-        Timber.i((didAssert ? "Asserted " : "Did not assert ")
-                + asserty);
+        Timber.i("Asserted " + asserty);
     }
 }
