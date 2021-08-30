@@ -302,19 +302,19 @@ SelectOneResetTest {
             FormEntryPage entry = hierarchy.clickOnQuestion(wardLabel);
             boolean minimal = variantNow.appearance.isMinimal();
             if (minimal) {
-                entry.clickOnText(TEXT_NO, 0)
-                        .clickOnText(TEXT_BROWNSVILLE, 0)
+                entry.clickOnText(TEXT_NO)
+                        .clickOnText(TEXT_BROWNSVILLE)
                         .clickOnText(TEXT_HARLINGEN)
-                        .clickOnText(TEXT_YES, 0);
+                        .clickOnText(TEXT_YES);
                 //B1e
                 if (assertB1e) {
                     entry.clickOnText(TEXT_SELECT_ANSWER);
                 } else {
-                    entry.clickOnText(TEXT_NORTH, 0);
+                    entry.clickOnText(TEXT_NORTH);
                 }
                 assertInfo(B1e, assertB1e);
                 entry.clickOnText(TEXT_EAST)
-                        .clickOnText(TEXT_HARLINGEN, 0)
+                        .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_BROWNSVILLE)
                         //B2e
                         .clickOnText(TEXT_SELECT_ANSWER);
@@ -323,22 +323,22 @@ SelectOneResetTest {
                         .scrollToAndClickText(TEXT_TEXAS, 0)
                         .clickOnText(TEXT_WASHINGTON);
             } else {
-                entry.scrollToAndClickText(TEXT_NO, 0)
-                        .clickOnText(TEXT_HARLINGEN, 0)
-                        .scrollToAndClickText(TEXT_YES, 0)
-                        .scrollToText(TEXT_WEST, 0)
+                entry.scrollToAndClickText(TEXT_NO)
+                        .clickOnText(TEXT_HARLINGEN)
+                        .scrollToAndClickText(TEXT_YES)
+                        .scrollToText(TEXT_WEST)
                         //B1e
-                        .assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0);
+                        .assertTextIsNotChecked(TEXT_WEST)
+                        .assertTextIsNotChecked(TEXT_EAST);
                 assertInfo(B1e);
-                entry.clickOnText(TEXT_EAST, 0)
-                        .clickOnText(TEXT_BROWNSVILLE, 0)
-                        .scrollToText(TEXT_SOUTH, 0)
+                entry.clickOnText(TEXT_EAST)
+                        .clickOnText(TEXT_BROWNSVILLE)
+                        .scrollToText(TEXT_SOUTH)
                         //B2e
-                        .assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0);
+                        .assertTextIsNotChecked(TEXT_SOUTH)
+                        .assertTextIsNotChecked(TEXT_NORTH);
                 assertInfo(B2e);
-                entry.clickOnText(TEXT_NORTH, 0)
+                entry.clickOnText(TEXT_NORTH)
                         .scrollToAndClickText(TEXT_WASHINGTON, 0);
             }
             entry.clickGoToArrow()
@@ -456,36 +456,36 @@ SelectOneResetTest {
             FormEntryPage entry = hierarchy.clickOnQuestion(wardLabel);
             boolean minimal = variantNow.appearance.isMinimal();
             if (minimal) {
-                entry.clickOnText(TEXT_NO, 0)
-                        .clickOnText(TEXT_BROWNSVILLE, 0)
+                entry.clickOnText(TEXT_NO)
+                        .clickOnText(TEXT_BROWNSVILLE)
                         .clickOnText(TEXT_HARLINGEN)
-                        .clickOnText(TEXT_YES, 0)
+                        .clickOnText(TEXT_YES)
                         //B1e
                         .clickOnText(TEXT_SELECT_ANSWER)
                         .clickOnText(TEXT_EAST)
-                        .clickOnText(TEXT_HARLINGEN, 0)
+                        .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_BROWNSVILLE)
                         //B2e
                         .clickOnText(TEXT_SELECT_ANSWER)
                         .clickOnText(TEXT_NORTH)
-                        .scrollToAndClickText(TEXT_TEXAS, 0)
+                        .scrollToAndClickText(TEXT_TEXAS)
                         .clickOnText(TEXT_WASHINGTON);
             } else {
-                entry.scrollToAndClickText(TEXT_NO, 0)
-                        .clickOnText(TEXT_HARLINGEN, 0)
-                        .scrollToAndClickText(TEXT_YES, 0)
-                        .scrollToText(TEXT_WEST, 0)
+                entry.scrollToAndClickText(TEXT_NO)
+                        .clickOnText(TEXT_HARLINGEN)
+                        .scrollToAndClickText(TEXT_YES)
+                        .scrollToText(TEXT_WEST)
                         //B1e
-                        .assertTextIsNotChecked(TEXT_WEST, 0)
-                        .assertTextIsNotChecked(TEXT_EAST, 0)
-                        .clickOnText(TEXT_EAST, 0)
-                        .clickOnText(TEXT_BROWNSVILLE, 0)
-                        .scrollToText(TEXT_SOUTH, 0)
+                        .assertTextIsNotChecked(TEXT_WEST)
+                        .assertTextIsNotChecked(TEXT_EAST)
+                        .clickOnText(TEXT_EAST)
+                        .clickOnText(TEXT_BROWNSVILLE)
+                        .scrollToText(TEXT_SOUTH)
                         //B2e
-                        .assertTextIsNotChecked(TEXT_SOUTH, 0)
-                        .assertTextIsNotChecked(TEXT_NORTH, 0)
-                        .clickOnText(TEXT_NORTH, 0)
-                        .scrollToAndClickText(TEXT_WASHINGTON, 0);
+                        .assertTextIsNotChecked(TEXT_SOUTH)
+                        .assertTextIsNotChecked(TEXT_NORTH)
+                        .clickOnText(TEXT_NORTH)
+                        .scrollToAndClickText(TEXT_WASHINGTON);
             }
             return entry.clickGoToArrow()
                     //B3h
