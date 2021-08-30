@@ -13,6 +13,9 @@ import org.odk.collect.android.utilities.FlingRegister;
 import org.odk.collect.android.utilities.ScreenUtils;
 import org.odk.collect.shared.Settings;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import timber.log.Timber;
 
 public class
@@ -68,13 +71,30 @@ SwipeHandler {
 
         }
 
+        Timer scrollTimer;
+        int timerCalls;
+
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
-            if (odkView != null) {
-                odkView.cancelLongPress();
-                odkView.monitorScrollY(e1, e2, distanceY);
+            if (odkView == null) {
+                return false;
             }
+            // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
+            odkView.cancelLongPress();
+
+            //For #3027
+            timerCalls++;
+            if (scrollTimer != null) {
+                scrollTimer.cancel();
+            }
+            scrollTimer = new Timer();
+            scrollTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    odkView.onViewScrolled();
+                }
+            }, 1000);
+
             return false;
         }
 

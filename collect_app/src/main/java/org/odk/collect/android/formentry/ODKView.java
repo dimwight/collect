@@ -98,8 +98,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import javax.inject.Inject;
 
@@ -491,13 +489,40 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
         scrollTo(setActive);
     }
 
+    public void onViewScrolled() {
+        FormController formController = Collect.getInstance().getFormController();
+        if (widgets.isEmpty() || formController == null) {
+            return;
+        }
+        for (QuestionWidget widget : widgets) {
+            Rect bounds = new Rect();
+            widget.getLocalVisibleRect(bounds);
+            int t = bounds.top;
+            int b = bounds.bottom;
+            int b2t = b - t;
+            boolean t0 = t >= 0;
+            int h = t0 ? b : b2t;
+            boolean tb2t = t0 && b2t * 2 > h;
+            String msg = String.format("%s t:%s b:%s h:%s tb2t:%s", //widget.getLabelText(),
+                    widget.getLabelText(),
+                    t, b, h, tb2t);
+            if (tb2t) {
+                formController.setFieldListActiveIndex(
+                        widget.getFormEntryPrompt().getIndex());
+                Timber.i("oVS: %s", msg);
+                break;
+            }
+        }
+    }
+
     /**
      * Returns true if any part of the question widget is currently on the screen or false otherwise.
      */
     public boolean isDisplayed(QuestionWidget qw) {
         Rect scrollBounds = new Rect();
         findViewById(R.id.odk_view_container).getHitRect(scrollBounds);
-        return qw.getLocalVisibleRect(scrollBounds);
+        boolean filled = qw.getLocalVisibleRect(scrollBounds);
+        return filled;
     }
 
 
@@ -706,28 +731,5 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
             widgetValueChangedListener.widgetValueChanged(changedWidget);
         }
 
-    }
-
-    Timer timer;
-    int calls;
-
-    public void monitorScrollY(MotionEvent e1, MotionEvent e2,
-                               float distanceY) {
-        if (timer != null) {
-            timer.cancel();
-        }
-        timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                calls++;
-                ArrayList<QuestionWidget> notShown = new ArrayList<>();
-                for (QuestionWidget widget :
-                        widgets) {
-                    if (widget.getClipBounds() == null)
-                        notShown.add(widget);
-                }
-            }
-        }, 1000);
     }
 }

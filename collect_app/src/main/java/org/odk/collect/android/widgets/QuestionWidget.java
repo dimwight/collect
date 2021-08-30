@@ -454,9 +454,14 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
 
     public void setFieldListActiveIndex() {
         FormController formController = Collect.getInstance().getFormController();
-        formController.setFieldListActiveIndex(
-                getQuestionDetails().getPrompt().getIndex()
-        );
+        if (false)
+            formController.setFieldListActiveIndex(
+                    getQuestionDetails().getPrompt().getIndex()
+            );
     }
 
+    public String getLabelText() {
+        return getQuestionDetails().getPrompt()
+                .getFormElement().getLabelInnerText();
+    }
 }
