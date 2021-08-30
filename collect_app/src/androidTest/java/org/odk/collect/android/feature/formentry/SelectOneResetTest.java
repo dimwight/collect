@@ -190,10 +190,10 @@ SelectOneResetTest {
                     continue;
                 }
                 Timber.i("testing " + variant + "=" + ordinal);
+                hierarchy.clickOnGroup(A.groupLabel(variant));
                 if (testBlockA) {
                     testBlockA(A, hierarchy);
                 }
-                hierarchy.clickGoUpIcon();
                 hierarchy.clickGoUpIcon();
                 hierarchy.clickOnGroup(B.groupLabel(variant));
                 if (testBlockB) {
