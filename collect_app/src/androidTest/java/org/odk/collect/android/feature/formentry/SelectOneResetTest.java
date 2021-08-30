@@ -185,7 +185,7 @@ SelectOneResetTest {
                 if (ordinal > lastOrdinal) {
                     break;
                 } else if (testSelectedVariants && !(
-                        ordinal == 3
+                        ordinal > 1
                 )) {
                     continue;
                 }
