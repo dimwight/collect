@@ -356,7 +356,7 @@ SelectOneResetTest {
     }
 
     private class ForPr extends Staged {
-        void testVariants_(FormHierarchyPage hierarchy) {
+        void testVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
                 int ordinal = variant.ordinal();

@@ -20,7 +20,6 @@ import org.odk.collect.android.widgets.items.SelectOneWidget;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import timber.log.Timber;
 
@@ -72,15 +71,21 @@ public class SelectOneWidgetUtils {
         }
 
         FormController fc = Collect.getInstance().getFormController();
-        if (fc == null //Impossible?
-                || fc.indexIsInFieldList(fc.getFormIndex()) //In field list?
-                || fc.getQuestionPrompt() == null) { //In unit test?
+        if (fc == null
+                //In field list?
+                || fc.indexIsInFieldList()
+                //In unit test?
+                || fc.getQuestionPrompt() == null) {
             return;
         }
 
         //Store current index, perform check, revert index
         FormIndex thenIndex = fc.getFormIndex();
-        doCascadeCheck(fc);
+        try {
+            doCascadeCheck(fc);
+        } catch (JavaRosaException e) {
+            Timber.d(e);
+        }
         fc.jumpToIndex(thenIndex);
     }
 
@@ -90,69 +95,71 @@ public class SelectOneWidgetUtils {
         boolean hasFastExternal = false;
         for (FormEntryPrompt question : questionsAfterSave) {
             hasFastExternal |= question.getFormElement()
-                    .getAdditionalAttribute(null, "query") == null;
+                    .getAdditionalAttribute(null, "query") != null;
         }
         if (!hasFastExternal) {
             return;
         }
         FormController fc = Collect.getInstance().getFormController();
-        //Formality
-        if (fc == null) {
+        if (fc == null
+                //In field list?
+                || !fc.indexIsInFieldList()) {
             return;
         }
 
         //Store current index, prepare for and perform check, revert index
         FormIndex thenIndex = fc.getFormIndex();
         fc.jumpToIndex(lastChangedIndex);
-        doCascadeCheck(fc);
+        try {
+            doCascadeCheck(fc);
+        } catch (JavaRosaException e) {
+            Timber.d(e);
+        }
         fc.jumpToIndex(thenIndex);
     }
 
-    private static void doCascadeCheck(FormController fc) {
-        try {
-            //Mini method
-            Supplier<String> getQuestionName = () -> {
-                String raw = fc.getQuestionPrompt()
-                        .getFormElement()
-                        .getBind()
-                        .getReference()
-                        .toString();
-                return raw.replaceAll(".+/([^/]+)$", "$1");
-            };
+    private static void doCascadeCheck(FormController fc) throws JavaRosaException {
+        //'Macros'
+        Function<FormEntryPrompt, String> getQuestionName = (question) ->
+                question.getFormElement().getBind()
+                        .getReference().toString()
+                        .replaceAll(".+/([^/]+)$", "$1");
 
-            //Used across iterations
-            String precedingMemberName = getQuestionName.get();
-            String skippedName = BAD_NAME;
-            //Loop until non-question
-            while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION) {
-                //Get question
-                FormEntryPrompt question = fc.getQuestionPrompt();
-                //Read name
-                String questionName = getQuestionName.get();
-                //Check for query string
-                String query = question.getFormElement()
-                        .getAdditionalAttribute(null, "query");
-                //No query?
-                if (query == null) {
-                    //Remember name for later - could be first member of next cascade
-                    skippedName = questionName;
-                    continue;
-                }
-                //Second member of next cascade?
-                if (queryMatchesName.test(query, skippedName)) {
-                    break;
-                }
-                //Reset anyway (could be about to be hidden)
-                fc.saveAnswer(question.getIndex(), null);
-                //Found next member of cascade?
-                if (queryMatchesName.test(query, precedingMemberName)) {
-                    //Ready to carry on looking
-                    precedingMemberName = questionName;
-                }
+        BiPredicate<String, String> queryMatchesName = (query, name) ->
+                query.matches(".*\\b" + name + "\\b.*");
+
+        //Used across iterations
+        String precedingMemberName = getQuestionName.apply(fc.getQuestionPrompt());
+        Timber.i("change: %s", precedingMemberName);
+        String skippedName = "123";
+
+        //Loop until non-question
+        while (fc.stepToNextScreenEvent() == FormEntryController.EVENT_QUESTION) {
+            //Get question
+            FormEntryPrompt question = fc.getQuestionPrompt();
+            //Read name
+            String questionName = getQuestionName.apply(question);
+            //Check for query string
+            String query = question.getFormElement()
+                    .getAdditionalAttribute(null, "query");
+            //No query?
+            if (query == null) {
+                //Remember name - could be first member of unrelated cascade
+                skippedName = questionName;
+                continue;
             }
-
-        } catch (JavaRosaException e) {
-            Timber.d(e);
+            //Second member of unrelated cascade?
+            if (queryMatchesName.test(query, skippedName)) {
+                break;
+            }
+            //Reset anyway (could be about to be hidden or just unhidden)
+            fc.saveAnswer(question.getIndex(), null);
+            Timber.i("reset: %s", questionName);
+            //Found next member of cascade?
+            if (queryMatchesName.test(query, precedingMemberName)) {
+                //Ready to carry on checking
+                precedingMemberName = questionName;
+            }
         }
     }
 
@@ -238,7 +245,11 @@ public class SelectOneWidgetUtils {
         if (true) {
             FormIndex thenIndex = fc.getFormIndex();
             fc.jumpToIndex(lastChangedIndex);
-            doCascadeCheck(fc);
+            try {
+                doCascadeCheck(fc);
+            } catch (JavaRosaException e) {
+                e.printStackTrace();
+            }
             fc.jumpToIndex(thenIndex);
             return;
         }
