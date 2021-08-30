@@ -175,7 +175,7 @@ SelectOneResetTest {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
                 boolean testSelectedVariants = true;
-                boolean testBlockA = false;
+                boolean testBlockA = true;
                 boolean testBlockB = true &&
                         (this instanceof ForPr ||
                                 variant.itemsetType == Internal
