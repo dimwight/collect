@@ -62,7 +62,8 @@ import javax.inject.Inject;
 import timber.log.Timber;
 
 @SuppressLint("BinaryOperationInTimber")
-public class FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
+public class
+FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
 
     public static final int RESULT_ADD_REPEAT = 2;
     /**

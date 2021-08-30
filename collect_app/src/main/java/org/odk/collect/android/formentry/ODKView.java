@@ -111,7 +111,8 @@ import timber.log.Timber;
  * {@code field-list} appearance.
  */
 @SuppressLint("ViewConstructor")
-public class ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedListener {
+public class
+ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedListener {
 
     private final LinearLayout widgetsList;
     private final LinearLayout.LayoutParams layout;

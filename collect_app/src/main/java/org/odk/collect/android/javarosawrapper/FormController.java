@@ -72,7 +72,8 @@ import timber.log.Timber;
  *
  * @author carlhartung
  */
-public class FormController {
+public class
+FormController {
 
     public static final boolean STEP_INTO_GROUP = true;
     public static final boolean STEP_OVER_GROUP = false;

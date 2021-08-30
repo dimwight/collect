@@ -15,7 +15,8 @@ import org.odk.collect.shared.Settings;
 
 import timber.log.Timber;
 
-public class SwipeHandler {
+public class
+SwipeHandler {
 
     private final GestureDetector gestureDetector;
     private final OnSwipeListener onSwipe;
