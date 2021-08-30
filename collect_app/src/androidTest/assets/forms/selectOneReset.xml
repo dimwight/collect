@@ -1,13 +1,11 @@
 <?xml version="1.0"?>
-<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events"
-    xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa"
-    xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:odk="http://www.opendatakit.org/xforms" xmlns="http://www.w3.org/2002/xforms">
     <h:head>
         <h:title>selectOneReset</h:title>
         <model odk:xforms-version="1.0.0">
             <instance>
-                <data id="selectOneReset" version="2021-08-30 A">
+                <data id="selectOneReset" version="2021-08-30 B">
                     <section-2 />
                     <group_A-2>
                         <state_A-2>tx</state_A-2>
@@ -24,6 +22,8 @@
                         <city_B-2>brownsville</city_B-2>
                         <show_ward_B-2>yes</show_ward_B-2>
                         <ward_B-2>ward_n</ward_B-2>
+                        <state_BB-2>tx</state_BB-2>
+                        <county_BB-2>cameron</county_BB-2>
                     </group_B-2>
                     <section-3 />
                     <group_A-3>
@@ -41,6 +41,8 @@
                         <city_B-3>brownsville</city_B-3>
                         <show_ward_B-3>yes</show_ward_B-3>
                         <ward_B-3>ward_n</ward_B-3>
+                        <state_BB-3>tx</state_BB-3>
+                        <county_BB-3>cameron</county_BB-3>
                     </group_B-3>
                     <meta>
                         <instanceID />
@@ -62,6 +64,8 @@
             <bind nodeset="/data/group_B-2/show_ward_B-2" type="string" />
             <bind nodeset="/data/group_B-2/ward_B-2"
                 relevant=" /data/group_B-2/show_ward_B-2 ='yes'" type="string" />
+            <bind nodeset="/data/group_B-2/state_BB-2" type="string" />
+            <bind nodeset="/data/group_B-2/county_BB-2" type="string" />
             <bind nodeset="/data/section-3" readonly="true()" type="string" />
             <bind nodeset="/data/group_A-3/state_A-3" type="string" />
             <bind nodeset="/data/group_A-3/county_A-3" type="string" />
@@ -77,8 +81,10 @@
             <bind nodeset="/data/group_B-3/show_ward_B-3" type="string" />
             <bind nodeset="/data/group_B-3/ward_B-3"
                 relevant=" /data/group_B-3/show_ward_B-3 ='yes'" type="string" />
-            <bind jr:preload="uid" nodeset="/data/meta/instanceID" readonly="true()"
-                type="string" />
+            <bind nodeset="/data/group_B-3/state_BB-3" type="string" />
+            <bind nodeset="/data/group_B-3/county_BB-3" type="string" />
+            <bind nodeset="/data/meta/instanceID" readonly="true()" type="string"
+                jr:preload="uid" />
         </model>
     </h:head>
     <h:body>
@@ -174,6 +180,21 @@
             <input query="instance('wards')/root/item[city= /data/group_B-2/city_B-2 ]"
                 ref="/data/group_B-2/ward_B-2">
                 <label>ward_B-2</label>
+            </input>
+            <select1 ref="/data/group_B-2/state_BB-2">
+                <label>state_BB-2</label>
+                <item>
+                    <label>Texas</label>
+                    <value>tx</value>
+                </item>
+                <item>
+                    <label>Washington</label>
+                    <value>wa</value>
+                </item>
+            </select1>
+            <input query="instance('counties')/root/item[state= /data/group_B-2/state_BB-2 ]"
+                ref="/data/group_B-2/county_BB-2">
+                <label>county_BB-2</label>
             </input>
         </group>
         <input ref="/data/section-3">
@@ -273,6 +294,22 @@
                 query="instance('wards')/root/item[city= /data/group_B-3/city_B-3 ]"
                 ref="/data/group_B-3/ward_B-3">
                 <label>ward_B-3</label>
+            </input>
+            <select1 appearance="minimal" ref="/data/group_B-3/state_BB-3">
+                <label>state_BB-3</label>
+                <item>
+                    <label>Texas</label>
+                    <value>tx</value>
+                </item>
+                <item>
+                    <label>Washington</label>
+                    <value>wa</value>
+                </item>
+            </select1>
+            <input appearance="minimal"
+                query="instance('counties')/root/item[state= /data/group_B-3/state_BB-3 ]"
+                ref="/data/group_B-3/county_BB-3">
+                <label>county_BB-3</label>
             </input>
         </group>
     </h:body>

@@ -12,7 +12,7 @@ import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Asser
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.B1e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.B2e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.B3h;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.B4h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.BB4h;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.A;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Block.B;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.ItemsetType.FastExternal;
@@ -153,11 +153,11 @@ SelectOneResetTest {
 
     private SectionVariant variantNow;
 
-    enum Assert {A1e, A2e, A3e, AA4e, A1h, A2h, A3h, B1e, B2e, B3h, B4h}
+    enum Assert {A1e, A2e, A3e, AA4e, A1h, A2h, A3h, B1e, B2e, B3h, BB4h}
 
     protected final boolean assertAA4e = true;
     protected final boolean assertB1e = true;
-    protected final boolean assertB4h = true;
+    protected final boolean assertBB4h = true;
 
     @Test
     public void testAllVariants() {
@@ -176,7 +176,7 @@ SelectOneResetTest {
                 variantNow = variant;
                 boolean testSelectedVariants = true;
                 boolean testBlockA = false;
-                boolean testBlockB = false &&
+                boolean testBlockB = true &&
                         (this instanceof ForPr ||
                                 variant.itemsetType == Internal
                                 || STAGE_3.isApplied());
@@ -346,13 +346,11 @@ SelectOneResetTest {
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH);
             assertInfo(B3h);
-            if (assertB4h) {
-                //B4h
-                hierarchy.clickOnGroup(B.groupLabel(variantNow))
-                        .assertText(TEXT_CAMERON)
-                        .clickGoUpIcon();
+            if (assertBB4h) {
+                //BB4h
+                hierarchy.assertText(TEXT_TEXAS, TEXT_CAMERON);
             }
-            assertInfo(B4h, assertB4h);
+            assertInfo(BB4h, assertBB4h);
 
             return hierarchy;
         }
@@ -493,7 +491,7 @@ SelectOneResetTest {
                     //B3h
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
                     .assertTextDoesNotExist(TEXT_NORTH)
-                    //B4h
+                    //BB4h
                     .clickOnGroup(B.groupLabel(variantNow))
                     .assertText(TEXT_CAMERON)
                     .clickGoUpIcon();
