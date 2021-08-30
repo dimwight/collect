@@ -130,7 +130,7 @@ public class SelectOneWidgetUtils {
 
         //Used across iterations
         String precedingMemberName = getQuestionName.apply(fc.getQuestionPrompt());
-        Timber.i("change: %s", precedingMemberName);
+        Timber.i("changed: %s", precedingMemberName);
         String skippedName = "123";
 
         //Loop until non-question

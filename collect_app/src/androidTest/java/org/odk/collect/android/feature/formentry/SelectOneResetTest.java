@@ -175,7 +175,7 @@ SelectOneResetTest {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
                 boolean testSelectedVariants = false;
-                boolean testBlockA = false;
+                boolean testBlockA = true;
                 boolean testBlockB = true &&
                         (this instanceof ForPr ||
                                 variant.itemsetType == Internal
@@ -459,7 +459,7 @@ SelectOneResetTest {
                         //B2e
                         .clickOnText(TEXT_SELECT_ANSWER)
                         .clickOnText(TEXT_NORTH)
-                        .scrollToAndClickText(TEXT_TEXAS)
+                        .scrollToAndClickText(TEXT_TEXAS, 0)
                         .clickOnText(TEXT_WASHINGTON);
             } else {
                 entry.scrollToAndClickText(TEXT_NO)
