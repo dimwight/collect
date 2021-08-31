@@ -489,6 +489,7 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
         scrollTo(setActive);
     }
 
+    //Added for #3027
     public void onViewScrolled() {
         FormController formController = Collect.getInstance().getFormController();
         if (widgets.isEmpty() || formController == null) {

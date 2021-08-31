@@ -40,7 +40,9 @@ public class SelectOneMinimalWidget extends SelectMinimalWidget {
 
     @Override
     protected void showDialog() {
+        //Added for #3027
         setFieldListActiveIndex();
+
         int numColumns = Appearances.getNumberOfColumns(getFormEntryPrompt(), screenUtils);
         boolean noButtonsMode = Appearances.isCompactAppearance(getFormEntryPrompt()) || Appearances.isNoButtonsAppearance(getFormEntryPrompt());
 

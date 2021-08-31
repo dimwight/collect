@@ -137,6 +137,7 @@ public class SelectMultipleListAdapter extends AbstractSelectListAdapter {
             }
             playAudio(selection.choice);
         }
+        //Added for #3027
         ((SelectMultiWidget) listener).setFieldListActiveIndex();
     }
 

@@ -56,6 +56,7 @@ public class TimeWidget extends QuestionWidget implements WidgetDataReceiver {
             binding.timeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontSize);
 
             binding.timeButton.setOnClickListener(v -> {
+                //Added for #3027
                 setFieldListActiveIndex();
                 DateTimeWidgetUtils.setWidgetWaitingForData(prompt.getIndex());
                 widgetUtils.showTimePickerDialog(context, selectedTime);

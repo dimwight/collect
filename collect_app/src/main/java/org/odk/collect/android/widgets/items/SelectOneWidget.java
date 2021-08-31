@@ -101,6 +101,8 @@ public class SelectOneWidget extends BaseSelectListWidget {
 
         clearFollowingItemsetWidgets();
         widgetValueChanged();
+
+        //Added for #3027
         setFieldListActiveIndex();
     }
 

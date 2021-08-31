@@ -82,7 +82,9 @@ public class SelectMultiWidget extends BaseSelectListWidget {
 
     @Override
     public void onItemClicked() {
+        //Added for #3027
         setFieldListActiveIndex();
+
         widgetValueChanged();
     }
 }

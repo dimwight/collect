@@ -57,6 +57,7 @@ public class DateWidget extends QuestionWidget implements WidgetDataReceiver {
             binding.dateButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontSize);
 
             binding.dateButton.setOnClickListener(v -> {
+                //Added for #3027
                 setFieldListActiveIndex();
                 DateTimeWidgetUtils.setWidgetWaitingForData(prompt.getIndex());
                 widgetUtils.showDatePickerDialog(context, datePickerDetails, selectedDate);

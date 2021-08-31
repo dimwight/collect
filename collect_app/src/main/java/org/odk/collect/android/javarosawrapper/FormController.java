@@ -121,7 +121,7 @@ FormController {
     private final FormEntryController formEntryController;
     private FormIndex indexWaitingForData;
 
-    //To transfer flag #3027
+    //Added for #3027
     private FormIndex fieldListActiveIndex;
 
     public FormController(File mediaFolder, FormEntryController fec, File instanceFile) {

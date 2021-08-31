@@ -148,6 +148,7 @@ public class StringWidget extends QuestionWidget {
         answerEditText.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Added for #3027 (needs two clicks!)
                 setFieldListActiveIndex();
             }
         });
@@ -176,6 +177,7 @@ public class StringWidget extends QuestionWidget {
             @Override
             public void afterTextChanged(Editable s) {
                 widgetValueChanged();
+                //Added for #3027
                 String label = getFormEntryPrompt().getFormElement().getLabelInnerText();
                 String textNow = s.toString();
                 if (!(ignores-- >= 0

@@ -452,6 +452,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         }
     }
 
+    //Added for #3027
     public void setFieldListActiveIndex() {
         FormController formController = Collect.getInstance().getFormController();
         if (true)
