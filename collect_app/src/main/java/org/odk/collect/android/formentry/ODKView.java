@@ -496,19 +496,17 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
             return;
         }
         for (QuestionWidget widget : widgets) {
-            if (isDisplayed(widget) && isLabelVisible(widget)) {
+            if (!isDisplayed(widget)) continue;
+            ViewGroup layout = (ViewGroup) widget.getChildAt(0);
+            Rect bounds = new Rect();
+            layout.getChildAt(0).getLocalVisibleRect(bounds);
+            int height = bounds.top >= 0 ? bounds.bottom : 0;
+            boolean labelVisible = height > 0;
+            if (labelVisible) {
                 widget.setFieldListActiveIndex();
                 break;
             }
         }
-    }
-
-    private boolean isLabelVisible(QuestionWidget qw) {
-        ViewGroup layout = (ViewGroup) qw.getChildAt(0);
-        Rect bounds = new Rect();
-        layout.getChildAt(0).getLocalVisibleRect(bounds);
-        int height = bounds.top >= 0 ? bounds.bottom : -1;
-        return height >= 0;
     }
 
     /**
