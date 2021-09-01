@@ -20,7 +20,6 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayable
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -456,50 +455,15 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
     //Added for #3027
     public void setFieldListActiveIndex() {
         FormController formController = Collect.getInstance().getFormController();
-        if (true)
+        if (true) {
             formController.setFieldListActiveIndex(
-                    getQuestionDetails().getPrompt().getIndex()
-            );
+                    getQuestionDetails().getPrompt().getIndex());
+            Timber.i("sFLAI: %s", _getLabelText());
+        }
     }
 
     public String _getLabelText() {
         return getQuestionDetails().getPrompt()
                 .getFormElement().getLabelInnerText();
-    }
-
-    private static final String _N = "\n";
-
-    public String _newInfoMsg() {
-        StringBuilder sb = new StringBuilder(_getLabelText())
-                .append(_N);
-        ViewGroup layout = (ViewGroup) getChildAt(0);
-        _addLayoutInfo(sb, layout, 0);
-        return sb.toString();
-    }
-
-    private void _addLayoutInfo(StringBuilder sb, ViewGroup layout, int indent) {
-        String spaces = new String(new char[indent])
-                .replace("\0", "-");
-        for (int at = 0; at < layout.getChildCount(); at++) {
-            View child = layout.getChildAt(at);
-            sb.append("\n" + spaces + "{")
-                    .append(child.getClass().getSimpleName());
-            if (child instanceof AudioVideoImageTextLabel) {
-                AudioVideoImageTextLabel label = (AudioVideoImageTextLabel) child;
-                Rect bounds = new Rect();
-                label.getLocalVisibleRect(bounds);
-                int t = bounds.top;
-                int b = bounds.bottom;
-                int b2t = b - t;
-                sb.append(String.format("\n%s t:%s b:%s h:%s tb2t:%s", t, b));
-                break;
-            }
-            if (child instanceof ViewGroup) {
-                _addLayoutInfo(sb, (ViewGroup) child, ++indent);
-                sb.append("\n" + spaces + "}");
-            } else {
-                sb.append("}");
-            }
-        }
     }
 }

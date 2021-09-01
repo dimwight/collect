@@ -34,6 +34,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -495,26 +496,19 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
             return;
         }
         for (QuestionWidget widget : widgets) {
-            Rect bounds = new Rect();
-            widget.getLocalVisibleRect(bounds);
-            int t = bounds.top;
-            int b = bounds.bottom;
-            int b2t = b - t;
-            boolean t0 = t >= 0;
-            int h = t0 ? b : b2t;
-            boolean tb2t = t0 && b2t * 2 > h;
-            String msg = false ?
-                    String.format("%s t:%s b:%s h:%s tb2t:%s", //widget.getLabelText(),
-                            widget._getLabelText(),
-                            t, b, h, tb2t)
-                    : widget._newInfoMsg();
-            if (tb2t) {
-                Timber.i("oVS: %s", msg);
-                formController.setFieldListActiveIndex(
-                        widget.getFormEntryPrompt().getIndex());
+            if (isDisplayed(widget) && isLabelVisible(widget)) {
+                widget.setFieldListActiveIndex();
                 break;
             }
         }
+    }
+
+    private boolean isLabelVisible(QuestionWidget qw) {
+        ViewGroup layout = (ViewGroup) qw.getChildAt(0);
+        Rect bounds = new Rect();
+        layout.getChildAt(0).getLocalVisibleRect(bounds);
+        int height = bounds.top >= 0 ? bounds.bottom : -1;
+        return height >= 0;
     }
 
     /**
