@@ -458,7 +458,6 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         if (true) {
             formController.setFieldListActiveIndex(
                     getQuestionDetails().getPrompt().getIndex());
-            Timber.i("sFLAI: %s", _getLabelText());
         }
     }
 

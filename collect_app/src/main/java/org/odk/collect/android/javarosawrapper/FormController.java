@@ -1315,6 +1315,12 @@ FormController {
     }
 
     public void setFieldListActiveIndex(FormIndex index) {
-        if (true) this.fieldListActiveIndex = index;
+        if (true) {
+            this.fieldListActiveIndex = index;
+            if (true)
+                Timber.i("sFLAI: %s",
+                        (index == null ? "null" : index.toString()));
+
+        }
     }
 }

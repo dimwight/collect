@@ -141,6 +141,7 @@ public class FormEntryMenuDelegate implements MenuDelegate, RequiresFormControll
                 FormIndex activeIndex = formController.getFieldListActiveIndex();
                 if (activeIndex != null) {
                     formController.jumpToIndex(activeIndex);
+                    formController.setFieldListActiveIndex(null);
                 }
                 formEntryViewModel.openHierarchy();
                 Intent i = new Intent(activity, FormHierarchyActivity.class);

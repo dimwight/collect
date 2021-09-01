@@ -416,10 +416,8 @@ FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDia
     private void jumpToHierarchyStartIndex() {
         FormController formController = Collect.getInstance().getFormController();
 
-        FormIndex activeIndex = formController.getFieldListActiveIndex();
-        FormIndex startIndex = activeIndex != null ? activeIndex :
+        FormIndex startIndex = false ? formController.getFieldListActiveIndex() :
                 formController.getFormIndex();
-        formController.setFieldListActiveIndex(null);
 
         // If we're not at the first level, we're inside a repeated group so we want to only
         // display everything enclosed within that group.
