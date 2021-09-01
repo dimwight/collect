@@ -1310,16 +1310,19 @@ FormController {
         return getFormDef().getMainInstance().resolveReference(treeReference).getValue();
     }
 
-    public FormIndex getFieldListActiveIndex() {
-        return fieldListActiveIndex;
+    public FormIndex getAndClearFieldListActiveIndex() {
+        FormIndex index = fieldListActiveIndex;
+        fieldListActiveIndex = null;
+        return index;
     }
 
     public void setFieldListActiveIndex(FormIndex index) {
-        if (true) {
+        if (false) {
             this.fieldListActiveIndex = index;
             if (true)
                 Timber.i("sFLAI: %s",
-                        (index == null ? "null" : index.toString()));
+                        (index == null ? "null" : index.toString()
+                                .replaceAll(".*/([^/]+)$", "$1")));
 
         }
     }
