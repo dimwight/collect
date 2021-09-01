@@ -1,5 +1,7 @@
 package org.odk.collect.android.listeners;
 
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_3;
+
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -82,6 +84,7 @@ SwipeHandler {
             // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
             odkView.cancelLongPress();
 
+            if (!STAGE_3.isApplied()) return false;
             //For #3027
             timerCalls++;
             if (scrollTimer != null) {

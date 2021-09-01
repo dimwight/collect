@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 import android.annotation.SuppressLint;
@@ -416,7 +417,7 @@ FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDia
     private void jumpToHierarchyStartIndex() {
         FormController formController = Collect.getInstance().getFormController();
 
-        FormIndex startIndex = false ? formController.getAndClearFieldListActiveIndex() :
+        FormIndex startIndex = false ? formController.getFieldListActiveIndex(true) :
                 formController.getFormIndex();
 
         // If we're not at the first level, we're inside a repeated group so we want to only
@@ -721,7 +722,8 @@ FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDia
     void onQuestionClicked(FormIndex index) {
         FormController formController = Collect.getInstance().getFormController();
         formController.jumpToIndex(index);
-        if (formController.indexIsInFieldList()) {
+        if (STAGE_1.isApplied() &&
+                formController.indexIsInFieldList()) {
             //Record which question should be active
             formController.setFieldListActiveIndex(index);
             try {

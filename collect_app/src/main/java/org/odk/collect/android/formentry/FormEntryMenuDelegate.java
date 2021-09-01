@@ -1,5 +1,6 @@
 package org.odk.collect.android.formentry;
 
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_2;
 import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_BACKGROUND_LOCATION;
 
 import android.content.Intent;
@@ -138,9 +139,11 @@ public class FormEntryMenuDelegate implements MenuDelegate, RequiresFormControll
             } else {
                 formSaveViewModel.saveAnswersForScreen(answersProvider.getAnswers());
 
-                FormIndex activeIndex = formController.getAndClearFieldListActiveIndex();
-                if (activeIndex != null) {
-                    formController.jumpToIndex(activeIndex);
+                if (STAGE_2.isApplied()) {
+                    FormIndex activeIndex = formController.getFieldListActiveIndex(true);
+                    if (activeIndex != null) {
+                        formController.jumpToIndex(activeIndex);
+                    }
                 }
                 formEntryViewModel.openHierarchy();
                 Intent i = new Intent(activity, FormHierarchyActivity.class);

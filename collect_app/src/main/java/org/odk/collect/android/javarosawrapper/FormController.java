@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.javarosawrapper;
 
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
 import static org.odk.collect.android.utilities.ApplicationConstants.Namespaces.XML_OPENDATAKIT_NAMESPACE;
@@ -1310,20 +1311,40 @@ FormController {
         return getFormDef().getMainInstance().resolveReference(treeReference).getValue();
     }
 
-    public FormIndex getAndClearFieldListActiveIndex() {
-        FormIndex index = fieldListActiveIndex;
-        fieldListActiveIndex = null;
-        return index;
+    public enum _UpdateStage {
+        //Current behaviour
+        STAGE_0,
+        //
+        STAGE_1,
+        //
+        STAGE_2,
+        //
+        STAGE_3,
+        //
+        STAGE_4;
+
+        private static _UpdateStage latest = STAGE_1;
+
+        public boolean isApplied() {
+            return latest.ordinal() >= this.ordinal();
+        }
     }
 
     public void setFieldListActiveIndex(FormIndex index) {
-        if (false) {
-            this.fieldListActiveIndex = index;
-            if (true)
-                Timber.i("sFLAI: %s",
-                        (index == null ? "null" : index.toString()
-                                .replaceAll(".*/([^/]+)$", "$1")));
+        if (!STAGE_1.isApplied()) return;
+        fieldListActiveIndex = index;
+        if (true)
+            Timber.i("sFLAI: %s",
+                    (index == null ? "null" : index.toString()
+                            .replaceAll(".*/([^/]+)$", "$1")));
 
+    }
+
+    public FormIndex getFieldListActiveIndex(boolean andClear) {
+        FormIndex index = fieldListActiveIndex;
+        if (andClear) {
+            fieldListActiveIndex = null;
         }
+        return index;
     }
 }

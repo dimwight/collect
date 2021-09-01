@@ -18,6 +18,7 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getClipID;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_4;
 
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
@@ -455,10 +456,10 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
     //Added for #3027
     public void setFieldListActiveIndex() {
         FormController formController = Collect.getInstance().getFormController();
-        if (true) {
-            formController.setFieldListActiveIndex(
-                    getQuestionDetails().getPrompt().getIndex());
-        }
+        if (!STAGE_4.isApplied() ||
+                formController == null) return;
+        formController.setFieldListActiveIndex(
+                getQuestionDetails().getPrompt().getIndex());
     }
 
     public String _getLabelText() {

@@ -15,6 +15,7 @@
 package org.odk.collect.android.formentry;
 
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.*;
 import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 
@@ -475,15 +476,16 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
             return;
         }
         //Retrieve and clear marker, set active #3027
-        FormIndex activeIndex = formController.getAndClearFieldListActiveIndex();
+        FormIndex activeIndex = formController.getFieldListActiveIndex(false);
         int activeAt = 0;
-        for (int at = 0; at < widgets.size(); at++) {
-            //Only set index >=0 if match found
-            if (widgets.get(at).getFormEntryPrompt().getIndex().equals(activeIndex)) {
-                activeAt = at;
-                break;
+        if (STAGE_1.isApplied())
+            for (int at = 0; at < widgets.size(); at++) {
+                //Only set index >=0 if match found
+                if (widgets.get(at).getFormEntryPrompt().getIndex().equals(activeIndex)) {
+                    activeAt = at;
+                    break;
+                }
             }
-        }
         QuestionWidget setActive = widgets.get(activeAt);
         setActive.setFocus(context);
         scrollTo(setActive);
@@ -503,7 +505,8 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
             int height = bounds.top >= 0 ? bounds.bottom : 0;
             boolean labelVisible = height > 0;
             if (labelVisible) {
-                widget.setFieldListActiveIndex();
+                formController.setFieldListActiveIndex(
+                        widget.getQuestionDetails().getPrompt().getIndex());
                 break;
             }
         }
