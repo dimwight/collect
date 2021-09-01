@@ -484,7 +484,6 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
             }
         }
         QuestionWidget setActive = widgets.get(activeAt);
-        setActive.setFieldListActiveIndex();
         setActive.setFocus(context);
         scrollTo(setActive);
     }
@@ -504,13 +503,15 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
             boolean t0 = t >= 0;
             int h = t0 ? b : b2t;
             boolean tb2t = t0 && b2t * 2 > h;
-            String msg = String.format("%s t:%s b:%s h:%s tb2t:%s", //widget.getLabelText(),
-                    widget.getLabelText(),
-                    t, b, h, tb2t);
+            String msg = false ?
+                    String.format("%s t:%s b:%s h:%s tb2t:%s", //widget.getLabelText(),
+                            widget._getLabelText(),
+                            t, b, h, tb2t)
+                    : widget._newInfoMsg();
             if (tb2t) {
+                Timber.i("oVS: %s", msg);
                 formController.setFieldListActiveIndex(
                         widget.getFormEntryPrompt().getIndex());
-                Timber.i("oVS: %s", msg);
                 break;
             }
         }
