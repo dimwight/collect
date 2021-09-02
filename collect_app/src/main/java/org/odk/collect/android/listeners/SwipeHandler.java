@@ -74,7 +74,6 @@ SwipeHandler {
         }
 
         Timer scrollTimer;
-        int timerCalls;
 
         @Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
@@ -86,7 +85,6 @@ SwipeHandler {
 
             if (!STAGE_3.isApplied()) return false;
             //For #3027
-            timerCalls++;
             if (scrollTimer != null) {
                 scrollTimer.cancel();
             }

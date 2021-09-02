@@ -500,10 +500,8 @@ ODKView extends FrameLayout implements OnLongClickListener, WidgetValueChangedLi
         for (QuestionWidget widget : widgets) {
             if (!isDisplayed(widget)) continue;
             ViewGroup layout = (ViewGroup) widget.getChildAt(0);
-            Rect bounds = new Rect();
-            layout.getChildAt(0).getLocalVisibleRect(bounds);
-            int height = bounds.top >= 0 ? bounds.bottom : 0;
-            boolean labelVisible = height > 0;
+            View label = layout.getChildAt(0);
+            boolean labelVisible = label.getLocalVisibleRect(new Rect());
             if (labelVisible) {
                 formController.setFieldListActiveIndex(
                         widget.getQuestionDetails().getPrompt().getIndex());
