@@ -140,7 +140,7 @@ public class FormEntryMenuDelegate implements MenuDelegate, RequiresFormControll
                 formSaveViewModel.saveAnswersForScreen(answersProvider.getAnswers());
 
                 if (STAGE_2.isApplied()) {
-                    FormIndex activeIndex = formController.getFieldListActiveIndex(true);
+                    FormIndex activeIndex = formController.getFieldListActiveIndex(false);
                     if (activeIndex != null) {
                         formController.jumpToIndex(activeIndex);
                     }

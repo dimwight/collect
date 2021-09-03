@@ -475,8 +475,8 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
             return;
         }
         //Retrieve and clear marker, set active #3027
-        FormIndex activeIndex = formController.getFieldListActiveIndex(false);
         int activeAt = 0;
+        FormIndex activeIndex = formController.getFieldListActiveIndex(true);
         if (STAGE_1.isApplied())
             for (int at = 0; at < widgets.size(); at++) {
                 //Only set index >=0 if match found

@@ -1340,9 +1340,9 @@ FormController {
 
     }
 
-    public FormIndex getFieldListActiveIndex(boolean andClear) {
+    public FormIndex getFieldListActiveIndex(boolean preserveValue) {
         FormIndex index = fieldListActiveIndex;
-        if (andClear) {
+        if (!preserveValue) {
             fieldListActiveIndex = null;
         }
         return index;
