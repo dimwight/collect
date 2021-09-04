@@ -14,6 +14,8 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.READ_ONLY;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,8 +49,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-
-import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.READ_ONLY;
 
 public class GeoPolyActivity extends BaseGeoMapActivity implements SettingsDialogFragment.SettingsDialogCallback {
     public static final String ANSWER_KEY = "answer";
@@ -478,11 +478,25 @@ public class GeoPolyActivity extends BaseGeoMapActivity implements SettingsDialo
         int seconds = INTERVAL_OPTIONS[intervalIndex];
         int minutes = seconds / 60;
         int meters = ACCURACY_THRESHOLD_OPTIONS[accuracyThresholdIndex];
+        double sdForDisplay = Double.NaN;
+        if (location != null) {
+            if (location.hasCmAccuracy) {
+                sdForDisplay = location.sd * 100d;
+            } else {
+                sdForDisplay = location.sd * 1d;
+            }
+        }
         locationStatus.setText(
-            location == null ? getString(R.string.location_status_searching)
-                : !usingThreshold ? getString(R.string.location_status_accuracy, location.sd)
-                : acceptable ? getString(R.string.location_status_acceptable, location.sd)
-                : getString(R.string.location_status_unacceptable, location.sd)
+                location == null ? getString(R.string.location_status_searching)
+                        : !usingThreshold ? getString(location.hasCmAccuracy ?
+                        R.string.location_status_accuracy_cm
+                        : R.string.location_status_accuracy_m, sdForDisplay)
+                        : acceptable ? getString(location.hasCmAccuracy ?
+                        R.string.location_status_acceptable_cm
+                        : R.string.location_status_acceptable_m, sdForDisplay)
+                        : getString(location.hasCmAccuracy ?
+                        R.string.location_status_unacceptable_cm
+                        : R.string.location_status_unacceptable_m, sdForDisplay)
         );
         locationStatus.setBackgroundColor(getResources().getColor(
             location == null ? R.color.locationStatusSearching

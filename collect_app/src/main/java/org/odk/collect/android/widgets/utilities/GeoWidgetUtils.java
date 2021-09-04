@@ -24,7 +24,7 @@ public final class GeoWidgetUtils {
             if (answer != null && !answer.isEmpty()) {
                 String[] parts = answer.split(" ");
                 return context.getString(
-                        R.string.gps_result,
+                        R.string.gps_result_m,
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[0]), "lat"),
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[1]), "lon"),
                         truncateDouble(parts[2]),
