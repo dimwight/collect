@@ -23,12 +23,15 @@ public final class GeoWidgetUtils {
         try {
             if (answer != null && !answer.isEmpty()) {
                 String[] parts = answer.split(" ");
+                double sd = Double.parseDouble(parts[3]) / (false ? 10 : 1);
+                boolean cmAccuracy = sd < 1;
+                double sdForDisplay = sd * (cmAccuracy ? 100 : 1);
                 return context.getString(
-                        R.string.gps_result_m,
+                        cmAccuracy ? R.string.gps_result_cm : R.string.gps_result_m,
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[0]), "lat"),
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[1]), "lon"),
                         truncateDouble(parts[2]),
-                        truncateDouble(parts[3])
+                        sdForDisplay
                 );
             }
         } catch (NumberFormatException e) {
