@@ -23,7 +23,7 @@ public final class GeoWidgetUtils {
         try {
             if (answer != null && !answer.isEmpty()) {
                 String[] parts = answer.split(" ");
-                double sd = Double.parseDouble(parts[3]) / (false ? 10 : 1);
+                double sd = Double.parseDouble(parts[3]);
                 boolean cmAccuracy = sd < 1;
                 double sdForDisplay = sd * (cmAccuracy ? 100 : 1);
                 return context.getString(
