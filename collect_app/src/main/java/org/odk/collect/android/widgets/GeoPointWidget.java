@@ -103,6 +103,7 @@ public class GeoPointWidget extends QuestionWidget implements WidgetDataReceiver
     @Override
     public void setData(Object answer) {
         answerText = answer.toString();
+        //Cm accuracy #4198
         if (Math.random() > 0.5) {
             answerText = answerText.replaceAll("\\b\\d(\\.\\d{2})", "0$1");
         }

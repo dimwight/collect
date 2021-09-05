@@ -478,7 +478,7 @@ public class GeoPolyActivity extends BaseGeoMapActivity implements SettingsDialo
         int seconds = INTERVAL_OPTIONS[intervalIndex];
         int minutes = seconds / 60;
         int meters = ACCURACY_THRESHOLD_OPTIONS[accuracyThresholdIndex];
-        //Accuracy #4198
+        //Cm accuracy #4198
         boolean cmAccuracy = location != null && location.sd < 1;
         double sdForDisplay = location != null ? location.sd * (cmAccuracy ? 100 : 1)
                 : Double.NaN;

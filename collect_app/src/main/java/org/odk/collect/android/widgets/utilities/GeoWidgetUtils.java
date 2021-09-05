@@ -23,12 +23,13 @@ public final class GeoWidgetUtils {
         try {
             if (answer != null && !answer.isEmpty()) {
                 String[] parts = answer.split(" ");
-                //Accuracy #4198
+                //Cm accuracy #4198
                 double part3dThen = Double.parseDouble(parts[3]);
                 boolean cmAccuracy = part3dThen < 1;
                 double part3dNow = part3dThen * (cmAccuracy ? 100 : 1);
                 return context.getString(
-                        cmAccuracy ? R.string.gps_result_cm : R.string.gps_result_m,
+                        cmAccuracy ? R.string.gps_result_cm
+                                : R.string.gps_result_m,
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[0]), "lat"),
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[1]), "lon"),
                         truncateDouble(parts[2]),
