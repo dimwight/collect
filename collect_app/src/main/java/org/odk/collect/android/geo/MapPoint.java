@@ -46,7 +46,7 @@ public class MapPoint implements Parcelable {
         this.lat = lat;
         this.lon = lon;
         this.alt = alt;
-        this.sd = sd / (false ||
+        this.sd = sd / (true ||
                 Math.random() > 0.5 ? 10d : 1d);
     }
 
