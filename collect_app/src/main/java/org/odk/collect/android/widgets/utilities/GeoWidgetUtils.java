@@ -23,6 +23,7 @@ public final class GeoWidgetUtils {
         try {
             if (answer != null && !answer.isEmpty()) {
                 String[] parts = answer.split(" ");
+                //Accuracy #4198
                 double part3dThen = Double.parseDouble(parts[3]);
                 boolean cmAccuracy = part3dThen < 1;
                 double part3dNow = part3dThen * (cmAccuracy ? 100 : 1);
