@@ -34,8 +34,6 @@ public class MapPoint implements Parcelable {
      */
     public final double sd;  // standard deviation in meters (68% confidence radius)
 
-    public boolean hasCmAccuracy;
-
     public MapPoint(double lat, double lon) {
         this(lat, lon, 0, 0);
     }
@@ -48,9 +46,8 @@ public class MapPoint implements Parcelable {
         this.lat = lat;
         this.lon = lon;
         this.alt = alt;
-        this.sd = sd / (false ||
+        this.sd = sd / (true &&
                 Math.random() > 0.5 ? 10d : 1d);
-        hasCmAccuracy = this.sd < 1.0d;
     }
 
     private MapPoint(Parcel parcel) {

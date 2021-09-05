@@ -19,27 +19,44 @@ public final class GeoWidgetUtils {
 
     }
 
+    //Cm accuracy #4198
+    public static String getAccuracyUnitString(Context context, double radius) {
+        if (radius != radius) {
+            return "";
+        }
+        radius /= (false &&
+                Math.random() > 0.5 ? 10d : 1d);
+        boolean cmAccuracy = radius < 1;
+        return context.getString(
+                cmAccuracy ? R.string.location_accuracy_cm
+                        : R.string.location_accuracy_m,
+                radius * (cmAccuracy ? 100 : 1));
+    }
+
     public static String getGeoPointAnswerToDisplay(Context context, String answer) {
+        if (answer == null || answer.isEmpty()) {
+            return "";
+        }
+        if (false &&
+                Math.random() > 0.5) {
+            answer = answer.replaceAll("\\b\\d(\\.\\d{2})", "0$1");
+        }
         try {
-            if (answer != null && !answer.isEmpty()) {
-                String[] parts = answer.split(" ");
-                //Cm accuracy #4198
-                double part3dThen = Double.parseDouble(parts[3]);
-                boolean cmAccuracy = part3dThen < 1;
-                double part3dNow = part3dThen * (cmAccuracy ? 100 : 1);
-                return context.getString(
-                        cmAccuracy ? R.string.gps_result_cm
-                                : R.string.gps_result_m,
-                        convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[0]), "lat"),
-                        convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[1]), "lon"),
-                        truncateDouble(parts[2]),
-                        part3dNow
-                );
-            }
+            String[] parts = answer.split(" ");
+            //Cm accuracy #4198
+            double radius = Double.parseDouble(parts[3]);
+            boolean cmAccuracy = radius < 1;
+            return context.getString(
+                    cmAccuracy ? R.string.gps_result_cm
+                            : R.string.gps_result_m,
+                    convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[0]), "lat"),
+                    convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[1]), "lon"),
+                    truncateDouble(parts[2]),
+                    radius * (cmAccuracy ? 100 : 1)
+            );
         } catch (NumberFormatException e) {
             return "";
         }
-        return "";
     }
 
     public static String getGeoPolyAnswerToDisplay(String answer) {

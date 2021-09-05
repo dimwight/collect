@@ -14,6 +14,10 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.DRAGGABLE_ONLY;
+import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.LOCATION;
+import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.READ_ONLY;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -34,16 +38,11 @@ import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.preferences.screens.MapsPreferencesFragment;
 import org.odk.collect.android.utilities.GeoUtils;
 import org.odk.collect.android.utilities.ToastUtils;
-
-import java.text.DecimalFormat;
+import org.odk.collect.android.widgets.utilities.GeoWidgetUtils;
 
 import javax.inject.Inject;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.DRAGGABLE_ONLY;
-import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.LOCATION;
-import static org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester.READ_ONLY;
 
 /**
  * Allow the user to indicate a location by placing a marker on a map, either
@@ -340,7 +339,7 @@ public class GeoPointMapActivity extends BaseGeoMapActivity {
     }
 
     public String formatLocationStatus(String provider, double accuracyRadius) {
-        return getString(R.string.location_accuracy, new DecimalFormat("#.##").format(accuracyRadius))
+        return GeoWidgetUtils.getAccuracyUnitString(this, accuracyRadius)
                 + " " + getString(R.string.location_provider, GeoUtils.capitalizeGps(provider));
     }
 
