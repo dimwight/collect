@@ -3,12 +3,12 @@ package org.odk.collect.android.feature.formentry;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Minimal;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Appearance.Plain;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A1e;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A2e;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A3e;
-import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.AA4e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A1h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A2e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A2h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A3e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.A3h;
+import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.AA4e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.B1e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.B2e;
 import static org.odk.collect.android.feature.formentry.SelectOneResetTest.Assert.B3h;
@@ -165,7 +165,7 @@ SelectOneResetTest {
         FormHierarchyPage hierarchy = new MainMenuPage()
                 .startBlankForm(TEXT_FORM)
                 .clickGoToArrow();
-        (STAGE_3).makeLatest();
+        (STAGE_0).makeLatest();
         Timber.i(UpdateStage.getLatest().name());
         (false ? new Staged() : new ForPr()).testVariants(hierarchy);
     }
@@ -174,9 +174,9 @@ SelectOneResetTest {
         void testVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
-                boolean testSelectedVariants = false;
+                boolean testSelectedVariants = true;
                 boolean testBlockA = true;
-                boolean testBlockB = true &&
+                boolean testBlockB = false &&
                         (this instanceof ForPr ||
                                 variant.itemsetType == Internal
                                 || STAGE_3.isApplied());
@@ -185,7 +185,8 @@ SelectOneResetTest {
                 if (ordinal > lastOrdinal) {
                     break;
                 } else if (testSelectedVariants && !(
-                        ordinal > 1
+                        ordinal == 1 ||
+                                ordinal == 3
                 )) {
                     continue;
                 }
@@ -309,7 +310,7 @@ SelectOneResetTest {
                 if (assertB1e) {
                     entry.clickOnText(TEXT_SELECT_ANSWER);
                 } else {
-                    entry.clickOnText(TEXT_NORTH);
+                    entry.clickOnText(TEXT_EAST);
                 }
                 assertInfo(B1e);
                 entry.clickOnText(TEXT_EAST)
@@ -357,7 +358,7 @@ SelectOneResetTest {
     }
 
     private class ForPr extends Staged {
-        void testVariants(FormHierarchyPage hierarchy) {
+        void testVariants_(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 variantNow = variant;
                 int ordinal = variant.ordinal();
@@ -379,42 +380,41 @@ SelectOneResetTest {
             String wardLabel = A.wardLabel(variantNow);
             String stateLabel = A.stateLabel(variantNow);
             boolean minimal = variantNow.appearance.isMinimal();
-            FormEntryPage entry = hierarchy
-                    .clickOnQuestion(showWardLabel)
-                    .clickOnText(TEXT_NO)
-                    .swipeToPreviousQuestion(cityLabel);
+            FormEntryPage entry;
+            if (variantNow.itemsetType == Internal) {
+                entry = hierarchy.clickOnQuestion(cityLabel);
+            } else {
+                entry = hierarchy
+                        .clickOnQuestion(showWardLabel)
+                        .clickOnText(TEXT_NO)
+                        .clickOnText(TEXT_YES)
+                        .clickGoToArrow()
+                        //A1h
+                        .assertTextDoesNotExist(TEXT_NORTH)
+                        .clickOnQuestion(wardLabel)
+                        //A1e
+                        .assertTextDoesNotExist();
+                if (minimal) {
+                    entry.openSelectMinimalDialog();
+                }
+                entry.clickOnText(TEXT_NORTH)
+                        .swipeToPreviousQuestion(showWardLabel)
+                        .swipeToPreviousQuestion(cityLabel);
+            }
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
             entry.clickOnText(TEXT_HARLINGEN)
-                    .swipeToNextQuestion(showWardLabel)
-                    .clickOnText(TEXT_YES)
                     .clickGoToArrow()
-                    //A1h
+                    //A2h
                     .assertTextDoesNotExist(TEXT_NORTH)
                     .clickOnQuestion(wardLabel)
-                    //A1e
-                    .assertTextDoesNotExist();
+                    //A2e
+                    .assertTextDoesNotExist(TEXT_NORTH);
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
             entry.clickOnText(TEXT_EAST)
-                    .swipeToPreviousQuestion(showWardLabel)
-                    .swipeToPreviousQuestion(cityLabel);
-            if (minimal) {
-                entry.openSelectMinimalDialog();
-            }
-            entry.clickOnText(TEXT_BROWNSVILLE)
-                    .clickGoToArrow()
-                    //A2h
-                    .assertTextDoesNotExist(TEXT_EAST)
-                    .clickOnQuestion(wardLabel)
-                    //A2e
-                    .assertTextDoesNotExist(TEXT_EAST);
-            if (minimal) {
-                entry.openSelectMinimalDialog();
-            }
-            entry.clickOnText(TEXT_NORTH)
                     .clickGoToArrow()
                     .clickOnQuestion(stateLabel);
             if (minimal) {
@@ -424,9 +424,11 @@ SelectOneResetTest {
                     .clickGoToArrow()
                     //A3h
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
-                    .assertTextDoesNotExist(TEXT_NORTH)
+                    .assertTextDoesNotExist(TEXT_HARLINGEN)
+                    .assertTextDoesNotExist(TEXT_EAST)
                     //A3e
-                    .clickOnQuestion(stateLabel).swipeToNextQuestion(A.countyLabel(variantNow))
+                    .clickOnQuestion(stateLabel)
+                    .swipeToNextQuestion(A.countyLabel(variantNow))
                     .assertTextDoesNotExist()
                     .swipeToNextQuestion(cityLabel)
                     .assertTextDoesNotExist()
@@ -448,17 +450,17 @@ SelectOneResetTest {
             boolean minimal = variantNow.appearance.isMinimal();
             if (minimal) {
                 entry.clickOnText(TEXT_NO)
-                        .clickOnText(TEXT_BROWNSVILLE)
-                        .clickOnText(TEXT_HARLINGEN)
+//                        .clickOnText(TEXT_BROWNSVILLE)
+//                        .clickOnText(TEXT_HARLINGEN)
                         .clickOnText(TEXT_YES)
                         //B1e
                         .clickOnText(TEXT_SELECT_ANSWER)
-                        .clickOnText(TEXT_EAST)
-                        .clickOnText(TEXT_HARLINGEN)
+                        .clickOnText(TEXT_NORTH)
                         .clickOnText(TEXT_BROWNSVILLE)
+                        .clickOnText(TEXT_HARLINGEN)
                         //B2e
                         .clickOnText(TEXT_SELECT_ANSWER)
-                        .clickOnText(TEXT_NORTH)
+                        .clickOnText(TEXT_EAST)
                         .scrollToAndClickText(TEXT_TEXAS, 0)
                         .clickOnText(TEXT_WASHINGTON);
             } else {
