@@ -104,9 +104,7 @@ public abstract class ItemsWidget extends QuestionWidget {
      * If there are "fast external itemset" selects right after this select, assume that they are linked to the current question and clear them.
      */
     protected final void clearFollowingItemsetWidgets() {
-        if (!isFastExternalItemsetUsed()) {
-            return;
-        } else if (STAGE_2.isApplied()) {
+        if (STAGE_2.isApplied()) {
             SelectOneWidgetUtils.checkFastExternalCascade(this);
             return;
         }

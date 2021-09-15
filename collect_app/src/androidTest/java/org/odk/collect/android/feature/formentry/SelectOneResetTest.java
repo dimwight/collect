@@ -165,7 +165,7 @@ SelectOneResetTest {
         FormHierarchyPage hierarchy = new MainMenuPage()
                 .startBlankForm(TEXT_FORM)
                 .clickGoToArrow();
-        (STAGE_0).makeLatest();
+        (STAGE_3).makeLatest();
         Timber.i(UpdateStage.getLatest().name());
         (false ? new Staged() : new ForPr()).testVariants(hierarchy);
     }
@@ -384,8 +384,7 @@ SelectOneResetTest {
             if (variantNow.itemsetType == Internal) {
                 entry = hierarchy.clickOnQuestion(cityLabel);
             } else {
-                entry = hierarchy
-                        .clickOnQuestion(showWardLabel)
+                entry = hierarchy.clickOnQuestion(showWardLabel)
                         .clickOnText(TEXT_NO)
                         .clickOnText(TEXT_YES)
                         .clickGoToArrow()
