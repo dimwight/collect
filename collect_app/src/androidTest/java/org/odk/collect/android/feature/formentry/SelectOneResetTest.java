@@ -171,9 +171,9 @@ SelectOneResetTest {
     private class Staged {
         void testVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
-                boolean testSelectedVariants = true;
-                boolean testBlockA = true;
-                boolean testBlockB = false &&
+                boolean testSelectedVariants = false;
+                boolean testBlockA = false;
+                boolean testBlockB = true &&
                         (this instanceof ForPr ||
                                 variant.itemsetType == Internal
                                 || STAGE_3.isApplied());
@@ -438,20 +438,20 @@ SelectOneResetTest {
         }
 
         FormHierarchyPage testBlockB(FormHierarchyPage hierarchy, SectionVariant variant) {
-            Block block = B;
-            Timber.i(newBlockMsg(block, variant));
-            String wardLabel = block.wardLabel(variant);
-            FormEntryPage entry = hierarchy.clickOnQuestion(wardLabel);
+            Timber.i(newBlockMsg(B, variant));
             boolean minimal = variant.appearance.isMinimal();
+            boolean internal = variant.itemsetType == Internal;
+            FormEntryPage entry = hierarchy.clickOnQuestion(internal ? B.cityLabel(variant)
+                    : B.showWardLabel(variant));
             if (minimal) {
-                entry.clickOnText(TEXT_NO)
-//                        .clickOnText(TEXT_BROWNSVILLE)
-//                        .clickOnText(TEXT_HARLINGEN)
-                        .clickOnText(TEXT_YES)
-                        //B1e
-                        .clickOnText(TEXT_SELECT_ANSWER)
-                        .clickOnText(TEXT_NORTH)
-                        .clickOnText(TEXT_BROWNSVILLE)
+                if (!internal) {
+                    entry.clickOnText(TEXT_NO)
+                            .clickOnText(TEXT_YES)
+                            //B1e
+                            .clickOnText(TEXT_SELECT_ANSWER)
+                            .clickOnText(TEXT_NORTH);
+                }
+                entry.clickOnText(TEXT_BROWNSVILLE)
                         .clickOnText(TEXT_HARLINGEN)
                         //B2e
                         .clickOnText(TEXT_SELECT_ANSWER)
@@ -459,26 +459,27 @@ SelectOneResetTest {
                         .scrollToAndClickText(TEXT_TEXAS, 0)
                         .clickOnText(TEXT_WASHINGTON);
             } else {
-                entry.scrollToAndClickText(TEXT_NO)
-                        .clickOnText(TEXT_HARLINGEN)
-                        .scrollToAndClickText(TEXT_YES)
+                if (!internal) {
+                    entry.scrollToAndClickText(TEXT_NO)
+                            .clickOnText(TEXT_YES)
+                            .scrollToText(TEXT_SOUTH)
+                            //B1e
+                            .assertTextIsNotChecked(TEXT_NORTH)
+                            .assertTextIsNotChecked(TEXT_SOUTH);
+                }
+                entry.scrollToAndClickText(TEXT_HARLINGEN)
                         .scrollToText(TEXT_WEST)
-                        //B1e
-                        .assertTextIsNotChecked(TEXT_WEST)
-                        .assertTextIsNotChecked(TEXT_EAST)
-                        .clickOnText(TEXT_EAST)
-                        .clickOnText(TEXT_BROWNSVILLE)
-                        .scrollToText(TEXT_SOUTH)
                         //B2e
-                        .assertTextIsNotChecked(TEXT_SOUTH)
-                        .assertTextIsNotChecked(TEXT_NORTH)
-                        .clickOnText(TEXT_NORTH)
+                        .assertTextIsNotChecked(TEXT_EAST)
+                        .assertTextIsNotChecked(TEXT_WEST)
+                        .clickOnText(TEXT_EAST)
                         .scrollToAndClickText(TEXT_WASHINGTON, 0);
             }
             return entry.clickGoToArrow()
                     //B3h
                     .assertText(TEXT_WASHINGTON, TEXT_YES)
-                    .assertTextDoesNotExist(TEXT_NORTH)
+                    .assertTextDoesNotExist(TEXT_HARLINGEN)
+                    .assertTextDoesNotExist(TEXT_EAST)
                     //BB4h
                     .assertText(TEXT_TEXAS, TEXT_CAMERON);
         }
