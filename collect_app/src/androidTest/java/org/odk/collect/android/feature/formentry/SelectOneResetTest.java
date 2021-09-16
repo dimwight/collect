@@ -165,14 +165,14 @@ SelectOneResetTest {
                 .clickGoToArrow();
         (STAGE_3).makeLatest();
         Timber.i(UpdateStage.getLatest().name());
-        (true ? new Staged() : new ForPr()).testVariants(hierarchy);
+        (false ? new Staged() : new ForPr()).testVariants(hierarchy);
     }
 
     private class Staged {
         void testVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 boolean testSelectedVariants = false;
-                boolean testBlockA = false;
+                boolean testBlockA = true;
                 boolean testBlockB = true &&
                         (this instanceof ForPr
                                 || variant.itemsetType == Internal
@@ -354,7 +354,7 @@ SelectOneResetTest {
     }
 
     private class ForPr extends Staged {
-        void testVariants_(FormHierarchyPage hierarchy) {
+        void testVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 int ordinal = variant.ordinal();
                 Timber.i("testing " + variant + "=" + ordinal);
