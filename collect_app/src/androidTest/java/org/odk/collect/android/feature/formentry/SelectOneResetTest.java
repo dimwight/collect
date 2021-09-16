@@ -165,15 +165,15 @@ SelectOneResetTest {
                 .clickGoToArrow();
         (STAGE_3).makeLatest();
         Timber.i(UpdateStage.getLatest().name());
-        (false ? new Staged() : new ForPr()).testVariants(hierarchy);
+        (true ? new Staged() : new ForPr()).testVariants(hierarchy);
     }
 
     private class Staged {
         void testVariants(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
-                boolean testSelectedVariants = false;
+                boolean testSelectedVariants = true;
                 boolean testBlockA = true;
-                boolean testBlockB = true &&
+                boolean testBlockB = false &&
                         (this instanceof ForPr ||
                                 variant.itemsetType == Internal
                                 || STAGE_3.isApplied());
@@ -209,54 +209,52 @@ SelectOneResetTest {
             String wardLabel = A.wardLabel(variant);
             String stateLabel = A.stateLabel(variant);
             boolean minimal = variant.appearance.isMinimal();
-            FormEntryPage entry = hierarchy
-                    .clickOnQuestion(showWardLabel)
-                    .clickOnText(TEXT_NO)
-                    .swipeToPreviousQuestion(cityLabel);
+            FormEntryPage entry;
+            if (variant.itemsetType == Internal) {
+                entry = hierarchy.clickOnQuestion(cityLabel);
+            } else {
+                entry = hierarchy.clickOnQuestion(showWardLabel)
+                        .clickOnText(TEXT_NO)
+                        .clickOnText(TEXT_YES);
+                //A1h
+                if (canAssertAtStage(A1h, STAGE_0, variant)) {
+                    entry.clickGoToArrow()
+                            .assertTextDoesNotExist(TEXT_NORTH);
+                    assertInfo(A1h);
+                }
+                hierarchy.clickOnQuestion(wardLabel);
+                //A1e
+                if (canAssertAtStage(A1e, STAGE_0, variant)) {
+                    entry.assertTextDoesNotExist();
+                    assertInfo(A1e);
+                }
+                if (minimal) {
+                    entry.openSelectMinimalDialog();
+                }
+                entry.clickOnText(TEXT_NORTH)
+                        .swipeToPreviousQuestion(showWardLabel)
+                        .swipeToPreviousQuestion(cityLabel);
+            }
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
             entry.clickOnText(TEXT_HARLINGEN)
-                    .swipeToNextQuestion(showWardLabel)
-                    .clickOnText(TEXT_YES)
-                    .clickGoToArrow();
-            //A1h
-            if (canAssertAtStage(A1h, STAGE_0, variant)) {
-                hierarchy.assertTextDoesNotExist(TEXT_NORTH);
-                assertInfo(A1h);
-            }
-            hierarchy.clickOnQuestion(wardLabel);
-            //A1e
-            if (canAssertAtStage(A1e, STAGE_0, variant)) {
-                entry.assertTextDoesNotExist();
-                assertInfo(A1e);
-            }
-            if (minimal) {
-                entry.openSelectMinimalDialog();
-            }
-            entry.clickOnText(TEXT_EAST)
-                    .swipeToPreviousQuestion(showWardLabel)
-                    .swipeToPreviousQuestion(cityLabel);
-            if (minimal) {
-                entry.openSelectMinimalDialog();
-            }
-            entry.clickOnText(TEXT_BROWNSVILLE)
                     .clickGoToArrow();
             //A2h
             if (canAssertAtStage(A2h, STAGE_2, variant)) {
-                hierarchy.assertTextDoesNotExist(TEXT_EAST);
+                hierarchy.assertTextDoesNotExist(TEXT_NORTH);
                 assertInfo(A2h);
             }
             hierarchy.clickOnQuestion(wardLabel);
             //A2e
             if (canAssertAtStage(A2e, STAGE_2, variant)) {
-                entry.assertTextDoesNotExist(TEXT_EAST);
+                entry.assertTextDoesNotExist(TEXT_NORTH);
                 assertInfo(A2e);
             }
             if (minimal) {
                 entry.openSelectMinimalDialog();
             }
-            entry.clickOnText(TEXT_NORTH)
+            entry.clickOnText(TEXT_EAST)
                     .clickGoToArrow()
                     .clickOnQuestion(stateLabel);
             if (minimal) {
@@ -267,7 +265,8 @@ SelectOneResetTest {
             //A3h
             if (canAssertAtStage(A3h, STAGE_2, variant)) {
                 hierarchy.assertText(TEXT_WASHINGTON, TEXT_YES)
-                        .assertTextDoesNotExist(TEXT_NORTH);
+                        .assertTextDoesNotExist(TEXT_HARLINGEN)
+                        .assertTextDoesNotExist(TEXT_EAST);
                 assertInfo(A3h);
             }
             hierarchy.clickOnQuestion(stateLabel);
@@ -287,10 +286,9 @@ SelectOneResetTest {
                         .swipeToNextQuestion(A.countyAfterLabel(variant))
                         //AA4e
                         .assertText(TEXT_CAMERON);
+                assertInfo(AA4e);
             }
-            assertInfo(AA4e);
-            entry.clickGoToArrow();
-            return hierarchy;
+            return entry.clickGoToArrow();
         }
 
         FormHierarchyPage testBlockB(FormHierarchyPage hierarchy, @NotNull SectionVariant variant) {
@@ -355,7 +353,7 @@ SelectOneResetTest {
     }
 
     private class ForPr extends Staged {
-        void testVariants(FormHierarchyPage hierarchy) {
+        void testVariants_(FormHierarchyPage hierarchy) {
             for (SectionVariant variant : SectionVariant.values()) {
                 int ordinal = variant.ordinal();
                 Timber.i("testing " + variant + "=" + ordinal);
