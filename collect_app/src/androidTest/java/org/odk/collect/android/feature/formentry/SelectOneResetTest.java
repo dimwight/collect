@@ -165,7 +165,7 @@ SelectOneResetTest {
                 .clickGoToArrow();
         (STAGE_3).makeLatest();
         Timber.i(UpdateStage.getLatest().name());
-        (false ? new Staged() : new ForPr()).testVariants(hierarchy);
+        (true ? new Staged() : new ForPr()).testVariants(hierarchy);
     }
 
     private class Staged {
@@ -202,7 +202,7 @@ SelectOneResetTest {
             }
         }
 
-        FormHierarchyPage testBlockA(FormHierarchyPage hierarchy, @NotNull SectionVariant variant) {
+        FormHierarchyPage testBlockA(FormHierarchyPage hierarchy, SectionVariant variant) {
             Timber.i(newBlockMsg(A, variant));
             String showWardLabel = A.showWardLabel(variant);
             String cityLabel = A.cityLabel(variant);
