@@ -101,9 +101,7 @@ public class SelectOneWidgetUtils {
             return;
         }
         FormController fc = Collect.getInstance().getFormController();
-        if (fc == null
-                //In field list?
-                || !fc.indexIsInFieldList()) {
+        if (fc == null) {
             return;
         }
 
