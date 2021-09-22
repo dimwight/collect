@@ -178,8 +178,10 @@ public class FormHierarchyTest {
         new MainMenuPage()
                 .startBlankForm("empty_first_repeat")
                 .clickGoToArrow()
-                .assertText("Beet, Bell pepper, Cabbage")
+                .assertText(false ? "Beet, Bell pepper, Cabbage"
+                        : "Beans, Beet, Bell pepper, Cabbage")
                 .clickOnText("Frequencies")
-                .assertText("2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage");
+                .assertText(
+                        "2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage");
     }
 }

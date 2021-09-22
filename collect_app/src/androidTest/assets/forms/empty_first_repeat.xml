@@ -7,7 +7,7 @@
             <instance>
                 <data id="empty_first_repeat" version="2021-09-10 A">
                     <veg_yn>1</veg_yn>
-                    <veg_type>2 3 5</veg_type>
+                    <veg_type>1 2 3 5</veg_type>
                     <veg_repeat_count />
                     <veg_repeat jr:template="">
                         <veg_group>
