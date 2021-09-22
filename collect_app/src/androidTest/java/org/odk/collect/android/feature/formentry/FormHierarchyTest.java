@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.ResetStateRule;
@@ -175,10 +176,12 @@ public class FormHierarchyTest {
     @Test
     //https://github.com/getodk/collect/issues/4570
     public void empty_first_repeat() {
+        boolean withBeans = FormHierarchyActivity.STATE_4570.isWithBeans();
         new MainMenuPage()
                 .startBlankForm("empty_first_repeat")
                 .clickGoToArrow()
-                .assertText(false ? "Beet, Bell pepper, Cabbage"
+                .assertText(withBeans
+                        ? "Beet, Bell pepper, Cabbage"
                         : "Beans, Beet, Bell pepper, Cabbage")
                 .clickOnText("Frequencies")
                 .assertText(
