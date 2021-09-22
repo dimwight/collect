@@ -177,6 +177,9 @@ public class FormHierarchyTest {
     //https://github.com/getodk/collect/issues/4570
     public void empty_first_repeat() {
         boolean withBeans = FormHierarchyActivity.STATE_4570.isWithBeans();
+        String[] frequencies = withBeans ?
+                new String[]{"1.\u200E Beans", "2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage"}
+                : new String[]{"2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage"};
         new MainMenuPage()
                 .startBlankForm("empty_first_repeat")
                 .clickGoToArrow()
@@ -184,7 +187,6 @@ public class FormHierarchyTest {
                         ? "Beet, Bell pepper, Cabbage"
                         : "Beans, Beet, Bell pepper, Cabbage")
                 .clickOnText("Frequencies")
-                .assertText(
-                        "2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage");
+                .assertText(frequencies);
     }
 }
