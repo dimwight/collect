@@ -14,7 +14,7 @@
 
 package org.odk.collect.android.activities;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.States4570.BEFORE_WITH_BEANS;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Tests4570.BEFORE_WITH_BEANS;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 import android.content.DialogInterface;
@@ -487,7 +487,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
         refreshView(false);
     }
 
-    public enum States4570 {
+    public enum Tests4570 {
         BEFORE_WITH_BEANS,
         BEFORE_WITHOUT_BEANS,
         AFTER_WITH_BEANS,
@@ -506,7 +506,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
         }
     }
 
-    public static final States4570 STATE_4570 = BEFORE_WITH_BEANS;
+    public static final Tests4570 TEST_4570 = BEFORE_WITH_BEANS;
 
     /**
      * @see #refreshView()
@@ -628,7 +628,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
                         boolean isFirst = fc.getMultiplicity() == 0;
                         boolean forPicker = shouldShowRepeatGroupPicker();
                         boolean isEmpty = !formController.isGroupRelevant();
-                        if (isEmpty && (STATE_4570.isBefore() ||
+                        if (isEmpty && (TEST_4570.isBefore() ||
                                 (!isFirst || forPicker))
                         ) {
                             break;

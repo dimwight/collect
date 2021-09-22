@@ -176,7 +176,7 @@ public class FormHierarchyTest {
     @Test
     //https://github.com/getodk/collect/issues/4570
     public void showsRepeatsWhenFirstIsEmpty() {
-        boolean withBeans = FormHierarchyActivity.STATE_4570.withBeans();
+        boolean withBeans = FormHierarchyActivity.TEST_4570.withBeans();
         String[] frequencies = withBeans ?
                 new String[]{"1.\u200E Beans", "2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage"}
                 : new String[]{"2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage"};
