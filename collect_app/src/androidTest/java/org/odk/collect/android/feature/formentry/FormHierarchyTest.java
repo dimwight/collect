@@ -176,14 +176,13 @@ public class FormHierarchyTest {
     @Test
     //https://github.com/getodk/collect/issues/4570
     public void showsRepeatsWhenFirstIsEmpty() {
-//        TreeElement root = Collect.getInstance().getFormController()
-//                .getFormDef().getInstance().getRoot();
-        boolean withBeans = FormHierarchyActivity.STATE_4570.isWithBeans();
+        boolean withBeans = FormHierarchyActivity.STATE_4570.withBeans();
         String[] frequencies = withBeans ?
                 new String[]{"1.\u200E Beans", "2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage"}
                 : new String[]{"2.\u200E Beet", "3.\u200E Bell pepper", "5.\u200E Cabbage"};
         new MainMenuPage()
-                .startBlankForm("empty_first_repeat")
+                .startBlankForm(withBeans ? "empty_first_repeat_beans"
+                        : "empty_first_repeat")
                 .clickGoToArrow()
                 .assertText(withBeans
                         ? "Beans, Beet, Bell pepper, Cabbage"

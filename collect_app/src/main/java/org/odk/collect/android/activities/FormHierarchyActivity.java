@@ -497,7 +497,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
             return this.ordinal() < 2;
         }
 
-        public boolean isWithBeans() {
+        public boolean withBeans() {
             return this.ordinal() % 2 == 0;
         }
 
