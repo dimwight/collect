@@ -500,6 +500,10 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
         public boolean isWithBeans() {
             return this.ordinal() % 2 == 0;
         }
+
+        public boolean isWillPass() {
+            return this != BEFORE_WITHOUT_BEANS;
+        }
     }
 
     public static final States4570 STATE_4570 = BEFORE_WITH_BEANS;
