@@ -624,7 +624,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
                         boolean isFirst = fc.getMultiplicity() == 0;
                         boolean forPicker = shouldShowRepeatGroupPicker();
                         boolean isEmpty = !formController.isGroupRelevant();
-                        if (isEmpty && (STATE_4570.isBefore() &&
+                        if (isEmpty && (STATE_4570.isBefore() ||
                                 (!isFirst || forPicker))
                         ) {
                             break;
