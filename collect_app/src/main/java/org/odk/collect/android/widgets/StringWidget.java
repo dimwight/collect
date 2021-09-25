@@ -77,7 +77,7 @@ public class StringWidget extends QuestionWidget {
 
     @Override
     public void setFocus(Context context) {
-        String details = getQuestionDetails().toString();
+        String _details = getQuestionDetails().toString();
         if (!questionDetails.isReadOnly()) {
             softKeyboardController.showSoftKeyboard(answerText);
             /*
@@ -178,13 +178,15 @@ public class StringWidget extends QuestionWidget {
             public void afterTextChanged(Editable s) {
                 widgetValueChanged();
                 //Added for #3027
-                String label = getFormEntryPrompt().getFormElement().getLabelInnerText();
+                String _label = getFormEntryPrompt().getFormElement().getLabelInnerText();
                 String textNow = s.toString();
                 if (!(ignores-- >= 0
                         || textThen.equals(textNow))) {
                     setFieldListActiveIndex();
                 }
-                if (ignores < 0) ignores = -1;
+                if (ignores < 0) {
+                    ignores = -1;
+                }
                 textThen = textNow;
             }
         });

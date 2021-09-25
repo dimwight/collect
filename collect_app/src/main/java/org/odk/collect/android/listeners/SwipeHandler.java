@@ -83,7 +83,9 @@ SwipeHandler {
             // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
             odkView.cancelLongPress();
 
-            if (!STAGE_3.isApplied()) return false;
+            if (!STAGE_3.isApplied()) {
+                return false;
+            }
             //For #3027
             if (scrollTimer != null) {
                 scrollTimer.cancel();

@@ -1331,12 +1331,15 @@ FormController {
     }
 
     public void setFieldListActiveIndex(FormIndex index) {
-        if (!STAGE_1.isApplied()) return;
+        if (!STAGE_1.isApplied()) {
+            return;
+        }
         fieldListActiveIndex = index;
-        if (true)
+        if (true) {
             Timber.i("sFLAI: %s",
                     (index == null ? "null" : index.toString()
                             .replaceAll(".*/([^/]+)$", "$1")));
+        }
 
     }
 

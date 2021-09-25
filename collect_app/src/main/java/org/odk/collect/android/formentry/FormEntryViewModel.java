@@ -170,10 +170,10 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
              FormIndex listBeforeIndex = formController.getFormIndex();
              //Scan to last question in list
              FormIndex activeIndex = null;
-             String SactiveIndex;
+             String _activeIndex;
              while (formController.indexIsInFieldList()) {
                  activeIndex = formController.getFormIndex();
-                 SactiveIndex = activeIndex.toString();
+                 _activeIndex = activeIndex.toString();
                  formController.stepToNextEvent(true);
                  //Don't overshoot starting point
                  FormIndex formIndex = formController.getFormIndex();

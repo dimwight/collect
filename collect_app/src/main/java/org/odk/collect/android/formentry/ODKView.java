@@ -15,7 +15,7 @@
 package org.odk.collect.android.formentry;
 
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
-import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.*;
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_1;
 import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 
@@ -477,7 +477,7 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         //Retrieve and clear marker, set active #3027
         int activeAt = 0;
         FormIndex activeIndex = formController.getFieldListActiveIndex(true);
-        if (STAGE_1.isApplied())
+        if (STAGE_1.isApplied()) {
             for (int at = 0; at < widgets.size(); at++) {
                 //Only set index >=0 if match found
                 if (widgets.get(at).getFormEntryPrompt().getIndex().equals(activeIndex)) {
@@ -485,6 +485,8 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
                     break;
                 }
             }
+
+        }
         QuestionWidget setActive = widgets.get(activeAt);
         setActive.setFocus(context);
         scrollTo(setActive);
@@ -497,7 +499,9 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
             return;
         }
         for (QuestionWidget widget : widgets) {
-            if (!isDisplayed(widget)) continue;
+            if (!isDisplayed(widget)) {
+                continue;
+            }
             ViewGroup layout = (ViewGroup) widget.getChildAt(0);
             View label = layout.getChildAt(0);
             boolean labelVisible = label.getLocalVisibleRect(new Rect());
@@ -515,8 +519,7 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     public boolean isDisplayed(QuestionWidget qw) {
         Rect scrollBounds = new Rect();
         findViewById(R.id.odk_view_container).getHitRect(scrollBounds);
-        boolean filled = qw.getLocalVisibleRect(scrollBounds);
-        return filled;
+        return qw.getLocalVisibleRect(scrollBounds);
     }
 
 

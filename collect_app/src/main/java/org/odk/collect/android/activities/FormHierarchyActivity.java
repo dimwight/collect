@@ -417,6 +417,7 @@ FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDia
     private void jumpToHierarchyStartIndex() {
         FormController formController = Collect.getInstance().getFormController();
 
+        @SuppressWarnings("PMD.SimplifiedTernary")
         FormIndex startIndex = false ? formController.getFieldListActiveIndex(false) :
                 formController.getFormIndex();
 
