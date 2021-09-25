@@ -1314,7 +1314,7 @@ FormController {
     public enum _UpdateStage {
         //Current behaviour
         STAGE_0,
-        //
+        //hierarchyToFormEntryScrollsToAndFocusesQuestio
         STAGE_1,
         //
         STAGE_2,
