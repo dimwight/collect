@@ -14,6 +14,9 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_1;
+import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
+
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -57,8 +60,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 public class FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
 
@@ -711,12 +712,18 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
     /**
      * Handles clicks on a question. Jumps to the form filling view with the selected question shown.
      * If the selected question is in a field list, show the entire field list.
+     * For #3027, prepare to set the appropriate focus.
      */
     void onQuestionClicked(FormIndex index) {
-        Collect.getInstance().getFormController().jumpToIndex(index);
-        if (Collect.getInstance().getFormController().indexIsInFieldList()) {
+        FormController formController = Collect.getInstance().getFormController();
+        formController.jumpToIndex(index);
+        if (formController.indexIsInFieldList()) {
+            if (STAGE_1.isApplied()) {
+                //Record which question should be active
+                formController.setFieldListActiveIndex(index);
+            }
             try {
-                Collect.getInstance().getFormController().stepToPreviousScreenEvent();
+                formController.stepToPreviousScreenEvent();
             } catch (JavaRosaException e) {
                 Timber.d(e);
                 createErrorDialog(e.getCause().getMessage());

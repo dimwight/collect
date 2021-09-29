@@ -15,6 +15,7 @@
 package org.odk.collect.android.formentry;
 
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_1;
 import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 
@@ -458,8 +459,32 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     }
 
     public void setFocus(Context context) {
-        if (!widgets.isEmpty()) {
-            widgets.get(0).setFocus(context);
+        FormController formController = Collect.getInstance().getFormController();
+        if (widgets.isEmpty() || formController == null) {
+            return;
+        }
+        int activeAt = 0;
+        if (STAGE_1.isApplied()) {
+            //Retrieve and clear marker, set active #3027
+            FormIndex activeIndex = formController.getFieldListActiveIndex(true);
+            for (int at = 0; at < widgets.size(); at++) {
+                //Only set index >=0 if match found
+                FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();
+                if (indexAt.equals(activeIndex)) {
+                    activeAt = at;
+                    break;
+                }
+            }
+        }
+        QuestionWidget setActive = widgets.get(activeAt);
+        if (false) {
+            new Handler().postDelayed(() -> {
+                setActive.setFocus(context);
+                scrollTo(setActive);
+            }, 100);
+        } else {
+            setActive.setFocus(context);
+            scrollTo(setActive);
         }
     }
 
