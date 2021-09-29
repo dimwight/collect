@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.javarosawrapper;
 
+import static org.odk.collect.android.javarosawrapper.FormController._UpdateStage.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
 import static org.odk.collect.android.utilities.ApplicationConstants.Namespaces.XML_OPENDATAKIT_NAMESPACE;
@@ -119,6 +120,9 @@ public class FormController {
     private File instanceFile;
     private final FormEntryController formEntryController;
     private FormIndex indexWaitingForData;
+
+    //Added for #3027
+    private FormIndex fieldListActiveIndex;
 
     public FormController(File mediaFolder, FormEntryController fec, File instanceFile) {
         this.mediaFolder = mediaFolder;
@@ -1301,5 +1305,45 @@ public class FormController {
 
     public IAnswerData getAnswer(TreeReference treeReference) {
         return getFormDef().getMainInstance().resolveReference(treeReference).getValue();
+    }
+
+    public enum _UpdateStage {
+        //Current behaviour
+        STAGE_0,
+        //questionSelectedInHierarchyHasFocusInFormEntry
+        STAGE_1,
+        //questionSelectedInFormEntryIsSelectableInHierarchy
+        STAGE_2,
+        //scrollingInFormEntrySelectsQuestionInHierarchy
+        STAGE_3,
+        //
+        STAGE_4;
+
+        private static final _UpdateStage latest = STAGE_0;
+
+        public boolean isApplied() {
+            return latest.ordinal() >= this.ordinal();
+        }
+    }
+
+    public void setFieldListActiveIndex(FormIndex index) {
+        if (!STAGE_1.isApplied()) {
+            return;
+        }
+        fieldListActiveIndex = index;
+        if (true) {
+            Timber.i("sFLAI: %s",
+                    (index == null ? "null" : index.toString()
+                            .replaceAll(".*/([^/]+)$", "$1")));
+        }
+
+    }
+
+    public FormIndex getFieldListActiveIndex(boolean preserveValue) {
+        FormIndex index = fieldListActiveIndex;
+        if (!preserveValue) {
+            fieldListActiveIndex = null;
+        }
+        return index;
     }
 }

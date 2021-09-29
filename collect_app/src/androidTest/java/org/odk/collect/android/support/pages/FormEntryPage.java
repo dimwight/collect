@@ -1,21 +1,12 @@
 package org.odk.collect.android.support.pages;
 
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.test.espresso.Espresso;
-
-import org.hamcrest.Matchers;
-import org.odk.collect.android.R;
-import org.odk.collect.android.support.ActivityHelpers;
-import org.odk.collect.android.utilities.FlingRegister;
-
-import java.util.concurrent.Callable;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.action.ViewActions.swipeRight;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
@@ -27,6 +18,16 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.odk.collect.android.support.CustomMatchers.withIndex;
+
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.test.espresso.Espresso;
+
+import org.hamcrest.Matchers;
+import org.odk.collect.android.R;
+import org.odk.collect.android.support.ActivityHelpers;
+import org.odk.collect.android.utilities.FlingRegister;
+
+import java.util.concurrent.Callable;
 
 public class FormEntryPage extends Page<FormEntryPage> {
 
@@ -290,6 +291,28 @@ public class FormEntryPage extends Page<FormEntryPage> {
                 }
             });
         }, 5);
+    }
+
+    public FormEntryPage flingUpAndWait(int millis) {
+        tryAgainOnFail(() -> {
+            FlingRegister.attemptingFling();
+            onView(withId(R.id.questionholder)).perform(swipeUp());
+
+            waitFor(() -> {
+                if (FlingRegister.isFlingDetected()) {
+                    return true;
+                } else {
+                    throw new RuntimeException("Fling never detected!");
+                }
+            });
+        }, 5);
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignored) {
+            // ignored
+        }
+
+        return this;
     }
 
     public FormEntryPage openSelectMinimalDialog() {
