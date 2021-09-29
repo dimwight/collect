@@ -1310,7 +1310,7 @@ public class FormController {
     public enum _UpdateStage {
         //Current behaviour
         STAGE_0,
-        //questionSelectedInHierarchyHasFocusInFormEntry
+        //questionClickedInHierarchyGetsFocusInFormEntry
         STAGE_1,
         //questionSelectedInFormEntryIsSelectableInHierarchy
         STAGE_2,

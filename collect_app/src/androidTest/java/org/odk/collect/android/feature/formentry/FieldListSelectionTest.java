@@ -22,7 +22,7 @@ public class FieldListSelectionTest {
             .around(rule);
 
     @Test
-    public void questionSelectedInHierarchyHasFocusInFormEntry() {
+    public void questionClickedInHierarchyGetsFocusInFormEntry() {
         if (false &&
                 !_UpdateStage.STAGE_1.isApplied()) {
             return;
@@ -33,7 +33,7 @@ public class FieldListSelectionTest {
         hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
     }
 
-    @Test
+    //    @Test
     public void questionSelectedInFormEntryIsSelectableInHierarchy() {
         if (false &&
                 !_UpdateStage.STAGE_2.isApplied()) {
@@ -46,7 +46,7 @@ public class FieldListSelectionTest {
         formEntryBackToHierarchy(page, questionLabel);
     }
 
-    @Test
+    //     @Test
     public void scrollingInFormEntrySelectsQuestionInHierarchy() {
         if (false &&
                 !_UpdateStage.STAGE_3.isApplied()) {
@@ -73,7 +73,8 @@ public class FieldListSelectionTest {
                                                String groupLabel,
                                                String questionLabel) {
         return hierarchy.clickOnGroup(groupLabel)
-                .clickOnQuestion(questionLabel);
+                .clickOnQuestion(questionLabel)
+                .assertText(questionLabel);
     }
 
     private void formEntryBackToHierarchy(FormEntryPage page,
