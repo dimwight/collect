@@ -55,21 +55,22 @@ public class FieldListSelectionTest {
         formEntryBackToHierarchy(page, groupLabel, questionLabel);
     }
 
-    //    @Test
+    @Test
     public void scrollingInFormEntrySelectsQuestionInHierarchy() {
         if (!_UpdateStage.STAGE_3.isApplied()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
-        String groupLabel = "Select one widgets";
-        String questionLabel = "Select one widget";
-        FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
-        String scrolledQuestionLabel = "Grid select multiple widget";
+        String groupLabel0 = "Select one widgets";
+        String questionLabel0 = "Select one widget";
+        FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel0, questionLabel0);
         page.flingUpAndWait(1000);
-        formEntryBackToHierarchy(page, groupLabel, scrolledQuestionLabel);
+        String groupLabel1 = "Select multi widgets";
+        String questionLabel1 = "Grid select multiple widget";
+        formEntryBackToHierarchy(page, groupLabel1, questionLabel1);
     }
 
-    @Test
+    //    @Test
     public void interactionInFormEntrySelectsQuestionInHierarchy() {
         if (false &&
                 !_UpdateStage.STAGE_4.isApplied()) {
