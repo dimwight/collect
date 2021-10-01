@@ -21,7 +21,7 @@ public class FieldListSelectionTest {
             .around(new CopyFormRule("fieldListSelection.xml", null))
             .around(rule);
 
-    @Test
+//    @Test
     public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
         if (!_UpdateStage.STAGE_1.isApplied()) {
             return;
@@ -32,7 +32,7 @@ public class FieldListSelectionTest {
         hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
     }
 
-    @Test
+    //    @Test
     public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
         if (!_UpdateStage.STAGE_2.isApplied()) {
             return;
@@ -44,7 +44,7 @@ public class FieldListSelectionTest {
         formEntryBackToHierarchy(page, questionLabel);
     }
 
-    @Test
+    //    @Test
     public void scrollingInFormEntrySelectsQuestionInHierarchy() {
         if (!_UpdateStage.STAGE_3.isApplied()) {
             return;
@@ -56,6 +56,21 @@ public class FieldListSelectionTest {
         String scrolledQuestionLabel = "Grid select multiple widget";
         page.flingUpAndWait(1000);
         formEntryBackToHierarchy(page, scrolledQuestionLabel);
+    }
+
+    @Test
+    public void interactionInFormEntrySelectsQuestionInHierarchy() {
+        if (false &&
+                !_UpdateStage.STAGE_4.isApplied()) {
+            return;
+        }
+        FormHierarchyPage hierarchy = openFormInHierarchy();
+        String groupLabel = "List group";
+        String questionLabel0 = "List widget";
+        String questionLabel1 = "Grid select multiple widget";
+        FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel, questionLabel0);
+        page.scrollToAndClickText("A");
+        formEntryBackToHierarchy(page, questionLabel1);
     }
 
     private FormHierarchyPage openFormInHierarchy() {
