@@ -32,7 +32,7 @@ public class FieldListSelectionTest {
             .around(new CopyFormRule("fieldListSelection.xml", null))
             .around(rule);
 
-    //    @Test
+    @Test
     public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
         if (!_UpdateStage.STAGE_1.isApplied()) {
             return;
@@ -43,7 +43,7 @@ public class FieldListSelectionTest {
         hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
     }
 
-    //    @Test
+    @Test
     public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
         if (!_UpdateStage.STAGE_2.isApplied()) {
             return;
@@ -70,7 +70,7 @@ public class FieldListSelectionTest {
         formEntryBackToHierarchy(page, groupLabel1, questionLabel1);
     }
 
-    //    @Test
+    @Test
     public void interactionInFormEntrySelectsQuestionInHierarchy() {
         if (false &&
                 !_UpdateStage.STAGE_4.isApplied()) {
