@@ -1,5 +1,8 @@
 package org.odk.collect.android.formentry;
 
+import static org.javarosa.form.api.FormEntryController.EVENT_BEGINNING_OF_FORM;
+import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -11,7 +14,6 @@ import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.GroupDef;
 import org.javarosa.core.model.actions.recordaudio.RecordAudioActionHandler;
-import org.javarosa.form.api.FormEntryController;
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.analytics.AnalyticsUtils;
@@ -23,8 +25,6 @@ import org.odk.collect.androidshared.livedata.NonNullLiveData;
 import org.odk.collect.utilities.Clock;
 
 import java.util.Objects;
-
-import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
 
 public class FormEntryViewModel extends ViewModel implements RequiresFormController {
 
@@ -153,12 +153,38 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
 
     public void moveBackward() {
         try {
+            //Never scan past current index
+            FormIndex activeStopIndex = formController.getFormIndex();
+            //Back up to previous screen
             int event = formController.stepToPreviousScreenEvent();
-
-            // If we are the beginning of the form we need to move back to the first actual screen
-            if (event == FormEntryController.EVENT_BEGINNING_OF_FORM) {
+            // If we are the beginning of the form we need to move forward
+            // to the first actual screen - most unlikely?
+            if (event == EVENT_BEGINNING_OF_FORM) {
                 formController.stepToNextScreenEvent();
+            //#3027 Field lists?
+            } else if (true ||
+                    !formController.indexIsInFieldList()) {
+                return;
             }
+            //Record start of preceding list
+            FormIndex listBeforeIndex = formController.getFormIndex();
+            //Scan to last question in list
+            FormIndex activeIndex = null;
+            String _activeIndex;
+            while (formController.indexIsInFieldList()) {
+                activeIndex = formController.getFormIndex();
+                _activeIndex = activeIndex.toString();
+                formController.stepToNextEvent(true);
+                //Don't overshoot starting point
+                FormIndex formIndex = formController.getFormIndex();
+                if (formIndex.equals(activeStopIndex)) {
+                    break;
+                }
+            }
+            //Record for focus setting
+            formController.setFieldListActiveIndex(activeIndex);
+            //Ready to display preceding list
+            formController.jumpToIndex(listBeforeIndex);
         } catch (JavaRosaException e) {
             error.setValue(new NonFatal(e.getCause().getMessage()));
             return;
