@@ -35,6 +35,7 @@ import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
 import org.odk.collect.android.formentry.questions.NoButtonsItem;
 import org.odk.collect.android.listeners.SelectItemClickListener;
+import org.odk.collect.android.widgets.items.SelectMultiWidget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,6 +136,8 @@ public class SelectMultipleListAdapter extends AbstractSelectListAdapter {
             }
             playAudio(selection.choice);
         }
+        //Added for #3027
+        ((SelectMultiWidget) listener).setFieldListActiveIndex();
     }
 
     public void addItem(Selection item) {

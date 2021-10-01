@@ -67,7 +67,7 @@ public class FieldListSelectionTest {
         FormHierarchyPage hierarchy = openFormInHierarchy();
         String groupLabel = "List group";
         String questionLabel0 = "List widget";
-        String questionLabel1 = "Grid select multiple widget";
+        String questionLabel1 = "Grid select multiple widget"; //SelectMultipleListAdapter
         FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel, questionLabel0);
         page.scrollToAndClickText("A");
         formEntryBackToHierarchy(page, questionLabel1);
