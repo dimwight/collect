@@ -35,6 +35,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -485,6 +486,27 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
         } else {
             setActive.setFocus(context);
             scrollTo(setActive);
+        }
+    }
+
+    //Added for #3027
+    public void onViewScrolled() {
+        FormController formController = Collect.getInstance().getFormController();
+        if (widgets.isEmpty() || formController == null) {
+            return;
+        }
+        for (QuestionWidget widget : widgets) {
+            if (!isDisplayed(widget)) {
+                continue;
+            }
+            ViewGroup layout = (ViewGroup) widget.getChildAt(0);
+            View label = layout.getChildAt(0);
+            boolean labelVisible = label.getLocalVisibleRect(new Rect());
+            if (labelVisible) {
+                formController.setFieldListActiveIndex(
+                        widget.getQuestionDetails().getPrompt().getIndex());
+                break;
+            }
         }
     }
 

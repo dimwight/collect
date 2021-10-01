@@ -21,22 +21,20 @@ public class FieldListSelectionTest {
             .around(new CopyFormRule("fieldListSelection.xml", null))
             .around(rule);
 
-//    @Test
-public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
-    if (false &&
-            !_UpdateStage.STAGE_1.isApplied()) {
-        return;
+    @Test
+    public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
+        if (!_UpdateStage.STAGE_1.isApplied()) {
+            return;
+        }
+        FormHierarchyPage hierarchy = openFormInHierarchy();
+        String groupLabel = "Select one widgets";
+        String questionLabel = "Select one widget";
+        hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
     }
-    FormHierarchyPage hierarchy = openFormInHierarchy();
-    String groupLabel = "Select one widgets";
-    String questionLabel = "Select one widget";
-    hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
-}
 
     @Test
     public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
-        if (false &&
-                !_UpdateStage.STAGE_2.isApplied()) {
+        if (!_UpdateStage.STAGE_2.isApplied()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
@@ -46,10 +44,9 @@ public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
         formEntryBackToHierarchy(page, questionLabel);
     }
 
-    //     @Test
+    @Test
     public void scrollingInFormEntrySelectsQuestionInHierarchy() {
-        if (false &&
-                !_UpdateStage.STAGE_3.isApplied()) {
+        if (!_UpdateStage.STAGE_3.isApplied()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
@@ -57,10 +54,8 @@ public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
         String questionLabel = "Select one widget";
         FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
         String scrolledQuestionLabel = "Grid select multiple widget";
-        page.flingUpAndWait(1000)
-                .clickGoToArrow()
-                .assertText(scrolledQuestionLabel)
-                .clickGoUpIcon();
+        page.flingUpAndWait(1000);
+        formEntryBackToHierarchy(page, scrolledQuestionLabel);
     }
 
     private FormHierarchyPage openFormInHierarchy() {
@@ -81,7 +76,8 @@ public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
                                           String questionLabel) {
         page.clickGoToArrow()
                 .assertText(questionLabel)
-                .clickGoUpIcon();
+                .clickGoUpIcon()
+                .assertText("wrapper > Text widgets"); //Bug or form design?
     }
 
 }

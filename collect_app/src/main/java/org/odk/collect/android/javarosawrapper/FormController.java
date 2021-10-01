@@ -1310,16 +1310,16 @@ public class FormController {
     public enum _UpdateStage {
         //Current behaviour
         STAGE_0,
-        //questionClickedInHierarchyGetsFocusInFormEntry
+        //questionSelectedInHierarchyIsScrolledToInFormEntry
         STAGE_1,
-        //questionSelectedInFormEntryIsSelectableInHierarchy
+        //formEntryToHierarchyRetracesQuestionSelectionSteps
         STAGE_2,
         //scrollingInFormEntrySelectsQuestionInHierarchy
         STAGE_3,
         //
         STAGE_4;
 
-        private static final _UpdateStage latest = STAGE_2;
+        private static final _UpdateStage latest = STAGE_3;
 
         public boolean isApplied() {
             return latest.ordinal() >= this.ordinal();
