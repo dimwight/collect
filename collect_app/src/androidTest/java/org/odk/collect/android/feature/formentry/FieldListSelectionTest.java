@@ -21,20 +21,20 @@ public class FieldListSelectionTest {
             .around(new CopyFormRule("fieldListSelection.xml", null))
             .around(rule);
 
-    @Test
-    public void questionClickedInHierarchyGetsFocusInFormEntry() {
-        if (false &&
-                !_UpdateStage.STAGE_1.isApplied()) {
-            return;
-        }
-        FormHierarchyPage hierarchy = openFormInHierarchy();
-        String groupLabel = "Select one widgets";
-        String questionLabel = "Select one widget";
-        hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
+//    @Test
+public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
+    if (false &&
+            !_UpdateStage.STAGE_1.isApplied()) {
+        return;
     }
+    FormHierarchyPage hierarchy = openFormInHierarchy();
+    String groupLabel = "Select one widgets";
+    String questionLabel = "Select one widget";
+    hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
+}
 
-    //    @Test
-    public void questionSelectedInFormEntryIsSelectableInHierarchy() {
+    @Test
+    public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
         if (false &&
                 !_UpdateStage.STAGE_2.isApplied()) {
             return;

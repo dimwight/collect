@@ -1319,7 +1319,7 @@ public class FormController {
         //
         STAGE_4;
 
-        private static final _UpdateStage latest = STAGE_1;
+        private static final _UpdateStage latest = STAGE_2;
 
         public boolean isApplied() {
             return latest.ordinal() >= this.ordinal();
