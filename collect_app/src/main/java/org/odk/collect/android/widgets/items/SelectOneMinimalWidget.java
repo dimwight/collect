@@ -1,5 +1,7 @@
 package org.odk.collect.android.widgets.items;
 
+import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 
@@ -12,15 +14,13 @@ import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
 import org.odk.collect.android.fragments.dialogs.SelectOneMinimalDialog;
 import org.odk.collect.android.listeners.AdvanceToNextListener;
-import org.odk.collect.android.utilities.DialogUtils;
-import org.odk.collect.android.utilities.SelectOneWidgetUtils;
-import org.odk.collect.android.utilities.HtmlUtils;
 import org.odk.collect.android.utilities.Appearances;
+import org.odk.collect.android.utilities.DialogUtils;
+import org.odk.collect.android.utilities.HtmlUtils;
+import org.odk.collect.android.utilities.SelectOneWidgetUtils;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 
 import java.util.List;
-
-import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 
 @SuppressLint("ViewConstructor")
 public class SelectOneMinimalWidget extends SelectMinimalWidget {
@@ -40,6 +40,9 @@ public class SelectOneMinimalWidget extends SelectMinimalWidget {
 
     @Override
     protected void showDialog() {
+        //Added for #3027
+        setFieldListActiveIndex();
+
         int numColumns = Appearances.getNumberOfColumns(getFormEntryPrompt(), screenUtils);
         boolean noButtonsMode = Appearances.isCompactAppearance(getFormEntryPrompt()) || Appearances.isNoButtonsAppearance(getFormEntryPrompt());
 

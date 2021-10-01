@@ -42,7 +42,7 @@ import timber.log.Timber;
 /**
  * The most basic widget that allows for entry of any text.
  */
-@SuppressLint("ViewConstructor")
+@SuppressLint("ViewConstructor,BinaryOperationInTimber")
 public class StringWidget extends QuestionWidget {
     public final EditText answerText;
 
@@ -143,6 +143,14 @@ public class StringWidget extends QuestionWidget {
         answerEditText.setHorizontallyScrolling(false);
         answerEditText.setSingleLine(false);
 
+        answerEditText.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Added for #3027 (needs two clicks!)
+                setFieldListActiveIndex();
+            }
+        });
+
         if (readOnly) {
             answerEditText.setBackground(null);
             answerEditText.setEnabled(false);
@@ -151,6 +159,9 @@ public class StringWidget extends QuestionWidget {
         }
 
         answerEditText.addTextChangedListener(new TextWatcher() {
+            private int ignores = 5;
+            String textThen = "";
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -164,6 +175,17 @@ public class StringWidget extends QuestionWidget {
             @Override
             public void afterTextChanged(Editable s) {
                 widgetValueChanged();
+                //Added for #3027
+                String _label = getFormEntryPrompt().getFormElement().getLabelInnerText();
+                String textNow = s.toString();
+                if (!(ignores-- >= 0
+                        || textThen.equals(textNow))) {
+                    setFieldListActiveIndex();
+                }
+                if (ignores < 0) {
+                    ignores = -1;
+                }
+                textThen = textNow;
             }
         });
 

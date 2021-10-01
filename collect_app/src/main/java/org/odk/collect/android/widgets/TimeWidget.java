@@ -23,7 +23,6 @@ import android.view.View;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.data.TimeData;
 import org.javarosa.form.api.FormEntryPrompt;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.odk.collect.android.R;
@@ -56,6 +55,8 @@ public class TimeWidget extends QuestionWidget implements WidgetDataReceiver {
             binding.timeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontSize);
 
             binding.timeButton.setOnClickListener(v -> {
+                //Added for #3027
+                setFieldListActiveIndex();
                 DateTimeWidgetUtils.setWidgetWaitingForData(prompt.getIndex());
                 widgetUtils.showTimePickerDialog(context, selectedTime);
             });

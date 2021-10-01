@@ -105,6 +105,7 @@ public class ListMultiWidget extends ItemsWidget implements MultiChoiceWidget {
                 c.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        setFieldListActiveIndex();
                         if (getFormEntryPrompt().isReadOnly()) {
                             if (buttonView.isChecked()) {
                                 buttonView.setChecked(false);

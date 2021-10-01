@@ -260,6 +260,7 @@ public class ListWidget extends ItemsWidget implements MultiChoiceWidget, OnChec
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        setFieldListActiveIndex();
         if (!isChecked) {
             // If it got unchecked, we don't care.
             return;

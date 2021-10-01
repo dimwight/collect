@@ -14,6 +14,8 @@
 
 package org.odk.collect.android.widgets.items;
 
+import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 
@@ -28,8 +30,6 @@ import org.odk.collect.android.widgets.warnings.SpacesInUnderlyingValuesWarning;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 
 /**
  * SelectMultiWidget handles multiple selection fields using checkboxes.
@@ -82,6 +82,9 @@ public class SelectMultiWidget extends BaseSelectListWidget {
 
     @Override
     public void onItemClicked() {
+        //Added for #3027
+        setFieldListActiveIndex();
+
         widgetValueChanged();
     }
 }
