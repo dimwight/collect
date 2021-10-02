@@ -176,7 +176,6 @@ public class StringWidget extends QuestionWidget {
             public void afterTextChanged(Editable s) {
                 widgetValueChanged();
                 //Added for #3027
-                String _label = getFormEntryPrompt().getFormElement().getLabelInnerText();
                 String textNow = s.toString();
                 if (!(ignores-- >= 0
                         || textThen.equals(textNow))) {
