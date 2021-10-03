@@ -37,13 +37,16 @@ public class FieldListSelectionTest {
         if (!_UpdateStage.STAGE_1.isApplied()) {
             return;
         }
+        boolean _stringWidget = false;
         FormHierarchyPage hierarchy = openFormInHierarchy();
-        String groupLabel = "Select one widgets";
-        String questionLabel = "Select one widget";
+        String groupLabel =
+                _stringWidget ? "Text widgets" : "Select one widgets";
+        String questionLabel =
+                _stringWidget ? " String widget" : "Select one widget";
         hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
     }
 
-    @Test
+//    @Test
     public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
         if (!_UpdateStage.STAGE_2.isApplied()) {
             return;
@@ -55,7 +58,7 @@ public class FieldListSelectionTest {
         formEntryBackToHierarchy(page, groupLabel, questionLabel);
     }
 
-    @Test
+    //    @Test
     public void scrollingInFormEntrySelectsQuestionInHierarchy() {
         if (!_UpdateStage.STAGE_3.isApplied()) {
             return;
@@ -70,7 +73,7 @@ public class FieldListSelectionTest {
         formEntryBackToHierarchy(page, groupLabel1, questionLabel1);
     }
 
-    @Test
+    //    @Test
     public void interactionInFormEntrySelectsQuestionInHierarchy() {
         if (false &&
                 !_UpdateStage.STAGE_4.isApplied()) {
