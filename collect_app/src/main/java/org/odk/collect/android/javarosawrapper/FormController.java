@@ -1331,11 +1331,15 @@ public class FormController {
             return;
         }
         fieldListActiveIndex = index;
-        if (true) {
-            Timber.i("sFLAI: %s",
-                    (index == null ? "null" : index.toString()
-                            .replaceAll(".*/([^/]+)$", "$1")));
+        boolean _trace = true;
+        if (!_trace) {
+            return;
         }
+        TreeReference ref = index == null ? null : index.getReference();
+        String refString = ref == null ? "" : ref.toShortString();
+        Timber.i("sFLAI: %s",
+                (index == null ? "null" : refString.isEmpty() ? "[no ref]" : refString
+                        .replaceAll("\\[.*", "")));
 
     }
 
