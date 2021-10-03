@@ -647,6 +647,16 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
 
     @Override
     public boolean onLongClick(View v) {
+        // For #3027
+        while (true) {
+            if (v instanceof QuestionWidget) {
+                QuestionWidget widget = (QuestionWidget) v;
+                widget.setFieldListActiveIndex();
+                break;
+            } else {
+                v = (View) v.getParent();
+            }
+        }
         return false;
     }
 
