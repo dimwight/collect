@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.gdrive;
 
+import static org.odk.collect.android.gdrive.GoogleSheetsUploaderActivity.FOR_3391;
 import static org.odk.collect.android.javarosawrapper.FormController.INSTANCE_ID;
 
 import androidx.annotation.NonNull;
@@ -110,16 +111,20 @@ public class InstanceGoogleSheetsUploader extends InstanceUploader {
             String formFilePath = PathUtils.getAbsoluteFilePath(new StoragePathProvider().getOdkDirPath(StorageSubdirectory.FORMS), form.getFormFilePath());
 
             TreeElement instanceElement = getInstanceElement(formFilePath, instanceFile);
-            setUpSpreadsheet(spreadsheetUrl);
-            sheetsHelper.updateSpreadsheetLocaleForNewSpreadsheet(spreadsheet.getSpreadsheetId(), spreadsheet.getSheets().get(0).getProperties().getTitle());
-            if (hasRepeatableGroups(instanceElement)) {
-                createSheetsIfNeeded(instanceElement);
+            if (!FOR_3391) {
+                setUpSpreadsheet(spreadsheetUrl);
+                sheetsHelper.updateSpreadsheetLocaleForNewSpreadsheet(spreadsheet.getSpreadsheetId(), spreadsheet.getSheets().get(0).getProperties().getTitle());
+                if (hasRepeatableGroups(instanceElement)) {
+                    createSheetsIfNeeded(instanceElement);
+                }
             }
             String key = getInstanceID(getChildElements(instanceElement, false));
             if (key == null) {
                 key = PropertyUtils.genUUID();
             }
-            insertRows(instance, instanceElement, null, key, instanceFile, spreadsheet.getSheets().get(0).getProperties().getTitle());
+            if (!FOR_3391) {
+                insertRows(instance, instanceElement, null, key, instanceFile, spreadsheet.getSheets().get(0).getProperties().getTitle());
+            }
         } catch (UploadException e) {
             submissionComplete(instance, false);
             throw e;
@@ -558,7 +563,8 @@ public class InstanceGoogleSheetsUploader extends InstanceUploader {
     private void setUpSpreadsheet(String urlString) throws UploadException, GoogleJsonResponseException {
         if (spreadsheet == null || spreadsheet.getSpreadsheetUrl() == null || !urlString.equals(spreadsheet.getSpreadsheetUrl())) {
             try {
-                spreadsheet = sheetsHelper.getSpreadsheet(UrlUtils.getSpreadsheetID(urlString));
+                spreadsheet = sheetsHelper.getSpreadsheet(
+                        UrlUtils.getSpreadsheetID(urlString));
                 spreadsheet.setSpreadsheetUrl(urlString);
             } catch (GoogleJsonResponseException e) {
                 Timber.i(e);

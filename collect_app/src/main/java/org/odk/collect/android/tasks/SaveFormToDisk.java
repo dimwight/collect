@@ -14,6 +14,8 @@
 
 package org.odk.collect.android.tasks;
 
+import static org.odk.collect.android.analytics.AnalyticsEvents.ENCRYPT_SUBMISSION;
+
 import android.content.ContentValues;
 import android.net.Uri;
 import android.util.Pair;
@@ -42,9 +44,9 @@ import org.odk.collect.android.analytics.AnalyticsUtils;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.database.instances.DatabaseInstanceColumns;
 import org.odk.collect.android.exception.EncryptionException;
+import org.odk.collect.android.external.InstancesContract;
 import org.odk.collect.android.formentry.saving.FormSaver;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.external.InstancesContract;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.ContentUriHelper;
@@ -66,8 +68,6 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.analytics.AnalyticsEvents.ENCRYPT_SUBMISSION;
 
 /**
  * Background task for loading a form.
@@ -142,8 +142,9 @@ public class SaveFormToDisk {
         try {
             exportData(shouldFinalize, progressListener);
 
-            if (formController.getInstanceFile() != null) {
-                removeSavepointFiles(formController.getInstanceFile().getName());
+            File instanceFile = formController.getInstanceFile();
+            if (instanceFile != null) {
+                removeSavepointFiles(instanceFile.getName());
             }
 
             saveToDiskResult.setSaveResult(saveAndExit ? SAVED_AND_EXIT : SAVED, shouldFinalize);
@@ -336,7 +337,8 @@ public class SaveFormToDisk {
 
         ByteArrayPayload payload = formController.getFilledInFormXml();
         // write out xml
-        String instancePath = formController.getInstanceFile().getAbsolutePath();
+        File instanceFile = formController.getInstanceFile();
+        String instancePath = instanceFile.getAbsolutePath();
 
         for (String fileName : tempFiles) {
             mediaUtils.deleteMediaFile(fileName);
@@ -366,7 +368,7 @@ public class SaveFormToDisk {
             // and (if appropriate) encrypt the files on the side
 
             // pay attention to the ref attribute of the submission profile...
-            File instanceXml = formController.getInstanceFile();
+            File instanceXml = instanceFile;
             File submissionXml = new File(instanceXml.getParentFile(), "submission.xml");
 
             payload = formController.getSubmissionXml();

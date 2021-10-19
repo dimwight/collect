@@ -63,6 +63,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
     private static final int GOOGLE_USER_DIALOG = 3;
     private static final String ALERT_MSG = "alertmsg";
     private static final String ALERT_SHOWING = "alertshowing";
+    public static final boolean FOR_3391 = true;
     private AlertDialog alertDialog;
     private String alertMsg;
     private boolean alertShowing;
@@ -352,7 +353,10 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
         protected Boolean doInBackground(Void... params) {
             try {
                 // Must be run from a background thread, not the main UI thread.
-                if (accountsManager.getToken() != null) {
+                if (FOR_3391 ||
+                        accountsManager.
+                                getToken()
+                                != null) {
                     return true;
                 }
             } catch (UserRecoverableAuthException e) {
