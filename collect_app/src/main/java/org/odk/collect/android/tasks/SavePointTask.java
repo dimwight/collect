@@ -68,7 +68,7 @@ public class SavePointTask extends AsyncTask<Void, Void, String> {
                 }
 
                 // write out xml
-                SaveFormToDisk.writeFile(payload, temp.getAbsolutePath());
+                SaveFormToDisk.writeFile(payload, temp);
 
                 long end = System.currentTimeMillis();
                 Timber.i("Savepoint ms: %s to %s", Long.toString(end - start), temp.toString());
