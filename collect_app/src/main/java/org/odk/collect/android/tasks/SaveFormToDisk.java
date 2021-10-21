@@ -65,7 +65,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -139,26 +142,38 @@ public class SaveFormToDisk {
             instanceName = updatedSaveName;
         }
 
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ENGLISH);
         File instanceFile = formController.getInstanceFile();
+        File parentFile = instanceFile.getParentFile();
+        String root = parentFile.getParentFile().getAbsolutePath();
+        long start = System.currentTimeMillis();
 
-        try {
-            exportData(instanceFile, shouldFinalize, progressListener);
+        for (int count = 0; count < 10; count++) {
+            String next = format.format(new Date(start + count * 1050));
+            String stamp = false ? parentFile.getName() : next;
+            File extra = new File(root + "/" + stamp + "/" + stamp + ".xml");
+            boolean equals = instanceFile.equals(extra);
+            instanceFile = extra;
 
-            if (instanceFile != null) {
-                removeSavepointFiles(instanceFile.getName());
+            try {
+                exportData(instanceFile, shouldFinalize, progressListener);
+
+                if (false &&
+                        instanceFile != null) {
+                    removeSavepointFiles(instanceFile.getName());
+                }
+
+                saveToDiskResult.setSaveResult(saveAndExit ? SAVED_AND_EXIT : SAVED, shouldFinalize);
+            } catch (EncryptionException e) {
+                saveToDiskResult.setSaveErrorMessage(e.getMessage());
+                saveToDiskResult.setSaveResult(ENCRYPTION_ERROR, shouldFinalize);
+            } catch (Exception e) {
+                Timber.e(e);
+
+                saveToDiskResult.setSaveErrorMessage(e.getMessage());
+                saveToDiskResult.setSaveResult(SAVE_ERROR, shouldFinalize);
             }
-
-            saveToDiskResult.setSaveResult(saveAndExit ? SAVED_AND_EXIT : SAVED, shouldFinalize);
-        } catch (EncryptionException e) {
-            saveToDiskResult.setSaveErrorMessage(e.getMessage());
-            saveToDiskResult.setSaveResult(ENCRYPTION_ERROR, shouldFinalize);
-        } catch (Exception e) {
-            Timber.e(e);
-
-            saveToDiskResult.setSaveErrorMessage(e.getMessage());
-            saveToDiskResult.setSaveResult(SAVE_ERROR, shouldFinalize);
         }
-
         return saveToDiskResult;
     }
 
