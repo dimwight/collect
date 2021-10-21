@@ -163,6 +163,127 @@ public class SaveFormToDisk {
     }
 
     /**
+     * Write's the data to the sdcard, and updates the instances content provider.
+     * In theory we don't have to write to disk, and this is where you'd add
+     * other methods.
+     */
+    private void exportData(File instanceFile, boolean markCompleted, FormSaver.ProgressListener progressListener) throws IOException, EncryptionException {
+        FormController formController = Collect.getInstance().getFormController();
+
+        progressListener.onProgressUpdate(TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_collecting_message));
+
+        ByteArrayPayload payload = formController.getFilledInFormXml();
+        // write out xml
+
+        for (String fileName : tempFiles) {
+            mediaUtils.deleteMediaFile(fileName);
+        }
+
+        progressListener.onProgressUpdate(TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_saving_message));
+
+        writeFile(payload, instanceFile);
+
+        // Write last-saved instance
+        File lastSavedFile = new File(formController.getLastSavedPath());
+        writeFile(payload, lastSavedFile);
+
+        // update the uri. We have exported the reloadable instance, so update status...
+        // Since we saved a reloadable instance, it is flagged as re-openable so that if any error
+        // occurs during the packaging of the data for the server fails (e.g., encryption),
+        // we can still reopen the filled-out form and re-save it at a later time.
+        String instancePath = instanceFile.getAbsolutePath();
+        updateInstanceDatabase(instancePath, true, true);
+
+        if (markCompleted) {
+            // now see if the packaging of the data for the server would make it
+            // non-reopenable (e.g., encryption or other fraction of the form).
+            boolean canEditAfterCompleted = formController.isSubmissionEntireForm();
+            boolean isEncrypted = false;
+
+            // build a submission.xml to hold the data being submitted
+            // and (if appropriate) encrypt the files on the side
+
+            // pay attention to the ref attribute of the submission profile...
+            File instanceXml = instanceFile;
+            File submissionXml = new File(instanceXml.getParentFile(), "submission.xml");
+
+            payload = formController.getSubmissionXml();
+
+            // write out submission.xml -- the data to actually submit to aggregate
+
+            progressListener.onProgressUpdate(
+                    TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_finalizing_message));
+
+            writeFile(payload, submissionXml);
+
+            // see if the form is encrypted and we can encrypt it...
+            EncryptedFormInformation formInfo = EncryptionUtils.getEncryptedFormInformation(uri, formController.getSubmissionMetadata());
+            if (formInfo != null) {
+                // if we are encrypting, the form cannot be reopened afterward
+                canEditAfterCompleted = false;
+                // and encrypt the submission (this is a one-way operation)...
+
+                progressListener.onProgressUpdate(
+                        TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_encrypting_message));
+
+                EncryptionUtils.generateEncryptedSubmission(instanceXml, submissionXml, formInfo);
+                isEncrypted = true;
+
+                analytics.logEvent(ENCRYPT_SUBMISSION, AnalyticsUtils.getFormHash(Collect.getInstance().getFormController()), "");
+            }
+
+            // At this point, we have:
+            // 1. the saved original instanceXml,
+            // 2. all the plaintext attachments
+            // 2. the submission.xml that is the completed xml (whether encrypting or not)
+            // 3. all the encrypted attachments if encrypting (isEncrypted = true).
+            //
+            // NEXT:
+            // 1. Update the instance database (with status complete).
+            // 2. Overwrite the instanceXml with the submission.xml
+            //    and remove the plaintext attachments if encrypting
+
+            updateInstanceDatabase(instancePath, false, canEditAfterCompleted);
+
+            if (!canEditAfterCompleted) {
+                manageFilesAfterSavingEncryptedForm(instanceXml, submissionXml);
+            } else {
+                // try to delete the submissionXml file, since it is
+                // identical to the existing instanceXml file
+                // (we don't need to delete and rename anything).
+                if (!submissionXml.delete()) {
+                    String msg = "Error deleting " + submissionXml.getAbsolutePath()
+                            + " (instance is re-openable)";
+                    Timber.w(msg);
+                }
+            }
+
+            // if encrypted, delete all plaintext files
+            // (anything not named instanceXml or anything not ending in .enc)
+            if (isEncrypted) {
+                InstancesRepository instancesRepository = new InstancesRepositoryProvider(Collect.getInstance()).get();
+                Instance instance = instancesRepository.get(ContentUriHelper.getIdFromUri(uri));
+
+                // Clear the geometry. Done outside of updateInstanceDatabase to avoid multiple
+                // branches and because it has no knowledge of encryption status.
+                instancesRepository.save(new Instance.Builder(instance)
+                        .geometry(null)
+                        .geometryType(null)
+                        .build()
+                );
+
+                ContentValues values = new ContentValues();
+                values.put(DatabaseInstanceColumns.GEOMETRY, (String) null);
+                values.put(DatabaseInstanceColumns.GEOMETRY_TYPE, (String) null);
+
+                if (!EncryptionUtils.deletePlaintextFiles(instanceXml, lastSavedFile)) {
+                    Timber.e("Error deleting plaintext files for %s", instanceXml.getAbsolutePath());
+                }
+            }
+        }
+    }
+
+    /**
      * Updates the status and editability for the database row corresponding to the instance that is
      * currently managed by the {@link FormController}. There are three cases:
      * - the instance was opened for edit so its database row already exists
@@ -323,126 +444,6 @@ public class SaveFormToDisk {
         File formIndexFile = getFormIndexFile(instanceName);
         FileUtils.deleteAndReport(savepointFile);
         FileUtils.deleteAndReport(formIndexFile);
-    }
-
-    /**
-     * Write's the data to the sdcard, and updates the instances content provider.
-     * In theory we don't have to write to disk, and this is where you'd add
-     * other methods.
-     */
-    private void exportData(File instanceFile, boolean markCompleted, FormSaver.ProgressListener progressListener) throws IOException, EncryptionException {
-        FormController formController = Collect.getInstance().getFormController();
-
-        progressListener.onProgressUpdate(TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_collecting_message));
-
-        ByteArrayPayload payload = formController.getFilledInFormXml();
-        // write out xml
-
-        for (String fileName : tempFiles) {
-            mediaUtils.deleteMediaFile(fileName);
-        }
-
-        progressListener.onProgressUpdate(TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_saving_message));
-
-        writeFile(payload, instanceFile);
-
-        // Write last-saved instance
-        File lastSavedFile = new File(formController.getLastSavedPath());
-        writeFile(payload, lastSavedFile);
-
-        // update the uri. We have exported the reloadable instance, so update status...
-        // Since we saved a reloadable instance, it is flagged as re-openable so that if any error
-        // occurs during the packaging of the data for the server fails (e.g., encryption),
-        // we can still reopen the filled-out form and re-save it at a later time.
-        updateInstanceDatabase(instanceFile.getAbsolutePath(), true, true);
-
-        if (markCompleted) {
-            // now see if the packaging of the data for the server would make it
-            // non-reopenable (e.g., encryption or other fraction of the form).
-            boolean canEditAfterCompleted = formController.isSubmissionEntireForm();
-            boolean isEncrypted = false;
-
-            // build a submission.xml to hold the data being submitted
-            // and (if appropriate) encrypt the files on the side
-
-            // pay attention to the ref attribute of the submission profile...
-            File instanceXml = instanceFile;
-            File submissionXml = new File(instanceXml.getParentFile(), "submission.xml");
-
-            payload = formController.getSubmissionXml();
-
-            // write out submission.xml -- the data to actually submit to aggregate
-
-            progressListener.onProgressUpdate(
-                    TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_finalizing_message));
-
-            writeFile(payload, submissionXml);
-
-            // see if the form is encrypted and we can encrypt it...
-            EncryptedFormInformation formInfo = EncryptionUtils.getEncryptedFormInformation(uri, formController.getSubmissionMetadata());
-            if (formInfo != null) {
-                // if we are encrypting, the form cannot be reopened afterward
-                canEditAfterCompleted = false;
-                // and encrypt the submission (this is a one-way operation)...
-
-                progressListener.onProgressUpdate(
-                        TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_encrypting_message));
-
-                EncryptionUtils.generateEncryptedSubmission(instanceXml, submissionXml, formInfo);
-                isEncrypted = true;
-
-                analytics.logEvent(ENCRYPT_SUBMISSION, AnalyticsUtils.getFormHash(Collect.getInstance().getFormController()), "");
-            }
-
-            // At this point, we have:
-            // 1. the saved original instanceXml,
-            // 2. all the plaintext attachments
-            // 2. the submission.xml that is the completed xml (whether encrypting or not)
-            // 3. all the encrypted attachments if encrypting (isEncrypted = true).
-            //
-            // NEXT:
-            // 1. Update the instance database (with status complete).
-            // 2. Overwrite the instanceXml with the submission.xml
-            //    and remove the plaintext attachments if encrypting
-
-            updateInstanceDatabase(instanceFile.getAbsolutePath(), false, canEditAfterCompleted);
-
-            if (!canEditAfterCompleted) {
-                manageFilesAfterSavingEncryptedForm(instanceXml, submissionXml);
-            } else {
-                // try to delete the submissionXml file, since it is
-                // identical to the existing instanceXml file
-                // (we don't need to delete and rename anything).
-                if (!submissionXml.delete()) {
-                    String msg = "Error deleting " + submissionXml.getAbsolutePath()
-                            + " (instance is re-openable)";
-                    Timber.w(msg);
-                }
-            }
-
-            // if encrypted, delete all plaintext files
-            // (anything not named instanceXml or anything not ending in .enc)
-            if (isEncrypted) {
-                InstancesRepository instancesRepository = new InstancesRepositoryProvider(Collect.getInstance()).get();
-                Instance instance = instancesRepository.get(ContentUriHelper.getIdFromUri(uri));
-
-                // Clear the geometry. Done outside of updateInstanceDatabase to avoid multiple
-                // branches and because it has no knowledge of encryption status.
-                instancesRepository.save(new Instance.Builder(instance)
-                        .geometry(null)
-                        .geometryType(null)
-                        .build()
-                );
-
-                ContentValues values = new ContentValues();
-                values.put(DatabaseInstanceColumns.GEOMETRY, (String) null);
-                values.put(DatabaseInstanceColumns.GEOMETRY_TYPE, (String) null);
-
-                if (!EncryptionUtils.deletePlaintextFiles(instanceXml, lastSavedFile)) {
-                    Timber.e("Error deleting plaintext files for %s", instanceXml.getAbsolutePath());
-                }
-            }
-        }
     }
 
     /**
