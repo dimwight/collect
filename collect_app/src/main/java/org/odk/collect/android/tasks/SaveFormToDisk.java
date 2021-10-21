@@ -139,10 +139,11 @@ public class SaveFormToDisk {
             instanceName = updatedSaveName;
         }
 
-        try {
-            exportData(shouldFinalize, progressListener);
+        File instanceFile = formController.getInstanceFile();
 
-            File instanceFile = formController.getInstanceFile();
+        try {
+            exportData(instanceFile, shouldFinalize, progressListener);
+
             if (instanceFile != null) {
                 removeSavepointFiles(instanceFile.getName());
             }
@@ -172,11 +173,11 @@ public class SaveFormToDisk {
      * Post-condition: the uri field is set to the URI of the instance database row that matches
      * the instance currently managed by the {@link FormController}.
      */
-    private void updateInstanceDatabase(boolean incomplete, boolean canEditAfterCompleted) {
+    private void updateInstanceDatabase(File instanceFile, boolean incomplete, boolean canEditAfterCompleted) {
         FormController formController = Collect.getInstance().getFormController();
         FormInstance formInstance = formController.getFormDef().getInstance();
 
-        String instancePath = formController.getInstanceFile().getAbsolutePath();
+        String instancePath = instanceFile.getAbsolutePath();
         InstancesRepository instances = new InstancesRepositoryProvider(Collect.getInstance()).get();
         Instance instance = instances.getOneByPath(instancePath);
 
@@ -330,14 +331,13 @@ public class SaveFormToDisk {
      * In theory we don't have to write to disk, and this is where you'd add
      * other methods.
      */
-    private void exportData(boolean markCompleted, FormSaver.ProgressListener progressListener) throws IOException, EncryptionException {
+    private void exportData(File instanceFile, boolean markCompleted, FormSaver.ProgressListener progressListener) throws IOException, EncryptionException {
         FormController formController = Collect.getInstance().getFormController();
 
         progressListener.onProgressUpdate(TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_collecting_message));
 
         ByteArrayPayload payload = formController.getFilledInFormXml();
         // write out xml
-        File instanceFile = formController.getInstanceFile();
         String instancePath = instanceFile.getAbsolutePath();
 
         for (String fileName : tempFiles) {
@@ -356,7 +356,7 @@ public class SaveFormToDisk {
         // Since we saved a reloadable instance, it is flagged as re-openable so that if any error
         // occurs during the packaging of the data for the server fails (e.g., encryption),
         // we can still reopen the filled-out form and re-save it at a later time.
-        updateInstanceDatabase(true, true);
+        updateInstanceDatabase(instanceFile, true, true);
 
         if (markCompleted) {
             // now see if the packaging of the data for the server would make it
@@ -407,7 +407,7 @@ public class SaveFormToDisk {
             // 2. Overwrite the instanceXml with the submission.xml
             //    and remove the plaintext attachments if encrypting
 
-            updateInstanceDatabase(false, canEditAfterCompleted);
+            updateInstanceDatabase(instanceFile, false, canEditAfterCompleted);
 
             if (!canEditAfterCompleted) {
                 manageFilesAfterSavingEncryptedForm(instanceXml, submissionXml);
