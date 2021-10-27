@@ -17,6 +17,7 @@ package org.odk.collect.android.utilities;
 import static org.odk.collect.shared.strings.StringUtils.trim;
 
 import android.text.Html;
+import android.text.Spanned;
 
 import java.util.regex.MatchResult;
 
@@ -107,7 +108,13 @@ public final class HtmlUtils {
     }
 
     public static CharSequence textToHtml(String text) {
-        return text == null ? "" : trim(Html.fromHtml(markdownToHtml(text)));
+        if (text == null) {
+            return "";
+        }
+        String html = markdownToHtml(text);
+        Spanned fromHtml = Html.fromHtml(html);
+        CharSequence trim = trim(fromHtml);
+        return trim;
     }
 }
 
