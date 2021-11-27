@@ -68,6 +68,14 @@ if (secretsFile.exists()) {
 def googleMapsApiKey = secrets.getProperty('GOOGLE_MAPS_API_KEY', '')
 def mapboxToken = secrets.getProperty('MAPBOX_ACCESS_TOKEN', '')
 
+
+
+repositories {
+    flatDir {
+        dirs '../../javarosy/build/libs'
+    }
+}
+
 android {
     compileSdkVersion Versions.android_compile_sdk
 
@@ -290,6 +298,7 @@ dependencies {
     implementation Dependencies.rarepebble_colorpicker
     implementation Dependencies.commons_io
     implementation Dependencies.opencsv
+    implementation 'net.sf.kxml:kxml2:2.3.0'
     implementation(Dependencies.javarosa) {
         exclude group: 'joda-time'
         exclude group: 'org.slf4j'
