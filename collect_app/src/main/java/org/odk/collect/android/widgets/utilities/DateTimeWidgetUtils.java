@@ -6,6 +6,8 @@ import android.os.Bundle;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.material.timepicker.MaterialTimePicker;
+
 import org.javarosa.core.model.FormIndex;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
@@ -196,7 +198,13 @@ public class DateTimeWidgetUtils {
         bundle.putInt(DIALOG_THEME, themeUtils.getSpinnerTimePickerDialogTheme());
         bundle.putSerializable(TIME, dateTime);
 
-        DialogFragmentUtils.showIfNotShowing(CustomTimePickerDialog.class, bundle, ((FragmentActivity) context).getSupportFragmentManager());
+        if (false) {
+            DialogFragmentUtils.showIfNotShowing(CustomTimePickerDialog.class, bundle, ((FragmentActivity) context).getSupportFragmentManager());
+        }
+
+        MaterialTimePicker.Builder builder = new MaterialTimePicker.Builder();
+        MaterialTimePicker build = builder.build();
+        build.onCreateDialog(bundle);
     }
 
     public void showDatePickerDialog(Context context, DatePickerDetails datePickerDetails, LocalDateTime date) {
