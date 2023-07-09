@@ -7,23 +7,28 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
 import static androidx.test.espresso.action.ViewActions.swipeRight;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.odk.collect.android.support.WaitFor.waitFor;
 import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 
 import android.os.Build;
 
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.hamcrest.Matchers;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.WaitFor;
 import org.odk.collect.android.utilities.FlingRegister;
 
 import java.util.concurrent.Callable;
@@ -39,7 +44,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
     @Override
     public FormEntryPage assertOnPage() {
         // Make sure we wait for loading to finish
-        WaitFor.waitFor((Callable<Void>) () -> {
+        waitFor((Callable<Void>) () -> {
             assertTextDoesNotExist(R.string.loading_form);
             return null;
         });
@@ -122,12 +127,12 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public FormEndPage swipeToEndScreen(String instanceName) {
         flingLeft();
-        return WaitFor.waitFor(() -> new FormEndPage(instanceName).assertOnPage());
+        return waitFor(() -> new FormEndPage(instanceName).assertOnPage());
     }
 
     public FormEndPage swipeToEndScreen() {
         flingLeft();
-        return WaitFor.waitFor(() -> new FormEndPage(formName).assertOnPage());
+        return waitFor(() -> new FormEndPage(formName).assertOnPage());
     }
 
     public ErrorDialog swipeToNextQuestionWithError() {
@@ -259,12 +264,12 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public AddNewRepeatDialog swipeToNextQuestionWithRepeatGroup(String repeatName) {
         flingLeft();
-        return WaitFor.waitFor(() -> new AddNewRepeatDialog(repeatName).assertOnPage());
+        return waitFor(() -> new AddNewRepeatDialog(repeatName).assertOnPage());
     }
 
     public AddNewRepeatDialog swipeToPreviousQuestionWithRepeatGroup(String repeatName) {
         flingRight();
-        return WaitFor.waitFor(() -> new AddNewRepeatDialog(repeatName).assertOnPage());
+        return waitFor(() -> new AddNewRepeatDialog(repeatName).assertOnPage());
     }
 
     public FormEntryPage answerQuestion(String question, String answer) {
@@ -309,7 +314,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
             FlingRegister.attemptingFling();
             onView(withId(R.id.questionholder)).perform(swipeLeft());
 
-            WaitFor.waitFor(() -> {
+            waitFor(() -> {
                 if (FlingRegister.isFlingDetected()) {
                     return true;
                 } else {
@@ -324,7 +329,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
             FlingRegister.attemptingFling();
             onView(withId(R.id.questionholder)).perform(swipeRight());
 
-            WaitFor.waitFor(() -> {
+            waitFor(() -> {
                 if (FlingRegister.isFlingDetected()) {
                     return true;
                 } else {
@@ -412,6 +417,33 @@ public class FormEntryPage extends Page<FormEntryPage> {
     public FormEntryPage assertBackgroundLocationSnackbarShown() {
         onView(withId(com.google.android.material.R.id.snackbar_text))
                 .check(matches(withText(String.format(ApplicationProvider.getApplicationContext().getString(R.string.background_location_enabled), "⋮"))));
+        return this;
+    }
+
+    public FormEntryPage flingUpAndWait(int millis) {
+        tryAgainOnFail(() -> {
+            FlingRegister.attemptingFling();
+            onView(withId(R.id.questionholder)).perform(swipeUp());
+
+            waitFor(() -> {
+                if (FlingRegister.isFlingDetected()) {
+                    return true;
+                } else {
+                    throw new RuntimeException("Fling never detected!");
+                }
+            });
+        }, 5);
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignored) {
+            // ignored
+        }
+
+        return this;
+    }
+
+    public FormEntryPage closeSelectMinimalDialog() {
+        onView(allOf(instanceOf(AppCompatImageButton.class), withParent(withId(R.id.toolbar)))).perform(click());
         return this;
     }
 

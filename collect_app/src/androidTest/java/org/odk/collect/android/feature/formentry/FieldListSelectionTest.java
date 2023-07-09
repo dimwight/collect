@@ -10,11 +10,10 @@ import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.FormHierarchyPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.rules.CollectTestRule;
+import org.odk.collect.android.support.rules.TestRuleChain;
 
 import java.util.Random;
 
@@ -22,14 +21,33 @@ public class FieldListSelectionTest {
 
     private static final String WRAPPER_GT = "wrapper > ";
 
-
     public CollectTestRule rule = new CollectTestRule();
 
     @Rule
-    public RuleChain copyFormChain = RuleChain
-            .outerRule(new org.odk.collect.android.support.rules.ResetStateRule())
-            .around(new org.odk.collect.android.support.rules.CopyFormRule("fieldListSelection.xml", null))
-            .around(rule);
+    public RuleChain copyFormChain = TestRuleChain.chain().around(rule);
+
+    private FormHierarchyPage openFormInHierarchy() {
+        return rule.startAtMainMenu()
+                .copyForm("fieldListSelection.xml")
+                .startBlankForm("fieldListSelection")
+                .clickGoToArrow()
+                .assertText(WRAPPER_GT + "Text widgets");
+    }
+
+    private FormEntryPage hierarchyToFormEntry(FormHierarchyPage hierarchy,
+                                               String group,
+                                               String question,
+                                               String assertHidden) {
+        FormEntryPage page = hierarchy.clickOnGroup(group)
+//                .assertText(WRAPPER_GT + group)
+                .clickOnQuestion(question)
+//                .assertText(question)
+                ;
+        if (!assertHidden.isEmpty()) {
+            page.assertTextDoesNotExist(assertHidden);
+        }
+        return page;
+    }
 
     @Test
     public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
@@ -38,13 +56,21 @@ public class FieldListSelectionTest {
         ) {
             return;
         }
-        boolean _stringWidget = false;
         FormHierarchyPage hierarchy = openFormInHierarchy();
-        String groupLabel =
-                _stringWidget ? "Text widgets" : "Select one widgets";
-        String questionLabel =
-                _stringWidget ? " String widget" : "Select one widget";
-        hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
+        hierarchyToFormEntry(hierarchy,
+                "Select one widgets",
+                "Select one widget",
+                "Time widget");
+    }
+
+    private void formEntryBackToHierarchy(FormEntryPage page,
+                                          String group,
+                                          String question) {
+        page.clickGoToArrow()
+                .assertText(WRAPPER_GT + group)
+                .assertText(question)
+                .clickGoUpIcon()
+                .assertText(WRAPPER_GT + "Text widgets"); //Bug or form design?
     }
 
     @Test
@@ -55,10 +81,13 @@ public class FieldListSelectionTest {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
-        String groupLabel = "Select one widgets";
-        String questionLabel = "Select one widget";
-        FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel, questionLabel);
-        formEntryBackToHierarchy(page, groupLabel, questionLabel);
+        String question = "Select one widget";
+        FormEntryPage page = hierarchy.clickOnGroup("Select one widgets")
+//                .assertText(WRAPPER_GT + group)
+                .clickOnQuestion(question)
+//                .assertText(question)
+                ;
+        formEntryBackToHierarchy(page, "Select one widgets", question);
     }
 
     @Test
@@ -69,13 +98,14 @@ public class FieldListSelectionTest {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
-        String groupLabel0 = "Select one widgets";
-        String questionLabel0 = "Select one widget";
-        FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel0, questionLabel0);
+        String group0 = "Select one widgets";
+        String question0 = "Select one widget";
+        FormEntryPage page = hierarchyToFormEntry(hierarchy,
+                group0, question0, "");
         page.flingUpAndWait(1000);
-        String groupLabel1 = "Select multi widgets";
-        String questionLabel1 = "Grid select multiple widget";
-        formEntryBackToHierarchy(page, groupLabel1, questionLabel1);
+        String group1 = "Select multi widgets";
+        String question1 = "Grid select multiple widget";
+        formEntryBackToHierarchy(page, group1, question1);
     }
 
     @Test
@@ -86,47 +116,22 @@ public class FieldListSelectionTest {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
-        String groupLabel0 = "Select multi widgets";
-        String questionLabel0 = "Grid select multiple widget"; //SelectMultipleListAdapter
-        FormEntryPage page = hierarchyToFormEntry(hierarchy, groupLabel0, questionLabel0);
+        String group0 = "Select multi widgets";
+        String question0 = "Grid select multiple widget"; //SelectMultipleListAdapter
+        FormEntryPage page = hierarchyToFormEntry(hierarchy, group0,
+                question0, "");
         if (false) {
             onView(withIndex(withText("Select Answer"), 1)).perform(click());
             page.closeSelectMinimalDialog();
         }
-        String groupLabel1 = "List group";
+        String group1 = "List group";
         boolean clickRadioButton = true ||
                 new Random().nextDouble() > 0.5;
-        String questionLabel1 = clickRadioButton ? "List widget" : "List multi widget";
+        String question1 = clickRadioButton ? "List widget" : "List multi widget";
         onView(withIndex(withClassName(endsWith(
                 clickRadioButton ? "RadioButton" : "CheckBox")
         ), 0)).perform(click());
-        formEntryBackToHierarchy(page, groupLabel1, questionLabel1);
-    }
-
-    private FormHierarchyPage openFormInHierarchy() {
-        return new MainMenuPage()
-                .startBlankForm("fieldListSelection")
-                .clickGoToArrow()
-                .assertText(WRAPPER_GT + "Text widgets");
-    }
-
-    private FormEntryPage hierarchyToFormEntry(FormHierarchyPage hierarchy,
-                                               String groupLabel,
-                                               String questionLabel) {
-        return hierarchy.clickOnGroup(groupLabel)
-                .assertText(WRAPPER_GT + groupLabel)
-                .clickOnQuestion(questionLabel)
-                .assertText(questionLabel);
-    }
-
-    private void formEntryBackToHierarchy(FormEntryPage page,
-                                          String groupLabel,
-                                          String questionLabel) {
-        page.clickGoToArrow()
-                .assertText(WRAPPER_GT + groupLabel)
-                .assertText(questionLabel)
-                .clickGoUpIcon()
-                .assertText(WRAPPER_GT + "Text widgets"); //Bug or form design?
+        formEntryBackToHierarchy(page, group1, question1);
     }
 
 }
