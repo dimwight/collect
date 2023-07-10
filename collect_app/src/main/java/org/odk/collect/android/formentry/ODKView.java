@@ -15,6 +15,7 @@
 package org.odk.collect.android.formentry;
 
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
+import static org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage.STAGE_1;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
 
@@ -63,6 +64,7 @@ import org.odk.collect.android.externaldata.ExternalAppsUtils;
 import org.odk.collect.android.formentry.media.PromptAutoplayer;
 import org.odk.collect.android.formentry.questions.QuestionTextSizeHelper;
 import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.android.javarosawrapper.JavaRosaFormController;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.utilities.ContentUriHelper;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
@@ -458,9 +460,34 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         });
     }
 
+    //For 3027
     public void setFocus(Context context) {
-        if (!widgets.isEmpty()) {
-            widgets.get(0).setFocus(context);
+        if (widgets.isEmpty() || formController == null) {
+            return;
+        }
+        int activeAt = 0;
+        if (STAGE_1.isApplied()) {
+            //Retrieve and clear marker, set active #3027
+            FormIndex activeIndex = ((JavaRosaFormController)
+                    formController).getFieldListActiveIndex(true);
+            for (int at = 0; at < widgets.size(); at++) {
+                //Only set index >=0 if match found
+                FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();
+                if (indexAt.equals(activeIndex)) {
+                    activeAt = at;
+                    break;
+                }
+            }
+        }
+        QuestionWidget setActive = widgets.get(activeAt);
+        if (false) {
+            new Handler().postDelayed(() -> {
+                setActive.setFocus(context);
+                scrollTo(setActive);
+            }, 100);
+        } else {
+            setActive.setFocus(context);
+            scrollTo(setActive);
         }
     }
 

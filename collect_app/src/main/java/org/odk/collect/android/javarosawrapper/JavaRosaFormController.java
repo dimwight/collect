@@ -1085,4 +1085,52 @@ public class JavaRosaFormController implements FormController {
         Entities extra = formEntryController.getModel().getExtras().get(Entities.class);
         return extra.getEntities().stream().map(entity -> new Entity(entity.dataset, entity.properties));
     }
+
+    //Added for #3027
+    private FormIndex fieldListActiveIndex;
+
+    public void setFieldListActiveIndex(FormIndex index) {
+        if (!_UpdateStage.STAGE_1.isApplied()) {
+            return;
+        }
+        fieldListActiveIndex = index;
+        boolean _trace = true;
+        if (!_trace) {
+            return;
+        }
+        TreeReference ref = index == null ? null : index.getReference();
+        String refString = ref == null ? "" : ref.toShortString();
+        Timber.i("sFLAI: %s",
+                (index == null ? "null" : refString.isEmpty() ? "[no ref]" : refString
+                        .replaceAll("\\[.*", "")));
+
+    }
+
+    public FormIndex getFieldListActiveIndex(boolean preserveValue) {
+        FormIndex index = fieldListActiveIndex;
+        if (!preserveValue) {
+            fieldListActiveIndex = null;
+        }
+        return index;
+    }
+
+    //Added for #3027 development
+    public enum _UpdateStage {
+        //Current behaviour
+        STAGE_0,
+        //questionSelectedInHierarchyIsScrolledToInFormEntry
+        STAGE_1,
+        //formEntryToHierarchyRetracesQuestionSelectionSteps
+        STAGE_2,
+        //scrollingInFormEntrySelectsQuestionInHierarchy
+        STAGE_3,
+        //interactionInFormEntrySelectsQuestionInHierarchy
+        STAGE_4;
+
+        private static final _UpdateStage LATEST = STAGE_1;
+
+        public boolean isApplied() {
+            return LATEST.ordinal() >= this.ordinal();
+        }
+    }
 }
