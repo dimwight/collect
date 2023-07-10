@@ -44,7 +44,7 @@ public class FieldListSelectionTest {
 //                .assertText(question)
                 ;
         if (!assertHidden.isEmpty()) {
-            page.assertTextDoesNotExist(assertHidden);
+            page.assertTextIsNotDisplayed(assertHidden);
         }
         return page;
     }
@@ -60,7 +60,7 @@ public class FieldListSelectionTest {
         hierarchyToFormEntry(hierarchy,
                 "Select one widgets",
                 "Select one widget",
-                "Time widget");
+                "String widget");
     }
 
     private void formEntryBackToHierarchy(FormEntryPage page,
