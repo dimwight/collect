@@ -18,6 +18,7 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getClipID;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
+import static org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage.STAGE_4;
 
 import android.app.Activity;
 import android.content.Context;
@@ -35,11 +36,13 @@ import org.javarosa.core.reference.InvalidReferenceException;
 import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
+import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.formentry.media.AudioHelperFactory;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.formentry.questions.QuestionTextSizeHelper;
+import org.odk.collect.android.javarosawrapper.JavaRosaFormController;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.preferences.GuidanceHint;
 import org.odk.collect.android.utilities.AnimationUtils;
@@ -413,5 +416,21 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         if (valueChangedListener != null) {
             valueChangedListener.widgetValueChanged(this);
         }
+    }
+
+    //Added for #3027
+    public void setFieldListActiveIndex() {
+        JavaRosaFormController formController = Collect.getInstance().getFormController();
+        if (!STAGE_4.isApplied() ||
+                formController == null) {
+            return;
+        }
+        formController.setFieldListActiveIndex(
+                getQuestionDetails().getPrompt().getIndex());
+    }
+
+    public String _getLabelText() {
+        return getQuestionDetails().getPrompt()
+                .getFormElement().getLabelInnerText();
     }
 }
