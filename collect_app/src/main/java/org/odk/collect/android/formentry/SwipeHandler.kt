@@ -5,11 +5,14 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.core.widget.NestedScrollView
+import org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage
 import org.odk.collect.android.utilities.FlingRegister
 import org.odk.collect.androidshared.utils.ScreenUtils
 import org.odk.collect.settings.keys.ProjectKeys
 import org.odk.collect.shared.settings.Settings
 import org.odk.collect.strings.localization.isLTR
+import java.util.Timer
+import java.util.TimerTask
 import kotlin.math.abs
 import kotlin.math.atan2
 
@@ -47,15 +50,35 @@ class SwipeHandler(context: Context, generalSettings: Settings) {
     fun beenSwiped() = beenSwiped
 
     inner class GestureListener : GestureDetector.OnGestureListener {
+        private var scrollTimer: Timer? = null
+
         override fun onDown(event: MotionEvent) = false
         override fun onSingleTapUp(e: MotionEvent) = false
 
         override fun onShowPress(e: MotionEvent) = Unit
         override fun onLongPress(e: MotionEvent) = Unit
 
-        override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+        override fun onScroll(
+            e1: MotionEvent,
+            e2: MotionEvent,
+            distanceX: Float,
+            distanceY: Float
+        ): Boolean {
             // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
             view?.cancelLongPress()
+
+            if (!_UpdateStage.STAGE_3.isApplied) {
+                return false
+            }
+            //For #3027
+            scrollTimer?.cancel()
+            scrollTimer = Timer()
+            scrollTimer!!.schedule(object : TimerTask() {
+                override fun run() {
+                    (view as ODKView).onViewScrolled()
+                }
+            }, 1000)
+
             return false
         }
 

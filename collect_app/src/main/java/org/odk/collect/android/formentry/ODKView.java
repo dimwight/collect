@@ -34,6 +34,7 @@ import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -488,6 +489,26 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         } else {
             setActive.setFocus(context);
             scrollTo(setActive);
+        }
+    }
+
+    //Added for #3027
+    public void onViewScrolled() {
+        if (widgets.isEmpty() || formController == null) {
+            return;
+        }
+        for (QuestionWidget widget : widgets) {
+            if (!isDisplayed(widget)) {
+                continue;
+            }
+            ViewGroup layout = (ViewGroup) widget.getChildAt(0);
+            View label = layout.getChildAt(0);
+            boolean labelVisible = label.getLocalVisibleRect(new Rect());
+            if (labelVisible) {
+                ((JavaRosaFormController) formController).setFieldListActiveIndex(
+                        widget.getQuestionDetails().getPrompt().getIndex());
+                break;
+            }
         }
     }
 

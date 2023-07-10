@@ -1,5 +1,6 @@
 package org.odk.collect.android.formentry;
 
+import static org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage.STAGE_2;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_BACKGROUND_LOCATION;
 
 import android.content.Intent;
@@ -11,11 +12,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.javarosa.core.model.FormIndex;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.formentry.backgroundlocation.BackgroundLocationViewModel;
 import org.odk.collect.android.formentry.questions.AnswersProvider;
 import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.android.javarosawrapper.JavaRosaFormController;
 import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.MenuDelegate;
@@ -124,6 +127,15 @@ public class FormEntryMenuDelegate implements MenuDelegate {
                 DialogFragmentUtils.showIfNotShowing(RecordingWarningDialogFragment.class, activity.getSupportFragmentManager());
             } else {
                 formEntryViewModel.updateAnswersForScreen(answersProvider.getAnswers(), false);
+
+                //For #3027
+                if (STAGE_2.isApplied()) {
+                    JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
+                    FormIndex activeIndex = formController.getFieldListActiveIndex(false);
+                    if (activeIndex != null) {
+                        formController.jumpToIndex(activeIndex);
+                    }
+                }
                 formEntryViewModel.openHierarchy();
                 Intent i = new Intent(activity, FormHierarchyActivity.class);
                 i.putExtra(FormHierarchyActivity.EXTRA_SESSION_ID, formEntryViewModel.getSessionId());

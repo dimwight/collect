@@ -1127,7 +1127,7 @@ public class JavaRosaFormController implements FormController {
         //interactionInFormEntrySelectsQuestionInHierarchy
         STAGE_4;
 
-        private static final _UpdateStage LATEST = STAGE_1;
+        private static final _UpdateStage LATEST = STAGE_3;
 
         public boolean isApplied() {
             return LATEST.ordinal() >= this.ordinal();
