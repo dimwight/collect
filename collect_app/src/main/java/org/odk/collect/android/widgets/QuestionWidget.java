@@ -14,11 +14,11 @@
 
 package org.odk.collect.android.widgets;
 
+import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_4;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getClipID;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_4;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,12 +36,12 @@ import org.javarosa.core.reference.InvalidReferenceException;
 import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.formentry.media.AudioHelperFactory;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.formentry.questions.QuestionTextSizeHelper;
-import org.odk.collect.android.javarosawrapper.JavaRosaFormController;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.preferences.GuidanceHint;
 import org.odk.collect.android.utilities.AnimationUtils;
@@ -424,7 +424,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         ) {
             return;
         }
-        JavaRosaFormController.setFieldListActiveIndex(
+        FormHierarchyActivity.setFieldListActiveIndex(
                 getQuestionDetails().getPrompt().getIndex());
     }
 

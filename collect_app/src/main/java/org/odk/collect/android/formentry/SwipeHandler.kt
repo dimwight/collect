@@ -5,7 +5,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.core.widget.NestedScrollView
-import org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027
+import org.odk.collect.android.activities.FormHierarchyActivity.Dev3027
 import org.odk.collect.android.utilities.FlingRegister
 import org.odk.collect.androidshared.utils.ScreenUtils
 import org.odk.collect.settings.keys.ProjectKeys
@@ -67,17 +67,17 @@ class SwipeHandler(context: Context, generalSettings: Settings) {
             // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
             view?.cancelLongPress()
 
-            if (!Dev3027.STAGE_3.isApplied) {
+            if (!Dev3027.STAGE_3.isApplied || view !is ODKView) {
                 return false
             }
             //For #3027
             scrollTimer?.cancel()
             scrollTimer = Timer()
-            scrollTimer!!.schedule(object : TimerTask() {
+            scrollTimer!!.schedule(/* task = */ object : TimerTask() {
                 override fun run() {
                     (view as ODKView).onViewScrolled()
                 }
-            }, 1000)
+            }, /* delay = */ 1000)
 
             return false
         }

@@ -14,8 +14,8 @@
 
 package org.odk.collect.android.formentry;
 
+import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_1;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_1;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
 
@@ -57,6 +57,7 @@ import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.exception.ExternalParamsException;
@@ -65,7 +66,6 @@ import org.odk.collect.android.externaldata.ExternalAppsUtils;
 import org.odk.collect.android.formentry.media.PromptAutoplayer;
 import org.odk.collect.android.formentry.questions.QuestionTextSizeHelper;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.javarosawrapper.JavaRosaFormController;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.utilities.ContentUriHelper;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
@@ -481,7 +481,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         int activeAt = 0;
         if (STAGE_1.isApplied()) {
             //Retrieve and clear marker, set active #3027
-            FormIndex activeIndex = JavaRosaFormController.getFieldListActiveIndex(true);
+            FormIndex activeIndex = FormHierarchyActivity.getFieldListActiveIndex(true);
             for (int at = 0; at < widgets.size(); at++) {
                 //Only set index >=0 if match found
                 FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();
@@ -516,7 +516,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
             View label = layout.getChildAt(0);
             boolean labelVisible = label.getLocalVisibleRect(new Rect());
             if (labelVisible) {
-                JavaRosaFormController.setFieldListActiveIndex(
+                FormHierarchyActivity.setFieldListActiveIndex(
                         widget.getQuestionDetails().getPrompt().getIndex());
                 break;
             }

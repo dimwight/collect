@@ -14,8 +14,8 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_1;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -85,6 +85,8 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
 
     public static final int RESULT_ADD_REPEAT = 2;
     public static final String EXTRA_SESSION_ID = "session_id";
+    //Added for #3027
+    private static FormIndex fieldListActiveIndex;
     /**
      * The questions and repeats at the current level.
      * Recreated every time {@link #refreshView()} is called.
@@ -793,9 +795,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         }
     }
 
-
     //For #3027
-
     /**
      * Handles clicks on a question. Jumps to the form filling view with the selected question shown.
      * If the selected question is in a field list, show the entire field list.
@@ -807,7 +807,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         if (formController.indexIsInFieldList()) {
             if (STAGE_1.isApplied()) {
                 //Record which question should be active
-                JavaRosaFormController.setFieldListActiveIndex(index);
+                setFieldListActiveIndex(index);
             }
             try {
                 formController.stepToPreviousScreenEvent();
@@ -902,6 +902,51 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         } else {
             goToPreviousEvent();
             goUpLevel();
+        }
+    }
+
+    public static void setFieldListActiveIndex(FormIndex index) {
+        if (!STAGE_1.isApplied()) {
+            return;
+        }
+        fieldListActiveIndex = index;
+        boolean _trace = true;
+        if (!_trace) {
+            return;
+        }
+        TreeReference ref = index == null ? null : index.getReference();
+        String refString = ref == null ? "" : ref.toShortString();
+        Timber.i("sFLAI: %s",
+                (index == null ? "null" : refString.isEmpty() ? "[no ref]" : refString
+                        .replaceAll("\\[.*", "")));
+
+    }
+
+    public static FormIndex getFieldListActiveIndex(boolean preserveValue) {
+        FormIndex index = fieldListActiveIndex;
+        if (!preserveValue) {
+            fieldListActiveIndex = null;
+        }
+        return index;
+    }
+
+    public enum Dev3027 {
+        //Added for #3027 development
+        //Current behaviour
+        STAGE_0,
+        //questionSelectedInHierarchyIsScrolledToInFormEntry
+        STAGE_1,
+        //formEntryToHierarchyRetracesQuestionSelectionSteps
+        STAGE_2,
+        //scrollingInFormEntrySelectsQuestionInHierarchy
+        STAGE_3,
+        //interactionInFormEntrySelectsQuestionInHierarchy
+        STAGE_4;
+
+        private static final Dev3027 LATEST = STAGE_3;
+
+        public boolean isApplied() {
+            return LATEST.ordinal() >= this.ordinal();
         }
     }
 }

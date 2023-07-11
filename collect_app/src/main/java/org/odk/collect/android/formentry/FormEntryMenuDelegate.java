@@ -1,6 +1,6 @@
 package org.odk.collect.android.formentry;
 
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_2;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_2;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_BACKGROUND_LOCATION;
 
 import android.content.Intent;
@@ -18,7 +18,6 @@ import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.formentry.backgroundlocation.BackgroundLocationViewModel;
 import org.odk.collect.android.formentry.questions.AnswersProvider;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.javarosawrapper.JavaRosaFormController;
 import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.MenuDelegate;
@@ -131,7 +130,7 @@ public class FormEntryMenuDelegate implements MenuDelegate {
                 //For #3027
                 if (STAGE_2.isApplied()) {
                     FormController formController = formEntryViewModel.getFormController();
-                    FormIndex activeIndex = JavaRosaFormController.getFieldListActiveIndex(false);
+                    FormIndex activeIndex = FormHierarchyActivity.getFieldListActiveIndex(false);
                     if (activeIndex != null) {
                         formController.jumpToIndex(activeIndex);
                     }
