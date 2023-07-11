@@ -15,7 +15,7 @@
 package org.odk.collect.android.formentry;
 
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage.STAGE_1;
+import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_1;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
 
@@ -140,12 +140,24 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
 
     /**
      * Builds the view for a specified question or field-list of questions.
+     *
      * @param context         the activity creating this view
      * @param questionPrompts the questions to be included in this view
      * @param groups          the group hierarchy that this question or field list is in
      * @param advancingPage   whether this view is being created after a forward swipe through the
      */
-    public ODKView(ComponentActivity context, final FormEntryPrompt[] questionPrompts, FormEntryCaption[] groups, boolean advancingPage, QuestionMediaManager questionMediaManager, WaitingForDataRegistry waitingForDataRegistry, AudioPlayer audioPlayer, AudioRecorder audioRecorder, FormEntryViewModel formEntryViewModel, InternalRecordingRequester internalRecordingRequester, ExternalAppRecordingRequester externalAppRecordingRequester, AudioHelper audioHelper) {
+    public ODKView(ComponentActivity context,
+                   final FormEntryPrompt[] questionPrompts,
+                   FormEntryCaption[] groups,
+                   boolean advancingPage,
+                   QuestionMediaManager questionMediaManager,
+                   WaitingForDataRegistry waitingForDataRegistry,
+                   AudioPlayer audioPlayer,
+                   AudioRecorder audioRecorder,
+                   FormEntryViewModel formEntryViewModel,
+                   InternalRecordingRequester internalRecordingRequester,
+                   ExternalAppRecordingRequester externalAppRecordingRequester,
+                   AudioHelper audioHelper) {
         super(context);
         viewLifecycle = ((ScreenContext) context).getViewLifecycle();
 
@@ -469,8 +481,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         int activeAt = 0;
         if (STAGE_1.isApplied()) {
             //Retrieve and clear marker, set active #3027
-            FormIndex activeIndex = ((JavaRosaFormController)
-                    formController).getFieldListActiveIndex(true);
+            FormIndex activeIndex = JavaRosaFormController.getFieldListActiveIndex(true);
             for (int at = 0; at < widgets.size(); at++) {
                 //Only set index >=0 if match found
                 FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();
@@ -505,7 +516,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
             View label = layout.getChildAt(0);
             boolean labelVisible = label.getLocalVisibleRect(new Rect());
             if (labelVisible) {
-                ((JavaRosaFormController) formController).setFieldListActiveIndex(
+                JavaRosaFormController.setFieldListActiveIndex(
                         widget.getQuestionDetails().getPrompt().getIndex());
                 break;
             }

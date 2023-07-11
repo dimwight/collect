@@ -1087,10 +1087,10 @@ public class JavaRosaFormController implements FormController {
     }
 
     //Added for #3027
-    private FormIndex fieldListActiveIndex;
+    private static FormIndex fieldListActiveIndex;
 
-    public void setFieldListActiveIndex(FormIndex index) {
-        if (!_UpdateStage.STAGE_1.isApplied()) {
+    public static void setFieldListActiveIndex(FormIndex index) {
+        if (!Dev3027.STAGE_1.isApplied()) {
             return;
         }
         fieldListActiveIndex = index;
@@ -1106,7 +1106,7 @@ public class JavaRosaFormController implements FormController {
 
     }
 
-    public FormIndex getFieldListActiveIndex(boolean preserveValue) {
+    public static FormIndex getFieldListActiveIndex(boolean preserveValue) {
         FormIndex index = fieldListActiveIndex;
         if (!preserveValue) {
             fieldListActiveIndex = null;
@@ -1114,8 +1114,8 @@ public class JavaRosaFormController implements FormController {
         return index;
     }
 
-    //Added for #3027 development
-    public enum _UpdateStage {
+    public enum Dev3027 {
+        //Added for #3027 development
         //Current behaviour
         STAGE_0,
         //questionSelectedInHierarchyIsScrolledToInFormEntry
@@ -1127,7 +1127,7 @@ public class JavaRosaFormController implements FormController {
         //interactionInFormEntrySelectsQuestionInHierarchy
         STAGE_4;
 
-        private static final _UpdateStage LATEST = STAGE_3;
+        private static final Dev3027 LATEST = STAGE_3;
 
         public boolean isApplied() {
             return LATEST.ordinal() >= this.ordinal();

@@ -18,7 +18,7 @@ import static org.odk.collect.android.formentry.media.FormMediaUtils.getClipID;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage.STAGE_4;
+import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_4;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,7 +36,6 @@ import org.javarosa.core.reference.InvalidReferenceException;
 import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.formentry.media.AudioHelperFactory;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
@@ -420,12 +419,12 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
 
     //Added for #3027
     public void setFieldListActiveIndex() {
-        JavaRosaFormController formController = Collect.getInstance().getFormController();
-        if (!STAGE_4.isApplied() ||
-                formController == null) {
+        if (!STAGE_4.isApplied()
+//                || formController == null
+        ) {
             return;
         }
-        formController.setFieldListActiveIndex(
+        JavaRosaFormController.setFieldListActiveIndex(
                 getQuestionDetails().getPrompt().getIndex());
     }
 

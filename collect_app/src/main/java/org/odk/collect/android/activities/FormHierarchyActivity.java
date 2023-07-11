@@ -15,7 +15,7 @@
 package org.odk.collect.android.activities;
 
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage.STAGE_1;
+import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_1;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -802,12 +802,12 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
      * For #3027, prepare to set the appropriate focus.
      */
     void onQuestionClicked(FormIndex index) {
-        JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
+        FormController formController = formEntryViewModel.getFormController();
         formController.jumpToIndex(index);
         if (formController.indexIsInFieldList()) {
             if (STAGE_1.isApplied()) {
                 //Record which question should be active
-                formController.setFieldListActiveIndex(index);
+                JavaRosaFormController.setFieldListActiveIndex(index);
             }
             try {
                 formController.stepToPreviousScreenEvent();

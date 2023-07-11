@@ -1,6 +1,6 @@
 package org.odk.collect.android.formentry;
 
-import static org.odk.collect.android.javarosawrapper.JavaRosaFormController._UpdateStage.STAGE_2;
+import static org.odk.collect.android.javarosawrapper.JavaRosaFormController.Dev3027.STAGE_2;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_BACKGROUND_LOCATION;
 
 import android.content.Intent;
@@ -130,8 +130,8 @@ public class FormEntryMenuDelegate implements MenuDelegate {
 
                 //For #3027
                 if (STAGE_2.isApplied()) {
-                    JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
-                    FormIndex activeIndex = formController.getFieldListActiveIndex(false);
+                    FormController formController = formEntryViewModel.getFormController();
+                    FormIndex activeIndex = JavaRosaFormController.getFieldListActiveIndex(false);
                     if (activeIndex != null) {
                         formController.jumpToIndex(activeIndex);
                     }
