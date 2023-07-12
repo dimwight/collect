@@ -26,6 +26,80 @@ public class FormHierarchyTest {
             .around(rule);
 
     @Test
+    //https://github.com/getodk/collect/issues/2942
+    public void A3_deletingLastGroupShouldNotBreakHierarchy() {
+        //!
+        FormHierarchyPage page = rule.startAtMainMenu()
+                .copyForm("formHierarchy3.xml")
+                .startBlankForm("formHierarchy3")
+                .swipeToNextQuestion("Text")
+                .swipeToNextQuestion("Integer 1_1")
+                .swipeToNextQuestion("Integer 1_2")
+                .swipeToNextQuestion("Integer 2_1")
+                .swipeToNextQuestion("Integer 2_2")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3"))
+                .assertQuestion("Barcode")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3"))
+                .assertQuestion("Date")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3"))
+                .assertQuestion("Date")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnDoNotAdd(new AddNewRepeatDialog("Repeat Group 1"))
+                .clickOnDoNotAdd(new FormEntryPage("formHierarchy3"))
+                .clickGoToArrow()
+                .clickGoUpIcon()//For #3027
+                .clickGoUpIcon()//For #3027
+                .clickOnText("Repeat Group 1")
+                .clickOnText("Repeat Group 1 > 1")
+                .clickOnText("Repeat Group 1_1")
+                .clickOnText("Repeat Group 1_1 > 2")
+                .deleteGroup();
+
+        onView(withId(R.id.list)).check(matches(RecyclerViewMatcher.withListSize(1)));
+
+        page.assertText("Repeat Group 1_1 > 1");
+    }
+
+    @Test
+    //https://github.com/getodk/collect/issues/2942
+    public void A0_deletingLastGroupShouldNotBreakHierarchy() {
+        //! Passes
+        FormHierarchyPage page = rule.startAtMainMenu()
+                .copyForm("formHierarchy3.xml")
+                .startBlankForm("formHierarchy3")
+                .swipeToNextQuestion("Text")
+                .swipeToNextQuestion("Integer 1_1")
+                .swipeToNextQuestion("Integer 1_2")
+                .swipeToNextQuestion("Integer 2_1")
+                .swipeToNextQuestion("Integer 2_2")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3"))
+                .assertQuestion("Barcode")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3"))
+                .assertQuestion("Date")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3"))
+                .assertQuestion("Date")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnDoNotAdd(new AddNewRepeatDialog("Repeat Group 1"))
+                .clickOnDoNotAdd(new FormEntryPage("formHierarchy3"))
+                .clickGoToArrow()
+                .clickOnText("Repeat Group 1")
+                .clickOnText("Repeat Group 1 > 1")
+                .clickOnText("Repeat Group 1_1")
+                .clickOnText("Repeat Group 1_1 > 2")
+                .deleteGroup();
+
+        onView(withId(R.id.list)).check(matches(RecyclerViewMatcher.withListSize(1)));
+
+        page.assertText("Repeat Group 1_1 > 1");
+    }
+
+    @Test
     //https://github.com/getodk/collect/issues/2871
     public void allRelevantQuestionsShouldBeVisibleInHierarchyView() {
         rule.startAtMainMenu()
@@ -118,42 +192,6 @@ public class FormHierarchyTest {
         onView(withId(R.id.list)).check(matches(RecyclerViewMatcher.withListSize(3)));
 
         page.assertTextDoesNotExist("Repeat Group 1");
-    }
-
-    @Test
-    //https://github.com/getodk/collect/issues/2942
-    public void deletingLastGroupShouldNotBreakHierarchy() {
-        //!
-        FormHierarchyPage page = rule.startAtMainMenu()
-                .copyForm("formHierarchy3.xml")
-                .startBlankForm("formHierarchy3")
-                .swipeToNextQuestion("Text")
-                .swipeToNextQuestion("Integer 1_1")
-                .swipeToNextQuestion("Integer 1_2")
-                .swipeToNextQuestion("Integer 2_1")
-                .swipeToNextQuestion("Integer 2_2")
-                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1")
-                .clickOnAdd(new FormEntryPage("formHierarchy3"))
-                .assertQuestion("Barcode")
-                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
-                .clickOnAdd(new FormEntryPage("formHierarchy3"))
-                .assertQuestion("Date")
-                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
-                .clickOnAdd(new FormEntryPage("formHierarchy3"))
-                .assertQuestion("Date")
-                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
-                .clickOnDoNotAdd(new AddNewRepeatDialog("Repeat Group 1"))
-                .clickOnDoNotAdd(new FormEntryPage("formHierarchy3"))
-                .clickGoToArrow()
-                .clickOnText("Repeat Group 1")
-                .clickOnText("Repeat Group 1 > 1")
-                .clickOnText("Repeat Group 1_1")
-                .clickOnText("Repeat Group 1_1 > 2")
-                .deleteGroup();
-
-        onView(withId(R.id.list)).check(matches(RecyclerViewMatcher.withListSize(1)));
-
-        page.assertText("Repeat Group 1_1 > 1");
     }
 
     @Test
