@@ -85,6 +85,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
 
     public static final int RESULT_ADD_REPEAT = 2;
     public static final String EXTRA_SESSION_ID = "session_id";
+    public static final String D_ = "#3027: ";
     //Added for #3027
     private static FormIndex fieldListActiveIndex;
     /**
@@ -910,15 +911,19 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
             return;
         }
         fieldListActiveIndex = index;
-        boolean _trace = true;
+        boolean _trace = false;
         if (!_trace) {
             return;
         }
         TreeReference ref = index == null ? null : index.getReference();
         String refString = ref == null ? "" : ref.toShortString();
-        Timber.i("sFLAI: %s",
-                (index == null ? "null" : refString.isEmpty() ? "[no ref]" : refString
-                        .replaceAll("\\[.*", "")));
+        String message = D_ + "ref=" +
+                "%s";
+        Timber.i(message,
+                (index == null ? "null" : refString.isEmpty() ? "[no ref]"
+                        : refString
+//                        .replaceAll("\\[.*", "")
+                ));
 
     }
 

@@ -5,12 +5,14 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.core.widget.NestedScrollView
+import org.odk.collect.android.activities.FormHierarchyActivity.D_
 import org.odk.collect.android.activities.FormHierarchyActivity.Dev3027
 import org.odk.collect.android.utilities.FlingRegister
 import org.odk.collect.androidshared.utils.ScreenUtils
 import org.odk.collect.settings.keys.ProjectKeys
 import org.odk.collect.shared.settings.Settings
 import org.odk.collect.strings.localization.isLTR
+import timber.log.Timber
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.abs
@@ -67,15 +69,22 @@ class SwipeHandler(context: Context, generalSettings: Settings) {
             // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
             view?.cancelLongPress()
 
-            if (!Dev3027.STAGE_3.isApplied || view !is ODKView) {
+            //For #3027
+            Timber.d(D_ + "view=" + view)
+            if (!Dev3027.STAGE_3.isApplied //|| view !is ODKView
+            ) {
                 return false
             }
-            //For #3027
             scrollTimer?.cancel()
             scrollTimer = Timer()
             scrollTimer!!.schedule(/* task = */ object : TimerTask() {
                 override fun run() {
-                    (view as ODKView).onViewScrolled()
+                    val maybe = this@SwipeHandler.view
+                    if (maybe is ODKView) {
+                        maybe.onViewScrolled()
+                    } else {
+                        Timber.d(D_ + "!maybe=" + maybe)
+                    }
                 }
             }, /* delay = */ 1000)
 
