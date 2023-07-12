@@ -948,10 +948,10 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         //interactionInFormEntrySelectsQuestionInHierarchy
         STAGE_4;
 
-        private static final Dev3027 LATEST = STAGE_3;
+        public static Dev3027 latest = STAGE_3;
 
         public boolean isApplied() {
-            return LATEST.ordinal() >= this.ordinal();
+            return latest.ordinal() >= this.ordinal();
         }
     }
 }
