@@ -399,6 +399,7 @@ public class FillBlankFormTest {
 
     @Test
     public void question_ShouldBeVisibleOnTheTopOfHierarchy() {
+        //!
         //TestCase23
         rule.startAtMainMenu()
                 .copyForm("manyQ.xml")
@@ -614,6 +615,7 @@ public class FillBlankFormTest {
 
     @Test
     public void groups_shouldBeVisibleInHierarchyView() {
+        //!
         //TestCase28
         rule.startAtMainMenu()
                 .copyForm("nested-repeats-complex.xml")
@@ -651,6 +653,7 @@ public class FillBlankFormTest {
 
     @Test
     public void hierachyView_shouldNotChangeAfterScreenRotation() {
+        //!
         //TestCase29
         rule.startAtMainMenu()
                 .copyForm("repeat_group_form.xml")

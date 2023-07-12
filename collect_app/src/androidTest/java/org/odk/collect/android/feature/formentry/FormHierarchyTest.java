@@ -10,12 +10,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.rules.CollectTestRule;
-import org.odk.collect.android.support.rules.TestRuleChain;
-import org.odk.collect.testshared.RecyclerViewMatcher;
 import org.odk.collect.android.support.pages.AddNewRepeatDialog;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.FormHierarchyPage;
+import org.odk.collect.android.support.rules.CollectTestRule;
+import org.odk.collect.android.support.rules.TestRuleChain;
+import org.odk.collect.testshared.RecyclerViewMatcher;
 
 public class FormHierarchyTest {
 
@@ -92,6 +92,7 @@ public class FormHierarchyTest {
     @Test
     //https://github.com/getodk/collect/issues/2936
     public void repeatGroupsShouldBeVisibleAsAppropriate() {
+        //!
         FormHierarchyPage page = rule.startAtMainMenu()
                 .copyForm("formHierarchy3.xml")
                 .startBlankForm("formHierarchy3")
@@ -122,6 +123,7 @@ public class FormHierarchyTest {
     @Test
     //https://github.com/getodk/collect/issues/2942
     public void deletingLastGroupShouldNotBreakHierarchy() {
+        //!
         FormHierarchyPage page = rule.startAtMainMenu()
                 .copyForm("formHierarchy3.xml")
                 .startBlankForm("formHierarchy3")

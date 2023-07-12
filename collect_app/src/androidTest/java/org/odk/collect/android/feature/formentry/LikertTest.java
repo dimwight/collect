@@ -84,6 +84,7 @@ public class LikertTest {
 
     @Test
     public void onlyOneRemainsClicked() {
+        //!
         openWidgetList();
         onView(withText("Likert Image Widget")).perform(click());
         onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());

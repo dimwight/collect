@@ -262,6 +262,7 @@ public class FieldListUpdateTest {
 
     @Test
     public void selectionChangeAtOneCascadeLevelWithMinimalAppearance_ShouldUpdateNextLevels() {
+        //!
         new FormEntryPage("fieldlist-updates")
                 .clickGoToArrow()
                 .clickGoUpIcon()

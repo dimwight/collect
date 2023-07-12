@@ -111,7 +111,7 @@ public class DeletingRepeatGroupsTest {
 
     @Test
     public void requestingDeletionOfAllRepeatsInHierarchyStartingFromIndexThatWillBeDeleted_shouldBringAUserToTheFirstRelevantQuestionBeforeTheGroup() {
-        //
+        //!
         activityTestRule.startInFormEntry()
                 .swipeToNextQuestion("text1")
                 .clickGoToArrow()
@@ -289,7 +289,7 @@ public class DeletingRepeatGroupsTest {
 
     @Test
     public void requestingDeletionOfAllRepeatsWithFieldListInHierarchyStartingFromIndexThatWillNotBeDeleted_shouldBringAUserBackToTheSameIndex() {
-        //
+        //!
         activityTestRule.startInFormEntry()
                 .clickGoToArrow()
                 .clickOnText("repeatGroupFieldList")
