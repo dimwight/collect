@@ -92,6 +92,32 @@ public class FieldListUpdateTest {
             .around(rule);
 
     @Test
+    public void A_selectionChangeAtOneCascadeLevelWithMinimalAppearance_ShouldUpdateNextLevels() {
+        //! Works on own
+        new FormEntryPage("fieldlist-updates")
+                .clickGoToArrow()
+                .clickGoUpIcon()
+                .clickOnGroup("Cascading select minimal")
+                .clickOnQuestion("Level1")
+                .assertTextsDoNotExist("A1", "B1", "C1", "A1A") // No choices should be shown for levels 2 and 3 when no selection is made for level 1
+                .openSelectMinimalDialog(0)
+                .clickOnText("C") // Selecting C for level 1 should only reveal options for C at level 2
+                .assertTextsDoNotExist("A1", "B1")
+                .openSelectMinimalDialog(1)
+                .clickOnText("C1")
+                .assertTextDoesNotExist("A1A")
+                .clickOnText("C")
+                .clickOnText("A") // Selecting A for level 1 should reveal options for A at level 2
+                .openSelectMinimalDialog(1)
+                .assertText("A1")
+                .assertTextsDoNotExist("A1A", "B1", "C1")
+                .clickOnText("A1") // Selecting A1 for level 2 should reveal options for A1 at level 3
+                .openSelectMinimalDialog(2)
+                .assertText("A1A")
+                .assertTextsDoNotExist("B1A", "B1", "C1");
+    }
+
+    @Test
     public void relevanceChangeAtEnd_ShouldToggleLastWidgetVisibility() {
         jumpToGroupWithText("Single relevance at end");
         onView(withText("Source1")).perform(click());
@@ -258,32 +284,6 @@ public class FieldListUpdateTest {
         onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isNotChecked()));
         onView(withText("A1")).check(doesNotExist());
         onView(withText("A1B")).check(doesNotExist());
-    }
-
-    @Test
-    public void selectionChangeAtOneCascadeLevelWithMinimalAppearance_ShouldUpdateNextLevels() {
-        //!
-        new FormEntryPage("fieldlist-updates")
-                .clickGoToArrow()
-                .clickGoUpIcon()
-                .clickOnGroup("Cascading select minimal")
-                .clickOnQuestion("Level1")
-                .assertTextsDoNotExist("A1", "B1", "C1", "A1A") // No choices should be shown for levels 2 and 3 when no selection is made for level 1
-                .openSelectMinimalDialog(0)
-                .clickOnText("C") // Selecting C for level 1 should only reveal options for C at level 2
-                .assertTextsDoNotExist("A1", "B1")
-                .openSelectMinimalDialog(1)
-                .clickOnText("C1")
-                .assertTextDoesNotExist("A1A")
-                .clickOnText("C")
-                .clickOnText("A") // Selecting A for level 1 should reveal options for A at level 2
-                .openSelectMinimalDialog(1)
-                .assertText("A1")
-                .assertTextsDoNotExist("A1A", "B1", "C1")
-                .clickOnText("A1") // Selecting A1 for level 2 should reveal options for A1 at level 3
-                .openSelectMinimalDialog(2)
-                .assertText("A1A")
-                .assertTextsDoNotExist("B1A", "B1", "C1");
     }
 
     @Test
