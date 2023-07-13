@@ -14,7 +14,7 @@
 
 package org.odk.collect.android.widgets;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_4;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_4;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getClipID;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;
@@ -419,7 +419,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
 
     //Added for #3027
     public void setFieldListActiveIndex() {
-        if (!STAGE_4.isApplied()
+        if (!STAGE_4.isLive()
 //                || formController == null
         ) {
             return;
@@ -428,7 +428,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
                 getQuestionDetails().getPrompt().getIndex());
     }
 
-    public String _getLabelText() {
+    public String getLabelText_() {
         return getQuestionDetails().getPrompt()
                 .getFormElement().getLabelInnerText();
     }

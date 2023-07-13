@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
@@ -37,9 +36,9 @@ public class LikertTest {
             .around(activityTestRule);
 
     @Test
-    public void A0_onlyOneRemainsClicked() {
+    public void a0_onlyOneRemainsClicked() {
         //! Passes
-        FormHierarchyActivity.Dev3027.latest = FormHierarchyActivity.Dev3027.STAGE_0;
+        FormHierarchyActivity.Stage3027.latest = FormHierarchyActivity.Stage3027.STAGE_0;
         openWidgetList();
         onView(withText("Likert Image Widget")).perform(click());
         onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());
@@ -50,9 +49,9 @@ public class LikertTest {
     }
 
     @Test
-    public void A3_onlyOneRemainsClicked() {
+    public void a3_onlyOneRemainsClicked() {
         //! Passes
-        FormHierarchyActivity.Dev3027.latest = FormHierarchyActivity.Dev3027.STAGE_3;
+        FormHierarchyActivity.Stage3027.latest = FormHierarchyActivity.Stage3027.STAGE_3;
         openWidgetList();
         onView(withText("Likert Image Widget")).perform(click());
         onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());

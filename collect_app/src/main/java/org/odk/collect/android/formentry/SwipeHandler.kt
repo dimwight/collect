@@ -5,8 +5,8 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.core.widget.NestedScrollView
-import org.odk.collect.android.activities.FormHierarchyActivity.D_
-import org.odk.collect.android.activities.FormHierarchyActivity.Dev3027
+import org.odk.collect.android.activities.FormHierarchyActivity.LC
+import org.odk.collect.android.activities.FormHierarchyActivity.Stage3027
 import org.odk.collect.android.utilities.FlingRegister
 import org.odk.collect.androidshared.utils.ScreenUtils
 import org.odk.collect.settings.keys.ProjectKeys
@@ -69,36 +69,46 @@ class SwipeHandler(context: Context, generalSettings: Settings) {
             // The onFling() captures the 'up' event so our view thinks it gets long pressed. We don't want that, so cancel it.
             view?.cancelLongPress()
 
-            //For #3027
-            Timber.d(D_ + "view=" + view)
-            if (!Dev3027.STAGE_3.isApplied //|| view !is ODKView
+            // For #3027
+            Timber.d(LC + "view=" + view)
+            if (!Stage3027.STAGE_3.isLive // || view !is ODKView
             ) {
                 return false
             }
             scrollTimer?.cancel()
             scrollTimer = Timer()
-            scrollTimer!!.schedule(/* task = */ object : TimerTask() {
-                override fun run() {
-                    val maybe = this@SwipeHandler.view
-                    if (maybe is ODKView) {
-                        maybe.onViewScrolled()
-                    } else {
-                        Timber.d(D_ + "!maybe=" + maybe)
+            scrollTimer!!.schedule(
+                object : TimerTask() {
+                    override fun run() {
+                        val maybe = this@SwipeHandler.view
+                        if (maybe is ODKView) {
+                            maybe.onViewScrolled()
+                        } else {
+                            Timber.d(LC + "!maybe=" + maybe)
+                        }
                     }
-                }
-            }, /* delay = */ 1000)
+                },
+                1000
+            )
 
             return false
         }
 
-        override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+        override fun onFling(
+            e1: MotionEvent,
+            e2: MotionEvent,
+            velocityX: Float,
+            velocityY: Float
+        ): Boolean {
             if (view == null) {
                 return false
             }
 
             FlingRegister.flingDetected()
-
-            if (generalSettings.getString(ProjectKeys.KEY_NAVIGATION)!!.contains(ProjectKeys.NAVIGATION_SWIPE) && allowSwiping) {
+            if (generalSettings.getString(ProjectKeys.KEY_NAVIGATION)!!.contains(
+                    ProjectKeys.NAVIGATION_SWIPE
+                ) && allowSwiping
+            ) {
                 // Looks for user swipes. If the user has swiped, move to the appropriate screen.
 
                 // For all screens a swipe is left/right of at least .25" and up/down of less than .25" OR left/right of > .5"

@@ -14,7 +14,7 @@
 
 package org.odk.collect.android.activities;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_1;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 import android.content.DialogInterface;
@@ -85,7 +85,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
 
     public static final int RESULT_ADD_REPEAT = 2;
     public static final String EXTRA_SESSION_ID = "session_id";
-    public static final String D_ = "#3027: ";
+    public static final String LC = "#3027: ";
     //Added for #3027
     private static FormIndex fieldListActiveIndex;
     /**
@@ -806,7 +806,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         FormController formController = formEntryViewModel.getFormController();
         formController.jumpToIndex(index);
         if (formController.indexIsInFieldList()) {
-            if (STAGE_1.isApplied()) {
+            if (STAGE_1.isLive()) {
                 //Record which question should be active
                 setFieldListActiveIndex(index);
             }
@@ -907,17 +907,17 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
     }
 
     public static void setFieldListActiveIndex(FormIndex index) {
-        if (!STAGE_1.isApplied()) {
+        if (!STAGE_1.isLive()) {
             return;
         }
         fieldListActiveIndex = index;
-        boolean _trace = false;
-        if (!_trace) {
+        boolean trace = true;
+        if (!trace) {
             return;
         }
         TreeReference ref = index == null ? null : index.getReference();
         String refString = ref == null ? "" : ref.toShortString();
-        String message = D_ + "ref=" +
+        String message = LC + "ref=" +
                 "%s";
         Timber.i(message,
                 (index == null ? "null" : refString.isEmpty() ? "[no ref]"
@@ -935,7 +935,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         return index;
     }
 
-    public enum Dev3027 {
+    public enum Stage3027 {
         //Added for #3027 development
         //Current behaviour
         STAGE_0,
@@ -948,10 +948,20 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         //interactionInFormEntrySelectsQuestionInHierarchy
         STAGE_4;
 
-        public static Dev3027 latest = STAGE_3;
+        public static Stage3027 latest = STAGE_2;
 
-        public boolean isApplied() {
+        public boolean isLive() {
             return latest.ordinal() >= this.ordinal();
         }
+
+        //Convenience method covering all eventualities
+        public static Stage3027 setStage(Stage3027 stage) {
+            boolean doIt = false;
+            if (doIt) {
+                latest = stage;
+            }
+            return latest;
+        }
+
     }
 }

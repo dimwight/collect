@@ -21,7 +21,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormFillingActivity;
-import org.odk.collect.android.activities.FormHierarchyActivity.Dev3027;
+import org.odk.collect.android.activities.FormHierarchyActivity.Stage3027;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.support.ActivityHelpers;
@@ -52,10 +52,10 @@ public class FillBlankFormTest {
             .around(rule);
 
     @Test
-    public void C0_question_ShouldBeVisibleOnTheTopOfHierarchy() {
+    public void c0_question_ShouldBeVisibleOnTheTopOfHierarchy() {
         //!
         //TestCase23
-        Dev3027.latest = Dev3027.STAGE_0;
+        Stage3027.latest = Stage3027.STAGE_0;
         rule.startAtMainMenu()
                 .copyForm("manyQ.xml")
                 .startBlankForm("manyQ")
@@ -68,10 +68,10 @@ public class FillBlankFormTest {
     }
 
     @Test
-    public void C3_question_ShouldBeVisibleOnTheTopOfHierarchy() {
+    public void c3_question_ShouldBeVisibleOnTheTopOfHierarchy() {
         //! Passes
         //TestCase23
-        Dev3027.latest = Dev3027.STAGE_3;
+        Stage3027.latest = Stage3027.STAGE_3;
         rule.startAtMainMenu()
                 .copyForm("manyQ.xml")
                 .startBlankForm("manyQ")
@@ -84,10 +84,10 @@ public class FillBlankFormTest {
     }
 
     @Test
-    public void B0_hierachyView_shouldNotChangeAfterScreenRotation() {
+    public void b0_hierachyView_shouldNotChangeAfterScreenRotation() {
         //!
         //TestCase29
-        Dev3027.latest = Dev3027.STAGE_0;
+        Stage3027.latest = Stage3027.STAGE_0;
         rule.startAtMainMenu()
                 .copyForm("repeat_group_form.xml")
                 .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
@@ -102,10 +102,10 @@ public class FillBlankFormTest {
     }
 
     @Test
-    public void B3_hierachyView_shouldNotChangeAfterScreenRotation() {
+    public void b3_hierachyView_shouldNotChangeAfterScreenRotation() {
         //! Passes
         //TestCase29
-        Dev3027.latest = Dev3027.STAGE_3;
+        Stage3027.latest = Stage3027.STAGE_3;
         rule.startAtMainMenu()
                 .copyForm("repeat_group_form.xml")
                 .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
@@ -120,10 +120,10 @@ public class FillBlankFormTest {
     }
 
     @Test
-    public void A0_groups_shouldBeVisibleInHierarchyView() {
+    public void a0_groups_shouldBeVisibleInHierarchyView() {
         //!
         //TestCase28
-        Dev3027.latest = Dev3027.STAGE_0;
+        Stage3027.latest = Stage3027.STAGE_0;
         rule.startAtMainMenu()
                 .copyForm("nested-repeats-complex.xml")
                 .startBlankForm("nested-repeats-complex")
@@ -159,10 +159,10 @@ public class FillBlankFormTest {
     }
 
     @Test
-    public void A3_groups_shouldBeVisibleInHierarchyView() {
+    public void a3_groups_shouldBeVisibleInHierarchyView() {
         //!
         //TestCase28
-        Dev3027.latest = Dev3027.STAGE_3;
+        Stage3027.latest = Stage3027.STAGE_3;
         rule.startAtMainMenu()
                 .copyForm("nested-repeats-complex.xml")
                 .startBlankForm("nested-repeats-complex")

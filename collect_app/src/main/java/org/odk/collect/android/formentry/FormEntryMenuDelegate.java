@@ -1,6 +1,6 @@
 package org.odk.collect.android.formentry;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_2;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_2;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_BACKGROUND_LOCATION;
 
 import android.content.Intent;
@@ -128,7 +128,7 @@ public class FormEntryMenuDelegate implements MenuDelegate {
                 formEntryViewModel.updateAnswersForScreen(answersProvider.getAnswers(), false);
 
                 //For #3027
-                if (STAGE_2.isApplied()) {
+                if (STAGE_2.isLive()) {
                     FormController formController = formEntryViewModel.getFormController();
                     FormIndex activeIndex = FormHierarchyActivity.getFieldListActiveIndex(false);
                     if (activeIndex != null) {

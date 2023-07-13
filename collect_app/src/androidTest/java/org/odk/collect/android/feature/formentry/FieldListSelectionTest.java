@@ -10,6 +10,7 @@ import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.odk.collect.android.activities.FormHierarchyActivity.Stage3027;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.FormHierarchyPage;
 import org.odk.collect.android.support.rules.CollectTestRule;
@@ -92,8 +93,8 @@ public class FieldListSelectionTest {
 
     @Test
     public void scrollingInFormEntrySelectsQuestionInHierarchy() {
-        if (false
-            //    !_UpdateStage.STAGE_3.isApplied()
+        if (//false
+                !Stage3027.STAGE_3.isLive()
         ) {
             return;
         }
@@ -110,8 +111,8 @@ public class FieldListSelectionTest {
 
     @Test
     public void interactionInFormEntrySelectsQuestionInHierarchy() {
-        if (false
-            //   !_UpdateStage.STAGE_4.isApplied()
+        if (//false
+                !Stage3027.STAGE_4.isLive()
         ) {
             return;
         }

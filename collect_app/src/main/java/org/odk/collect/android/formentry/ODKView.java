@@ -14,7 +14,7 @@
 
 package org.odk.collect.android.formentry;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Dev3027.STAGE_1;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_1;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
@@ -479,7 +479,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
             return;
         }
         int activeAt = 0;
-        if (STAGE_1.isApplied()) {
+        if (STAGE_1.isLive()) {
             //Retrieve and clear marker, set active #3027
             FormIndex activeIndex = FormHierarchyActivity.getFieldListActiveIndex(true);
             for (int at = 0; at < widgets.size(); at++) {

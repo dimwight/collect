@@ -176,7 +176,7 @@ abstract class Page<T : Page<T>> {
         return this as T
     }
 
-    //For #3027
+    // For #3027
     fun assertTextIsNotDisplayed(text: String?): T {
         onView(
             allOf(

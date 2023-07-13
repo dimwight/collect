@@ -3,6 +3,8 @@ package org.odk.collect.android.feature.formentry;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_0;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import org.odk.collect.android.support.rules.TestRuleChain;
 import org.odk.collect.testshared.RecyclerViewMatcher;
 
 public class DeletingRepeatGroupsTest {
+    //Fails B0
     private static final String TEST_FORM = "repeat_groups.xml";
 
     private final BlankFormTestRule activityTestRule = new BlankFormTestRule(TEST_FORM, "repeatGroups");
@@ -25,8 +28,9 @@ public class DeletingRepeatGroupsTest {
             .around(activityTestRule);
 
     @Test
-    public void A_requestingDeletionOfAllRepeatsInHierarchyStartingFromIndexThatWillBeDeleted_shouldBringAUserToTheFirstRelevantQuestionBeforeTheGroup() {
-        //! Runs alone, in class
+    public void a0_requestingDeletionOfAllRepeatsInHierarchyStartingFromIndexThatWillBeDeleted_shouldBringAUserToTheFirstRelevantQuestionBeforeTheGroup() {
+        //! Passes
+        Stage3027.setStage(STAGE_0);
         activityTestRule.startInFormEntry()
                 .swipeToNextQuestion("text1")
                 .clickGoToArrow()
@@ -44,8 +48,9 @@ public class DeletingRepeatGroupsTest {
     }
 
     @Test
-    public void B_requestingDeletionOfAllRepeatsWithFieldListInHierarchyStartingFromIndexThatWillNotBeDeleted_shouldBringAUserBackToTheSameIndex() {
-        //! Runs alone, in class
+    public void b0_requestingDeletionOfAllRepeatsWithFieldListInHierarchyStartingFromIndexThatWillNotBeDeleted_shouldBringAUserBackToTheSameIndex() {
+        //! Passes
+        Stage3027.setStage(STAGE_0);
         activityTestRule.startInFormEntry()
                 .clickGoToArrow()
                 .clickOnText("repeatGroupFieldList")
@@ -62,7 +67,7 @@ public class DeletingRepeatGroupsTest {
     }
 
     @Test
-    public void requestingDeletionOfFirstRepeat_deletesFirstRepeat() {//
+    public void requestingDeletionOfFirstRepeat_deletesFirstRepeat() { //
         activityTestRule.startInFormEntry()
                 .swipeToNextQuestion("text1")
                 .deleteGroup("text1")
