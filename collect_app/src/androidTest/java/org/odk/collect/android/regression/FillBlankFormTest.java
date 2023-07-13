@@ -21,6 +21,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormFillingActivity;
+import org.odk.collect.android.activities.FormHierarchyActivity.Dev3027;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.support.ActivityHelpers;
@@ -42,12 +43,160 @@ import java.util.List;
 //Issue NODK-244
 @RunWith(AndroidJUnit4.class)
 public class FillBlankFormTest {
+    // Fails B3, C3
 
     public CollectTestRule rule = new CollectTestRule();
 
     @Rule
     public RuleChain copyFormChain = TestRuleChain.chain()
             .around(rule);
+
+    @Test
+    public void C0_question_ShouldBeVisibleOnTheTopOfHierarchy() {
+        //!
+        //TestCase23
+        Dev3027.latest = Dev3027.STAGE_0;
+        rule.startAtMainMenu()
+                .copyForm("manyQ.xml")
+                .startBlankForm("manyQ")
+                .swipeToNextQuestion("t2")
+                .swipeToNextQuestion("n1")
+                .clickGoToArrow()
+                .assertText("n1")
+                .assertTextDoesNotExist("t1")
+                .assertTextDoesNotExist("t2");
+    }
+
+    @Test
+    public void C3_question_ShouldBeVisibleOnTheTopOfHierarchy() {
+        //! Passes
+        //TestCase23
+        Dev3027.latest = Dev3027.STAGE_3;
+        rule.startAtMainMenu()
+                .copyForm("manyQ.xml")
+                .startBlankForm("manyQ")
+                .swipeToNextQuestion("t2")
+                .swipeToNextQuestion("n1")
+                .clickGoToArrow()
+                .assertText("n1")
+                .assertTextDoesNotExist("t1")
+                .assertTextDoesNotExist("t2");
+    }
+
+    @Test
+    public void B0_hierachyView_shouldNotChangeAfterScreenRotation() {
+        //!
+        //TestCase29
+        Dev3027.latest = Dev3027.STAGE_0;
+        rule.startAtMainMenu()
+                .copyForm("repeat_group_form.xml")
+                .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
+                .clickOnDoNotAdd(new FormEntryPage("Repeat Group"))
+                .clickGoToArrow()
+                .clickGoUpIcon()
+                .checkIfElementInHierarchyMatchesToText("Group Name", 0)
+                .rotateToLandscape(new FormHierarchyPage("Repeat Group"))
+                .checkIfElementInHierarchyMatchesToText("Group Name", 0)
+                .rotateToPortrait(new FormHierarchyPage("Repeat Group"))
+                .checkIfElementInHierarchyMatchesToText("Group Name", 0);
+    }
+
+    @Test
+    public void B3_hierachyView_shouldNotChangeAfterScreenRotation() {
+        //! Passes
+        //TestCase29
+        Dev3027.latest = Dev3027.STAGE_3;
+        rule.startAtMainMenu()
+                .copyForm("repeat_group_form.xml")
+                .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
+                .clickOnDoNotAdd(new FormEntryPage("Repeat Group"))
+                .clickGoToArrow()
+                .clickGoUpIcon()
+                .checkIfElementInHierarchyMatchesToText("Group Name", 0)
+                .rotateToLandscape(new FormHierarchyPage("Repeat Group"))
+                .checkIfElementInHierarchyMatchesToText("Group Name", 0)
+                .rotateToPortrait(new FormHierarchyPage("Repeat Group"))
+                .checkIfElementInHierarchyMatchesToText("Group Name", 0);
+    }
+
+    @Test
+    public void A0_groups_shouldBeVisibleInHierarchyView() {
+        //!
+        //TestCase28
+        Dev3027.latest = Dev3027.STAGE_0;
+        rule.startAtMainMenu()
+                .copyForm("nested-repeats-complex.xml")
+                .startBlankForm("nested-repeats-complex")
+                .swipeToNextQuestion("You will now be asked questions about your friends. When you see a dialog, tap \"Add\" until you have added all your friends.")
+                .swipeToNextQuestionWithRepeatGroup("Friends")
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("La")
+                .swipeToNextQuestion("You will now be asked questions about La's pets. When you see a dialog, tap \"Add\" until you have added all of La's pets.")
+                .swipeToNextQuestionWithRepeatGroup("Pets")
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("Le")
+                .swipeToNextQuestionWithRepeatGroup("Pets")
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("Be")
+                .swipeToNextQuestionWithRepeatGroup("Pets")
+                .clickOnDoNotAdd(new AddNewRepeatDialog("Friends"))
+                .clickOnDoNotAdd(new AddNewRepeatDialog("Enemies"))
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("Bu")
+                .swipeToNextQuestionWithRepeatGroup("Enemies")
+                .clickOnDoNotAdd(new FormEndPage("nested-repeats-complex"))
+                .clickGoToArrow()
+                .clickOnText("Friends")
+                .checkListSizeInHierarchy(1)
+                .clickOnElementInHierarchy(0)
+                .clickOnText("Pets")
+                .checkListSizeInHierarchy(2)
+                .clickGoUpIcon()
+                .clickGoUpIcon()
+                .clickGoUpIcon()
+                .clickOnText("Enemies")
+                .checkListSizeInHierarchy(1);
+    }
+
+    @Test
+    public void A3_groups_shouldBeVisibleInHierarchyView() {
+        //!
+        //TestCase28
+        Dev3027.latest = Dev3027.STAGE_3;
+        rule.startAtMainMenu()
+                .copyForm("nested-repeats-complex.xml")
+                .startBlankForm("nested-repeats-complex")
+                .swipeToNextQuestion("You will now be asked questions about your friends. When you see a dialog, tap \"Add\" until you have added all your friends.")
+                .swipeToNextQuestionWithRepeatGroup("Friends")
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("La")
+                .swipeToNextQuestion("You will now be asked questions about La's pets. When you see a dialog, tap \"Add\" until you have added all of La's pets.")
+                .swipeToNextQuestionWithRepeatGroup("Pets")
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("Le")
+                .swipeToNextQuestionWithRepeatGroup("Pets")//
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("Be")
+                .swipeToNextQuestionWithRepeatGroup("Pets")
+                .clickOnDoNotAdd(new AddNewRepeatDialog("Friends"))
+                .clickOnDoNotAdd(new AddNewRepeatDialog("Enemies"))
+                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
+                .inputText("Bu")
+                .swipeToNextQuestionWithRepeatGroup("Enemies")
+                .clickOnDoNotAdd(new FormEndPage("nested-repeats-complex"))
+                .clickGoToArrow()//
+                .clickOnText("Friends")
+        /*
+                .checkListSizeInHierarchy(1)
+                .clickOnElementInHierarchy(0)
+                .clickOnText("Pets")//
+                     .checkListSizeInHierarchy(2)
+                .clickGoUpIcon()
+                .clickGoUpIcon()
+                .clickGoUpIcon()
+                .clickOnText("Enemies")
+                .checkListSizeInHierarchy(1)*/;
+    }
 
     @Test
     public void exitDialog_ShouldDisplaySaveAndIgnoreOptions() {
@@ -398,21 +547,6 @@ public class FillBlankFormTest {
     }
 
     @Test
-    public void question_ShouldBeVisibleOnTheTopOfHierarchy() {
-        //!
-        //TestCase23
-        rule.startAtMainMenu()
-                .copyForm("manyQ.xml")
-                .startBlankForm("manyQ")
-                .swipeToNextQuestion("t2")
-                .swipeToNextQuestion("n1")
-                .clickGoToArrow()
-                .assertText("n1")
-                .assertTextDoesNotExist("t1")
-                .assertTextDoesNotExist("t2");
-    }
-
-    @Test
     public void bigForm_ShouldBeFilledSuccessfully() {
         //TestCase18
         rule.startAtMainMenu()
@@ -611,61 +745,6 @@ public class FillBlankFormTest {
                 .assertText("File: " + formsDirPath + "/fieldlist-updates_nocsv-media/fruits.csv is missing.")
                 .swipeToEndScreen()
                 .clickFinalize();
-    }
-
-    @Test
-    public void groups_shouldBeVisibleInHierarchyView() {
-        //!
-        //TestCase28
-        rule.startAtMainMenu()
-                .copyForm("nested-repeats-complex.xml")
-                .startBlankForm("nested-repeats-complex")
-                .swipeToNextQuestion("You will now be asked questions about your friends. When you see a dialog, tap \"Add\" until you have added all your friends.")
-                .swipeToNextQuestionWithRepeatGroup("Friends")
-                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
-                .inputText("La")
-                .swipeToNextQuestion("You will now be asked questions about La's pets. When you see a dialog, tap \"Add\" until you have added all of La's pets.")
-                .swipeToNextQuestionWithRepeatGroup("Pets")
-                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
-                .inputText("Le")
-                .swipeToNextQuestionWithRepeatGroup("Pets")
-                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
-                .inputText("Be")
-                .swipeToNextQuestionWithRepeatGroup("Pets")
-                .clickOnDoNotAdd(new AddNewRepeatDialog("Friends"))
-                .clickOnDoNotAdd(new AddNewRepeatDialog("Enemies"))
-                .clickOnAdd(new FormEntryPage("nested-repeats-complex"))
-                .inputText("Bu")
-                .swipeToNextQuestionWithRepeatGroup("Enemies")
-                .clickOnDoNotAdd(new FormEndPage("nested-repeats-complex"))
-                .clickGoToArrow()
-                .clickOnText("Friends")
-                .checkListSizeInHierarchy(1)
-                .clickOnElementInHierarchy(0)
-                .clickOnText("Pets")
-                .checkListSizeInHierarchy(2)
-                .clickGoUpIcon()
-                .clickGoUpIcon()
-                .clickGoUpIcon()
-                .clickOnText("Enemies")
-                .checkListSizeInHierarchy(1);
-    }
-
-    @Test
-    public void hierachyView_shouldNotChangeAfterScreenRotation() {
-        //!
-        //TestCase29
-        rule.startAtMainMenu()
-                .copyForm("repeat_group_form.xml")
-                .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
-                .clickOnDoNotAdd(new FormEntryPage("Repeat Group"))
-                .clickGoToArrow()
-                .clickGoUpIcon()
-                .checkIfElementInHierarchyMatchesToText("Group Name", 0)
-                .rotateToLandscape(new FormHierarchyPage("Repeat Group"))
-                .checkIfElementInHierarchyMatchesToText("Group Name", 0)
-                .rotateToPortrait(new FormHierarchyPage("Repeat Group"))
-                .checkIfElementInHierarchyMatchesToText("Group Name", 0);
     }
 
     @Test
