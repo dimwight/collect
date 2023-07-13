@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.support.rules.BlankFormTestRule;
 import org.odk.collect.android.support.rules.ResetStateRule;
 import org.odk.collect.android.support.rules.TestRuleChain;
@@ -25,6 +26,7 @@ import org.odk.collect.android.support.rules.TestRuleChain;
 import java.util.Collections;
 
 public class LikertTest {
+    // A3 fails!
     private static final String LIKERT_TEST_FORM = "likert_test.xml";
 
     public BlankFormTestRule activityTestRule = new BlankFormTestRule(LIKERT_TEST_FORM, "All widgets likert icon", Collections.singletonList("famous.jpg"));
@@ -33,6 +35,32 @@ public class LikertTest {
     public RuleChain copyFormChain = TestRuleChain.chain()
             .around(new ResetStateRule())
             .around(activityTestRule);
+
+    @Test
+    public void A0_onlyOneRemainsClicked() {
+        //! Passes
+        FormHierarchyActivity.Dev3027.latest = FormHierarchyActivity.Dev3027.STAGE_0;
+        openWidgetList();
+        onView(withText("Likert Image Widget")).perform(click());
+        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());
+        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isChecked()));
+        onView(withIndex(withClassName(endsWith("RadioButton")), 2)).perform(click());
+        onView(withIndex(withClassName(endsWith("RadioButton")), 2)).check(matches(isChecked()));
+        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isNotChecked()));
+    }
+
+    @Test
+    public void A3_onlyOneRemainsClicked() {
+        //! Passes
+        FormHierarchyActivity.Dev3027.latest = FormHierarchyActivity.Dev3027.STAGE_3;
+        openWidgetList();
+        onView(withText("Likert Image Widget")).perform(click());
+        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());
+        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isChecked()));
+        onView(withIndex(withClassName(endsWith("RadioButton")), 2)).perform(click());
+        onView(withIndex(withClassName(endsWith("RadioButton")), 2)).check(matches(isChecked()));
+        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isNotChecked()));
+    }
 
     @Test
     public void allText_canClick() {
@@ -82,17 +110,6 @@ public class LikertTest {
         onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isChecked()));
     }
 
-    @Test
-    public void onlyOneRemainsClicked() {
-        //!
-        openWidgetList();
-        onView(withText("Likert Image Widget")).perform(click());
-        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());
-        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isChecked()));
-        onView(withIndex(withClassName(endsWith("RadioButton")), 2)).perform(click());
-        onView(withIndex(withClassName(endsWith("RadioButton")), 2)).check(matches(isChecked()));
-        onView(withIndex(withClassName(endsWith("RadioButton")), 0)).check(matches(isNotChecked()));
-    }
 
     @Test
     public void testImagesLoad() {
