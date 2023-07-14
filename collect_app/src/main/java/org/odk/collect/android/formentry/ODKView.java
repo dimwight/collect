@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.formentry;
 
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_1;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
@@ -55,6 +56,7 @@ import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.exception.ExternalParamsException;
@@ -458,9 +460,33 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         });
     }
 
+    //For 3027
     public void setFocus(Context context) {
-        if (!widgets.isEmpty()) {
-            widgets.get(0).setFocus(context);
+        if (widgets.isEmpty() || formController == null) {
+            return;
+        }
+        int activeAt = 0;
+        if (STAGE_1.isLive()) {
+            //Retrieve and clear marker, set active #3027
+            FormIndex activeIndex = FormHierarchyActivity.getFieldListActiveIndex(true);
+            for (int at = 0; at < widgets.size(); at++) {
+                //Only set index >=0 if match found
+                FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();
+                if (indexAt.equals(activeIndex)) {
+                    activeAt = at;
+                    break;
+                }
+            }
+        }
+        QuestionWidget setActive = widgets.get(activeAt);
+        if (false) {
+            new Handler().postDelayed(() -> {
+                setActive.setFocus(context);
+                scrollTo(setActive);
+            }, 100);
+        } else {
+            setActive.setFocus(context);
+            scrollTo(setActive);
         }
     }
 
