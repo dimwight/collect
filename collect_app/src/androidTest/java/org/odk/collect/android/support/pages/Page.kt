@@ -176,18 +176,6 @@ abstract class Page<T : Page<T>> {
         return this as T
     }
 
-    // For #3027-1
-    fun assertTextIsNotDisplayed(text: String?): T {
-        onView(
-            allOf(
-                withText(text),
-                isDisplayed()
-//                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)
-            )
-        ).check(doesNotExist())
-        return this as T
-    }
-
     fun checkIsSnackbarWithMessageDisplayed(message: Int): T {
         onView(withText(message)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
         return this as T
