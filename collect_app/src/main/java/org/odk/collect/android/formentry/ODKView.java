@@ -473,14 +473,14 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         });
     }
 
-    //For 3027
+    //For #3027
     public void setFocus(Context context) {
         if (widgets.isEmpty()) {
             return;
         }
         int activeAt = 0;
         if (STAGE_1.isLive()) {
-            //Retrieve and ?clear marker, set active #3027
+            //Retrieve and ?clear marker, set active
             FormIndex activeIndex = FormHierarchyActivity.getActiveIndex(true);
             for (int at = 0; at < widgets.size(); at++) {
                 //Only set index >=0 if match found
