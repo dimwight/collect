@@ -424,7 +424,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         ) {
             return;
         }
-        FormHierarchyActivity.setFieldListActiveIndex(
+        FormHierarchyActivity.setActiveIndex(
                 getQuestionDetails().getPrompt().getIndex());
     }
 

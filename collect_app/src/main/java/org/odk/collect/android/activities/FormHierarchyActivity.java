@@ -83,11 +83,11 @@ import timber.log.Timber;
 
 public class FormHierarchyActivity extends LocalizedActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
 
-    public static final int RESULT_ADD_REPEAT = 2;
     public static final String EXTRA_SESSION_ID = "session_id";
+
+    // For #3027
+    private static FormIndex activeIndex;
     public static final String LC = "#3027: ";
-    //Added for #3027
-    private static FormIndex fieldListActiveIndex;
     /**
      * The questions and repeats at the current level.
      * Recreated every time {@link #refreshView()} is called.
@@ -808,7 +808,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         if (formController.indexIsInFieldList()) {
             if (STAGE_1.isLive()) {
                 //Record which question should be active
-                setFieldListActiveIndex(index);
+                setActiveIndex(index);
             }
             try {
                 formController.stepToPreviousScreenEvent();
@@ -906,11 +906,11 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         }
     }
 
-    public static void setFieldListActiveIndex(FormIndex index) {
+    public static void setActiveIndex(FormIndex index) {
         if (!STAGE_1.isLive()) {
             return;
         }
-        fieldListActiveIndex = index;
+        activeIndex = index;
         boolean trace = true;
         if (!trace) {
             return;
@@ -927,10 +927,10 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
 
     }
 
-    public static FormIndex getFieldListActiveIndex(boolean preserveValue) {
-        FormIndex index = fieldListActiveIndex;
+    public static FormIndex getActiveIndex(boolean preserveValue) {
+        FormIndex index = activeIndex;
         if (!preserveValue) {
-            fieldListActiveIndex = null;
+            activeIndex = null;
         }
         return index;
     }

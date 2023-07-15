@@ -130,7 +130,7 @@ public class FormEntryMenuDelegate implements MenuDelegate {
                 //For #3027
                 if (STAGE_2.isLive()) {
                     FormController formController = formEntryViewModel.getFormController();
-                    FormIndex activeIndex = FormHierarchyActivity.getFieldListActiveIndex(false);
+                    FormIndex activeIndex = FormHierarchyActivity.getActiveIndex(false);
                     if (activeIndex != null) {
                         formController.jumpToIndex(activeIndex);
                     }

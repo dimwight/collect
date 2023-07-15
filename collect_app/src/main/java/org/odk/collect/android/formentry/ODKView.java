@@ -481,7 +481,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         int activeAt = 0;
         if (STAGE_1.isLive()) {
             //Retrieve and clear marker, set active #3027
-            FormIndex activeIndex = FormHierarchyActivity.getFieldListActiveIndex(true);
+            FormIndex activeIndex = FormHierarchyActivity.getActiveIndex(true);
             for (int at = 0; at < widgets.size(); at++) {
                 //Only set index >=0 if match found
                 FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();
@@ -516,7 +516,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
             View label = layout.getChildAt(0);
             boolean labelVisible = label.getLocalVisibleRect(new Rect());
             if (labelVisible) {
-                FormHierarchyActivity.setFieldListActiveIndex(
+                FormHierarchyActivity.setActiveIndex(
                         widget.getQuestionDetails().getPrompt().getIndex());
                 break;
             }
