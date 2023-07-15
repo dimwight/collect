@@ -38,7 +38,7 @@ public class LikertTest {
     @Test
     public void a0_onlyOneRemainsClicked() {
         //! Passes
-        FormHierarchyActivity.Stage3027.latest = FormHierarchyActivity.Stage3027.STAGE_0;
+        FormHierarchyActivity.Stages3027.latest = FormHierarchyActivity.Stages3027.STAGE_0;
         openWidgetList();
         onView(withText("Likert Image Widget")).perform(click());
         onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());
@@ -51,7 +51,7 @@ public class LikertTest {
     @Test
     public void a3_onlyOneRemainsClicked() {
         //! Passes
-        FormHierarchyActivity.Stage3027.latest = FormHierarchyActivity.Stage3027.STAGE_3;
+        FormHierarchyActivity.Stages3027.latest = FormHierarchyActivity.Stages3027.STAGE_3;
         openWidgetList();
         onView(withText("Likert Image Widget")).perform(click());
         onView(withIndex(withClassName(endsWith("RadioButton")), 0)).perform(click());

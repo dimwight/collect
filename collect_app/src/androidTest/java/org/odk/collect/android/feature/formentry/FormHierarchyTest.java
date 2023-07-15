@@ -4,15 +4,15 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_0;
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_3;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_0;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_3;
 import static org.odk.collect.testshared.RecyclerViewMatcher.withRecyclerView;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.activities.FormHierarchyActivity.Stage3027;
+import org.odk.collect.android.activities.FormHierarchyActivity.Stages3027;
 import org.odk.collect.android.support.pages.AddNewRepeatDialog;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.FormHierarchyPage;
@@ -33,7 +33,7 @@ public class FormHierarchyTest {
     //https://github.com/getodk/collect/issues/2942
     public void a0_deletingLastGroupShouldNotBreakHierarchy() {
         //! Passes
-        Stage3027.setStage(STAGE_0);
+        Stages3027.setStage(STAGE_0);
         FormHierarchyPage page = rule.startAtMainMenu()
                 .copyForm("formHierarchy3.xml")
                 .startBlankForm("formHierarchy3")
@@ -70,7 +70,7 @@ public class FormHierarchyTest {
     //https://github.com/getodk/collect/issues/2942
     public void a3_deletingLastGroupShouldNotBreakHierarchy() {
         //!
-        Stage3027 latest = Stage3027.setStage(STAGE_3);
+        Stages3027 latest = Stages3027.setStage(STAGE_3);
         FormHierarchyPage page = rule.startAtMainMenu()
                 .copyForm("formHierarchy3.xml")
                 .startBlankForm("formHierarchy3")

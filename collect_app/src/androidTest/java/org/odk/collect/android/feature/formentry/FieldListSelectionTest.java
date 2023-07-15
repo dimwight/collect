@@ -10,7 +10,7 @@ import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.odk.collect.android.activities.FormHierarchyActivity.Stage3027;
+import org.odk.collect.android.activities.FormHierarchyActivity.Stages3027;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.FormHierarchyPage;
 import org.odk.collect.android.support.rules.CollectTestRule;
@@ -77,7 +77,7 @@ public class FieldListSelectionTest {
     @Test
     public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
         if (
-                !Stage3027.STAGE_2.isLive()
+                !Stages3027.STAGE_2.isLive()
         ) {
             return;
         }
@@ -93,7 +93,7 @@ public class FieldListSelectionTest {
 
     @Test
     public void scrollingInFormEntrySelectsQuestionInHierarchy() {
-        if (!Stage3027.STAGE_3.isLive()) {
+        if (!Stages3027.STAGE_3.isLive()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
@@ -109,7 +109,7 @@ public class FieldListSelectionTest {
 
     @Test
     public void interactionInFormEntrySelectsQuestionInHierarchy() {
-        if (!Stage3027.STAGE_4.isLive()) {
+        if (!Stages3027.STAGE_4.isLive()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();

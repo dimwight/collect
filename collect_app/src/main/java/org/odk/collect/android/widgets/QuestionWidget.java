@@ -14,7 +14,7 @@
 
 package org.odk.collect.android.widgets;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_4;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_4;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getClipID;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayColor;
 import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;

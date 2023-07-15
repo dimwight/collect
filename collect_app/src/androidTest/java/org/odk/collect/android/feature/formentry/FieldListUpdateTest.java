@@ -40,7 +40,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_0;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_0;
 import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 
 import android.app.Activity;
@@ -62,7 +62,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
 import org.odk.collect.android.TestSettingsProvider;
-import org.odk.collect.android.activities.FormHierarchyActivity.Stage3027;
+import org.odk.collect.android.activities.FormHierarchyActivity.Stages3027;
 import org.odk.collect.android.preferences.GuidanceHint;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.support.pages.FormEntryPage;
@@ -97,7 +97,7 @@ public class FieldListUpdateTest {
     @Test
     public void a0_selectionChangeAtOneCascadeLevelWithMinimalAppearance_ShouldUpdateNextLevels() {
         //! Passes
-        Stage3027.setStage(STAGE_0);
+        Stages3027.setStage(STAGE_0);
         new FormEntryPage("fieldlist-updates")
                 .clickGoToArrow()
                 .clickGoUpIcon()

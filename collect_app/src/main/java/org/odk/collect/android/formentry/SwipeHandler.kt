@@ -6,7 +6,7 @@ import android.view.MotionEvent
 import android.widget.FrameLayout
 import androidx.core.widget.NestedScrollView
 import org.odk.collect.android.activities.FormHierarchyActivity.LC
-import org.odk.collect.android.activities.FormHierarchyActivity.Stage3027
+import org.odk.collect.android.activities.FormHierarchyActivity.Stages3027
 import org.odk.collect.android.utilities.FlingRegister
 import org.odk.collect.androidshared.utils.ScreenUtils
 import org.odk.collect.settings.keys.ProjectKeys
@@ -71,7 +71,7 @@ class SwipeHandler(context: Context, generalSettings: Settings) {
 
             // For #3027
             Timber.d(LC + "view=" + view)
-            if (!Stage3027.STAGE_3.isLive // || view !is ODKView
+            if (!Stages3027.STAGE_3.isLive // || view !is ODKView
             ) {
                 return false
             }

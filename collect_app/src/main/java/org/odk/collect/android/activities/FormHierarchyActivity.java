@@ -14,7 +14,7 @@
 
 package org.odk.collect.android.activities;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_1;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 import android.content.DialogInterface;
@@ -935,7 +935,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         return index;
     }
 
-    public enum Stage3027 {
+    public enum Stages3027 {
         //Added for #3027 development
         //Current behaviour
         STAGE_0,
@@ -948,14 +948,14 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         //interactionInFormEntrySelectsQuestionInHierarchy
         STAGE_4;
 
-        public static Stage3027 latest = STAGE_2;
+        public static Stages3027 latest = STAGE_2;
 
         public boolean isLive() {
             return latest.ordinal() >= this.ordinal();
         }
 
         //Convenience method covering all eventualities
-        public static Stage3027 setStage(Stage3027 stage) {
+        public static Stages3027 setStage(Stages3027 stage) {
             boolean doIt = false;
             if (doIt) {
                 latest = stage;

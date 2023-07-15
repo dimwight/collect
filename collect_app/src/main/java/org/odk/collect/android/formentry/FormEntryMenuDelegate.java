@@ -1,6 +1,6 @@
 package org.odk.collect.android.formentry;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stage3027.STAGE_2;
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_2;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_BACKGROUND_LOCATION;
 
 import android.content.Intent;
