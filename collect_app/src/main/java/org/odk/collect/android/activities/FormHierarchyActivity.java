@@ -904,61 +904,10 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
     }
 
     public static void setActiveIndex(FormIndex index) {
-        if (!STAGE_1.isLive()) {
-            return;
-        }
         activeIndex = index;
-        boolean trace = true;
-        if (!trace) {
-            return;
-        }
-        TreeReference ref = index == null ? null : index.getReference();
-        String refString = ref == null ? "" : ref.toShortString();
-        String message = LC + "ref=" +
-                "%s";
-        Timber.i(message,
-                (index == null ? "null" : refString.isEmpty() ? "[no ref]"
-                        : refString
-//                        .replaceAll("\\[.*", "")
-                ));
-
     }
 
-    public static FormIndex getActiveIndex(boolean preserveValue) {
-        FormIndex index = activeIndex;
-        if (!preserveValue) {
-            activeIndex = null;
-        }
-        return index;
-    }
-
-    public enum Stages3027 {
-        //Added for #3027 development
-        //Current behaviour
-        STAGE_0,
-        //questionSelectedInHierarchyIsScrolledToInFormEntry
-        STAGE_1,
-        //formEntryToHierarchyRetracesQuestionSelectionSteps
-        STAGE_2,
-        //scrollingInFormEntrySelectsQuestionInHierarchy
-        STAGE_3,
-        //interactionInFormEntrySelectsQuestionInHierarchy
-        STAGE_4;
-
-        public static Stages3027 latest = STAGE_1;
-
-        public boolean isLive() {
-            return latest.ordinal() >= this.ordinal();
-        }
-
-        //Convenience method covering all eventualities
-        public static Stages3027 setStage(Stages3027 stage) {
-            boolean doIt = false;
-            if (doIt) {
-                latest = stage;
-            }
-            return latest;
-        }
-
+    public static FormIndex getActiveIndex() {
+        return activeIndex;
     }
 }
