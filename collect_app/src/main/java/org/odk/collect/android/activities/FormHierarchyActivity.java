@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 import android.content.DialogInterface;
@@ -84,6 +85,9 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
 
     public static final int RESULT_ADD_REPEAT = 2;
     public static final String EXTRA_SESSION_ID = "session_id";
+    public static final String LC = "#3027: ";
+    //Added for #3027
+    private static FormIndex activeIndex;
     /**
      * The questions and repeats at the current level.
      * Recreated every time {@link #refreshView()} is called.
@@ -788,15 +792,23 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         }
     }
 
+    //For #3027
+
     /**
      * Handles clicks on a question. Jumps to the form filling view with the selected question shown.
      * If the selected question is in a field list, show the entire field list.
+     * For #3027, prepare to set the appropriate focus.
      */
     void onQuestionClicked(FormIndex index) {
-        formEntryViewModel.getFormController().jumpToIndex(index);
-        if (formEntryViewModel.getFormController().indexIsInFieldList()) {
+        FormController formController = formEntryViewModel.getFormController();
+        formController.jumpToIndex(index);
+        if (formController.indexIsInFieldList()) {
+            if (STAGE_1.isLive()) {
+                //Record which question should be active
+                setActiveIndex(index);
+            }
             try {
-                formEntryViewModel.getFormController().stepToPreviousScreenEvent();
+                formController.stepToPreviousScreenEvent();
             } catch (JavaRosaException e) {
                 Timber.d(e);
                 createErrorDialog(e.getCause().getMessage());
@@ -889,5 +901,64 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
             goToPreviousEvent();
             goUpLevel();
         }
+    }
+
+    public static void setActiveIndex(FormIndex index) {
+        if (!STAGE_1.isLive()) {
+            return;
+        }
+        activeIndex = index;
+        boolean trace = true;
+        if (!trace) {
+            return;
+        }
+        TreeReference ref = index == null ? null : index.getReference();
+        String refString = ref == null ? "" : ref.toShortString();
+        String message = LC + "ref=" +
+                "%s";
+        Timber.i(message,
+                (index == null ? "null" : refString.isEmpty() ? "[no ref]"
+                        : refString
+//                        .replaceAll("\\[.*", "")
+                ));
+
+    }
+
+    public static FormIndex getActiveIndex(boolean preserveValue) {
+        FormIndex index = activeIndex;
+        if (!preserveValue) {
+            activeIndex = null;
+        }
+        return index;
+    }
+
+    public enum Stages3027 {
+        //Added for #3027 development
+        //Current behaviour
+        STAGE_0,
+        //questionSelectedInHierarchyIsScrolledToInFormEntry
+        STAGE_1,
+        //formEntryToHierarchyRetracesQuestionSelectionSteps
+        STAGE_2,
+        //scrollingInFormEntrySelectsQuestionInHierarchy
+        STAGE_3,
+        //interactionInFormEntrySelectsQuestionInHierarchy
+        STAGE_4;
+
+        public static Stages3027 latest = STAGE_1;
+
+        public boolean isLive() {
+            return latest.ordinal() >= this.ordinal();
+        }
+
+        //Convenience method covering all eventualities
+        public static Stages3027 setStage(Stages3027 stage) {
+            boolean doIt = false;
+            if (doIt) {
+                latest = stage;
+            }
+            return latest;
+        }
+
     }
 }
