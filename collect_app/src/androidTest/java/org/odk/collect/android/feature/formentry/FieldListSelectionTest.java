@@ -52,9 +52,7 @@ public class FieldListSelectionTest {
 
     @Test
     public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
-        if (false
-            //!_UpdateStage.STAGE_1.isApplied()
-        ) {
+        if (Stages3027.STAGE_1.isLive()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
@@ -76,9 +74,7 @@ public class FieldListSelectionTest {
 
     @Test
     public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
-        if (
-                !Stages3027.STAGE_2.isLive()
-        ) {
+        if (Stages3027.STAGE_2.isLive()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
