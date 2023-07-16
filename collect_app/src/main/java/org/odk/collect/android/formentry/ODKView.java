@@ -468,7 +468,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         int activeAt = 0;
         if (STAGE_1.isLive()) {
             //Retrieve and clear marker, set active #3027
-            FormIndex activeIndex = FormHierarchyActivity.getActiveIndex();
+            FormIndex activeIndex = FormHierarchyActivity.getFieldlistFocusIndex();
             for (int at = 0; at < widgets.size(); at++) {
                 //Only set index >=0 if match found
                 FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();

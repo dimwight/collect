@@ -1,5 +1,4 @@
 package org.odk.collect.android.feature.formentry;
-// collect_app/src/androidTest/java/org/odk/collect/android/feature/formentry/FieldListSelectionTest.java
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
@@ -11,11 +10,10 @@ import static org.odk.collect.android.activities.FormHierarchyActivity.Stages302
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.odk.collect.android.support.pages.FormHierarchyPage;
 import org.odk.collect.android.support.rules.CollectTestRule;
 import org.odk.collect.android.support.rules.TestRuleChain;
 
-public class FieldListSelectionTest {
+public class FieldlistFocusTest {
     private static final String WRAPPER_GT = "wrapper > ";
 
     public CollectTestRule rule = new CollectTestRule();
@@ -29,18 +27,23 @@ public class FieldListSelectionTest {
                 !STAGE_1.isLive()) {
             return;
         }
-        FormHierarchyPage hierarchy = rule.startAtMainMenu()
-                .copyForm("fieldListSelection.xml")
-                .startBlankForm("fieldListSelection")
+        String groupS1 = "Select one widgets";
+        String questionS1 = "Select one widget";
+        rule.startAtMainMenu()
+                .copyForm("fieldlist-focus.xml")
+                .startBlankForm("fieldlist-focus")
+                .assertTexts("Text widgets", "String widget")
+                .clickForwardButton()
+                .assertTexts("Text widgets", "String number widget")
                 .clickGoToArrow()
-                .assertText(WRAPPER_GT + "Text widgets");
-        String group = "Select one widgets";
-        String question = "Select one widget";
-        hierarchy.clickOnGroup(group)
-                .assertText(WRAPPER_GT + group)
-                .clickOnQuestion(question)
-                .assertText(question);
-        onView(allOf(withText("String widget"), isDisplayed()))
+                .assertTexts("Text widgets", "String widget")
+                .clickGoUpIcon()
+                .clickOnText("wrapper")
+                .clickOnGroup(groupS1)
+                .assertText(WRAPPER_GT + groupS1)
+                .clickOnQuestion(questionS1)
+                .assertText(questionS1);
+        onView(allOf(withText("Time widget"), isDisplayed()))
                 .check(doesNotExist());
     }
 

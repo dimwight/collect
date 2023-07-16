@@ -87,7 +87,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
     public static final String EXTRA_SESSION_ID = "session_id";
     public static final String LC = "#3027: ";
     //Added for #3027
-    private static FormIndex activeIndex;
+    private static FormIndex fieldlistFocusIndex;
     /**
      * The questions and repeats at the current level.
      * Recreated every time {@link #refreshView()} is called.
@@ -805,7 +805,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         if (formController.indexIsInFieldList()) {
             if (STAGE_1.isLive()) {
                 //Record which question should be active
-                setActiveIndex(index);
+                setFieldlistFocusIndex(index);
             }
             try {
                 formController.stepToPreviousScreenEvent();
@@ -903,11 +903,30 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         }
     }
 
-    public static void setActiveIndex(FormIndex index) {
-        activeIndex = index;
+    public static void setFieldlistFocusIndex(FormIndex index) {
+        fieldlistFocusIndex = index;
     }
 
-    public static FormIndex getActiveIndex() {
-        return activeIndex;
+    public static FormIndex getFieldlistFocusIndex() {
+        return fieldlistFocusIndex;
+    }
+
+    public enum Stages3027 { // For #3027 development
+        // Current behaviour
+        STAGE_0,
+        // questionSelectedInHierarchyIsScrolledToInFormEntry
+        STAGE_1,
+        // formEntryToHierarchyRetracesQuestionSelectionSteps
+        STAGE_2,
+        // scrollingInFormEntrySelectsQuestionInHierarchy
+        STAGE_3,
+        // interactionInFormEntrySelectsQuestionInHierarchy
+        STAGE_4;
+
+        public static Stages3027 latest = STAGE_1;
+
+        public boolean isLive() {
+            return latest.ordinal() >= this.ordinal();
+        }
     }
 }
