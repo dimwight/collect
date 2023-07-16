@@ -18,7 +18,7 @@ import org.odk.collect.android.support.rules.TestRuleChain;
 
 import java.util.Random;
 
-public class FieldListSelectionTest {
+public class FieldlistFocusTest {
 
     private static final String WRAPPER_GT = "wrapper > ";
 
@@ -52,7 +52,7 @@ public class FieldListSelectionTest {
 
     @Test
     public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
-        if (Stages3027.STAGE_1.isLive()) {
+        if (!Stages3027.STAGE_1.isLive()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
@@ -74,7 +74,7 @@ public class FieldListSelectionTest {
 
     @Test
     public void formEntryToHierarchyRetracesQuestionSelectionSteps() {
-        if (Stages3027.STAGE_2.isLive()) {
+        if (!Stages3027.STAGE_2.isLive()) {
             return;
         }
         FormHierarchyPage hierarchy = openFormInHierarchy();
