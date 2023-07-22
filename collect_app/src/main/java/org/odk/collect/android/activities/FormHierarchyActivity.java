@@ -83,7 +83,11 @@ import timber.log.Timber;
 public class FormHierarchyActivity extends LocalizedActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
 
     public static final int RESULT_ADD_REPEAT = 2;
+
     public static final String EXTRA_SESSION_ID = "session_id";
+
+    private static FormIndex fieldlistFocusIndex;
+
     /**
      * The questions and repeats at the current level.
      * Recreated every time {@link #refreshView()} is called.
@@ -791,12 +795,15 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
     /**
      * Handles clicks on a question. Jumps to the form filling view with the selected question shown.
      * If the selected question is in a field list, show the entire field list.
+     * For #3027, prepare to set the appropriate focus.
      */
     void onQuestionClicked(FormIndex index) {
-        formEntryViewModel.getFormController().jumpToIndex(index);
-        if (formEntryViewModel.getFormController().indexIsInFieldList()) {
+        FormController formController = formEntryViewModel.getFormController();
+        formController.jumpToIndex(index);
+        if (formController.indexIsInFieldList()) {
+            setFieldlistFocusIndex(index);
             try {
-                formEntryViewModel.getFormController().stepToPreviousScreenEvent();
+                formController.stepToPreviousScreenEvent();
             } catch (JavaRosaException e) {
                 Timber.d(e);
                 createErrorDialog(e.getCause().getMessage());
@@ -889,5 +896,13 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
             goToPreviousEvent();
             goUpLevel();
         }
+    }
+
+    public static void setFieldlistFocusIndex(FormIndex index) {
+        fieldlistFocusIndex = index;
+    }
+
+    public static FormIndex getFieldlistFocusIndex() {
+        return fieldlistFocusIndex;
     }
 }

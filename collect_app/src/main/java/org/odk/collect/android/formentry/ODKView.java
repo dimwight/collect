@@ -55,6 +55,7 @@ import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.exception.ExternalParamsException;
@@ -459,9 +460,18 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
     }
 
     public void setFocus(Context context) {
-        if (!widgets.isEmpty()) {
-            widgets.get(0).setFocus(context);
+        if (widgets.isEmpty()) {
+            return;
         }
+        QuestionWidget forFocus = widgets.get(0);
+        FormIndex focusIndex = FormHierarchyActivity.getFieldlistFocusIndex();
+        for (QuestionWidget widget : widgets) {
+            if (widget.getFormEntryPrompt().getIndex().equals(focusIndex)) {
+                forFocus = widget;
+            }
+        }
+        forFocus.setFocus(context);
+        scrollTo(forFocus);
     }
 
     /**
