@@ -793,10 +793,12 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
      * If the selected question is in a field list, show the entire field list.
      */
     void onQuestionClicked(FormIndex index) {
-        formEntryViewModel.getFormController().jumpToIndex(index);
-        if (formEntryViewModel.getFormController().indexIsInFieldList()) {
+        FormController formController = formEntryViewModel.getFormController();
+        formController.jumpToIndex(index);
+        if (!FormFillingActivity.For3027X &&
+                formController.indexIsInFieldList()) {
             try {
-                formEntryViewModel.getFormController().stepToPreviousScreenEvent();
+                formController.stepToPreviousScreenEvent();
             } catch (JavaRosaException e) {
                 Timber.d(e);
                 createErrorDialog(e.getCause().getMessage());

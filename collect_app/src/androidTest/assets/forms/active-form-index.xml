@@ -2,16 +2,15 @@
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml"
     xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms">
     <h:head>
-        <h:title>ActiveFormIndex</h:title>
-        collect_app/src/androidTest/assets/forms/fieldListSelection.xml
+        <h:title>active-form-index</h:title>
         <model odk:xforms-version="1.0.0">
             <instance>
-                <data id="fieldListSelection" version="2021-09-29 B">
+                <data id="active-form-index" version="23-07-22e">
+                    <text_widgets>
+                        <string_widget />
+                        <string_number_widget />
+                    </text_widgets>
                     <wrapper>
-                        <text_widgets>
-                            <string_widget />
-                            <string_number_widget />
-                        </text_widgets>
                         <number_widgets>
                             <integer_widget />
                             <integer_thousands_sep_widget />
@@ -31,18 +30,14 @@
                             <grid_multi_widget_compact />
                             <spinner_multi_widget />
                         </select_multi_widgets>
-                        <table_list_test>
-                            <table_list_1 />
-                            <table_list_2 />
-                        </table_list_test>
                     </wrapper>
                     <meta>
                         <instanceID />
                     </meta>
                 </data>
             </instance>
-            <bind nodeset="/data/wrapper/text_widgets/string_widget" type="string" />
-            <bind nodeset="/data/wrapper/text_widgets/string_number_widget" type="string" />
+            <bind nodeset="/data/text_widgets/string_widget" type="string" />
+            <bind nodeset="/data/text_widgets/string_number_widget" type="string" />
             <bind nodeset="/data/wrapper/number_widgets/integer_widget" type="int" />
             <bind nodeset="/data/wrapper/number_widgets/integer_thousands_sep_widget" type="int" />
             <bind nodeset="/data/wrapper/number_widgets/decimal_widget" type="decimal" />
@@ -56,59 +51,48 @@
             <bind nodeset="/data/wrapper/select_multi_widgets/grid_multi_widget_compact"
                 type="string" />
             <bind nodeset="/data/wrapper/select_multi_widgets/spinner_multi_widget" type="string" />
-            <bind nodeset="/data/wrapper/table_list_test/table_list_1" type="string" />
-            <bind nodeset="/data/wrapper/table_list_test/table_list_2" type="string" />
             <bind jr:preload="uid" nodeset="/data/meta/instanceID" readonly="true()"
                 type="string" />
         </model>
     </h:head>
     <h:body>
+        <group ref="/data/text_widgets">
+            <label>Text widgets</label>
+            <input ref="/data/text_widgets/string_widget">
+                <label>String widget</label>
+            </input>
+            <input appearance="numbers" ref="/data/text_widgets/string_number_widget">
+                <label>String number widget</label>
+            </input>
+        </group>
         <group appearance="field-list" ref="/data/wrapper">
             <label>wrapper</label>
-            <group ref="/data/wrapper/text_widgets">
-                <label>Text widgets</label>
-                <input ref="/data/wrapper/text_widgets/string_widget">
-                    <label>String widget</label>
-                </input>
-                <input appearance="numbers" ref="/data/wrapper/text_widgets/string_number_widget">
-                    <label>String number widget</label>
-                    <hint>text type with numbers appearance</hint>
-                </input>
-            </group>
             <group ref="/data/wrapper/number_widgets">
                 <label>Numerical widgets</label>
                 <input ref="/data/wrapper/number_widgets/integer_widget">
                     <label>Integer widget</label>
-                    <hint>integer type with no appearance</hint>
                 </input>
                 <input appearance="thousands-sep"
                     ref="/data/wrapper/number_widgets/integer_thousands_sep_widget">
                     <label>Integer widget with thousands separators</label>
-                    <hint>integer type with thousands-sep appearance. This appearance can also be
-                        applied to decimal and string numbers widgets
-                    </hint>
                 </input>
                 <input ref="/data/wrapper/number_widgets/decimal_widget">
                     <label>Decimal widget</label>
-                    <hint>decimal type with no appearance</hint>
                 </input>
             </group>
             <group ref="/data/wrapper/date_time_widgets">
                 <label>Date and time widgets</label>
                 <input appearance="year" ref="/data/wrapper/date_time_widgets/date_widget_year">
                     <label>Date widget</label>
-                    <hint>date type with year appearance</hint>
                 </input>
                 <input ref="/data/wrapper/date_time_widgets/time_widget">
                     <label>Time widget</label>
-                    <hint>time type with no appearance</hint>
                 </input>
             </group>
             <group ref="/data/wrapper/select_one_widgets">
                 <label>Select one widgets</label>
                 <select1 ref="/data/wrapper/select_one_widgets/select_one_widget">
                     <label>Select one widget</label>
-                    <hint>select_one type with no appearance, 4 text choices</hint>
                     <item>
                         <label>A</label>
                         <value>a</value>
@@ -128,7 +112,6 @@
                 </select1>
                 <select1 appearance="minimal" ref="/data/wrapper/select_one_widgets/spinner_widget">
                     <label>Spinner widget</label>
-                    <hint>select_one type with minimal appearance, 4 text choices</hint>
                     <item>
                         <label>A</label>
                         <value>a</value>
@@ -149,7 +132,6 @@
                 <select1 appearance="autocomplete"
                     ref="/data/wrapper/select_one_widgets/select_one_autocomplete_widget">
                     <label>Select one search widget</label>
-                    <hint>select_one type with autocomplete appearance, 4 text choices</hint>
                     <item>
                         <label>A</label>
                         <value>a</value>
@@ -172,7 +154,6 @@
                 <label>Select multi widgets</label>
                 <select ref="/data/wrapper/select_multi_widgets/select_multi_widget">
                     <label>Multi select widget</label>
-                    <hint>select_multiple type with no appearance, 4 text choices</hint>
                     <item>
                         <label>A</label>
                         <value>a</value>
@@ -193,7 +174,6 @@
                 <select appearance="compact"
                     ref="/data/wrapper/select_multi_widgets/grid_multi_widget_compact">
                     <label>Grid select multiple widget</label>
-                    <hint>select_multiple type with compact appearance, 4 image choices</hint>
                     <item>
                         <label>A</label>
                         <value>a</value>
@@ -214,7 +194,6 @@
                 <select appearance="minimal"
                     ref="/data/wrapper/select_multi_widgets/spinner_multi_widget">
                     <label>Spinner widget: select multiple</label>
-                    <hint>select_multiple type with minimal appearance, 4 image choices</hint>
                     <item>
                         <label>A</label>
                         <value>a</value>
@@ -230,53 +209,6 @@
                     <item>
                         <label>D</label>
                         <value>d</value>
-                    </item>
-                </select>
-            </group>
-            <group ref="/data/wrapper/table_list_test">
-                <label>List group</label>
-                <select1 appearance="list-nolabel" ref="/data/wrapper/table_list_test/table_list_1">
-                    <label>List widget</label>
-                    <hint>Show only the inputs of these options and not the labels (type=select_one
-                        yes_no, appearance=list-nolabel)
-                    </hint>
-                    <item>
-                        <label>Yes</label>
-                        <value>yes</value>
-                    </item>
-                    <item>
-                        <label>No</label>
-                        <value>no</value>
-                    </item>
-                    <item>
-                        <label>Don't Know</label>
-                        <value>dk</value>
-                    </item>
-                    <item>
-                        <label>Not Applicable</label>
-                        <value>na</value>
-                    </item>
-                </select1>
-                <select appearance="list-nolabel" ref="/data/wrapper/table_list_test/table_list_2">
-                    <label>List multi widget</label>
-                    <hint>Show only the inputs of these options and not the labels
-                        (type=select_multiple yes_no, appearance=list-nolabel)
-                    </hint>
-                    <item>
-                        <label>Yes</label>
-                        <value>yes</value>
-                    </item>
-                    <item>
-                        <label>No</label>
-                        <value>no</value>
-                    </item>
-                    <item>
-                        <label>Don't Know</label>
-                        <value>dk</value>
-                    </item>
-                    <item>
-                        <label>Not Applicable</label>
-                        <value>na</value>
                     </item>
                 </select>
             </group>

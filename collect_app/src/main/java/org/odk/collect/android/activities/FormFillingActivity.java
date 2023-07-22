@@ -257,6 +257,7 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
     public static final String KEY_AUTO_SAVED = "autosaved";
 
     public static final String TAG_PROGRESS_DIALOG_MEDIA_LOADING = FormFillingActivity.class.getName() + MaterialProgressDialogFragment.class.getName() + "mediaLoading";
+    public static final boolean For3027X = false;
 
     private boolean autoSaved;
     private boolean allowMovingBackwards;
@@ -1142,7 +1143,7 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
     private SwipeHandler.View createView(int event, boolean advancingPage) {
         releaseOdkView();
 
-        FormController formController = getFormController();
+        final FormController formController = getFormController();
 
         String formTitle = formController.getFormTitle();
         setTitle(formTitle);
@@ -1152,13 +1153,23 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
                     formController.getFormIndex(), true, null, System.currentTimeMillis(), null);
         }
 
+        Runnable backUp = null;
         switch (event) {
             case FormEntryController.EVENT_BEGINNING_OF_FORM:
                 return createViewForFormBeginning(formController);
-            case FormEntryController.EVENT_END_OF_FORM:
-                return createViewForFormEnd(formController);
-            case FormEntryController.EVENT_QUESTION:
             case FormEntryController.EVENT_GROUP:
+                if (For3027X &&
+                        formController.indexIsInFieldList()) {
+                    backUp = () -> {
+                        try {
+                            formController.stepToPreviousScreenEvent();
+                        } catch (JavaRosaException e) {
+                            Timber.d(e);
+                        }
+                    };
+                    if (backUp != null) backUp.run();
+                }
+            case FormEntryController.EVENT_QUESTION:
             case FormEntryController.EVENT_REPEAT:
                 // should only be a group here if the event_group is a field-list
                 try {
@@ -1167,6 +1178,7 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
                     FormEntryCaption[] groups = formController
                             .getGroupsForCurrentIndex();
                     FormEntryPrompt[] prompts = formController.getQuestionPrompts();
+
 
                     odkView = createODKView(advancingPage, prompts, groups);
                     odkView.setWidgetValueChangedListener(this);
@@ -1193,6 +1205,8 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
                 }
 
                 return odkView;
+            case FormEntryController.EVENT_END_OF_FORM:
+                return createViewForFormEnd(formController);
 
             case EVENT_PROMPT_NEW_REPEAT:
                 createRepeatDialog();

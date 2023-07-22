@@ -137,12 +137,24 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
 
     /**
      * Builds the view for a specified question or field-list of questions.
+     *
      * @param context         the activity creating this view
      * @param questionPrompts the questions to be included in this view
      * @param groups          the group hierarchy that this question or field list is in
      * @param advancingPage   whether this view is being created after a forward swipe through the
      */
-    public ODKView(ComponentActivity context, final FormEntryPrompt[] questionPrompts, FormEntryCaption[] groups, boolean advancingPage, QuestionMediaManager questionMediaManager, WaitingForDataRegistry waitingForDataRegistry, AudioPlayer audioPlayer, AudioRecorder audioRecorder, FormEntryViewModel formEntryViewModel, InternalRecordingRequester internalRecordingRequester, ExternalAppRecordingRequester externalAppRecordingRequester, AudioHelper audioHelper) {
+    public ODKView(ComponentActivity context,
+                   final FormEntryPrompt[] questionPrompts,
+                   FormEntryCaption[] groups,
+                   boolean advancingPage,
+                   QuestionMediaManager questionMediaManager,
+                   WaitingForDataRegistry waitingForDataRegistry,
+                   AudioPlayer audioPlayer,
+                   AudioRecorder audioRecorder,
+                   FormEntryViewModel formEntryViewModel,
+                   InternalRecordingRequester internalRecordingRequester,
+                   ExternalAppRecordingRequester externalAppRecordingRequester,
+                   AudioHelper audioHelper) {
         super(context);
         viewLifecycle = ((ScreenContext) context).getViewLifecycle();
 

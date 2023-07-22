@@ -10,11 +10,10 @@ import static org.hamcrest.Matchers.allOf;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.odk.collect.android.support.pages.FormHierarchyPage;
 import org.odk.collect.android.support.rules.CollectTestRule;
 import org.odk.collect.android.support.rules.TestRuleChain;
 
-public class ActiveFormIndexTest {
+public class FieldlistFocusTest {
     private static final String WRAPPER_GT = "wrapper > ";
 
     public CollectTestRule rule = new CollectTestRule();
@@ -24,18 +23,23 @@ public class ActiveFormIndexTest {
 
     @Test
     public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
-        FormHierarchyPage hierarchy = rule.startAtMainMenu()
+        String groupS1 = "Select one widgets";
+        String questionS1 = "Select one widget";
+        rule.startAtMainMenu()
                 .copyForm("active-form-index.xml")
-                .startBlankForm("ActiveFormIndex")
+                .startBlankForm("active-form-index")
+                .assertTexts("Text widgets", "String widget")
+                .clickForwardButton()
+                .assertTexts("Text widgets", "String number widget")
                 .clickGoToArrow()
-                .assertText(WRAPPER_GT + "Text widgets");
-        String group = "Select one widgets";
-        String question = "Select one widget";
-        hierarchy.clickOnGroup(group)
-                .assertText(WRAPPER_GT + group)
-                .clickOnQuestion(question)
-                .assertText(question);
-        onView(allOf(withText("String widget"), isDisplayed()))
+                .assertTexts("Text widgets", "String widget")
+                .clickGoUpIcon()
+                .clickOnText("wrapper")
+                .clickOnGroup(groupS1)
+                .assertText(WRAPPER_GT + groupS1)
+                .clickOnQuestion(questionS1)
+                .assertText(questionS1);
+        onView(allOf(withText("Time widget"), isDisplayed()))
                 .check(doesNotExist());
     }
 
