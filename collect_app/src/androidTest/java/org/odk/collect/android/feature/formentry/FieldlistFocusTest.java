@@ -5,7 +5,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_1;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,10 +21,6 @@ public class FieldlistFocusTest {
 
     @Test
     public void questionSelectedInHierarchyIsScrolledToInFieldlist() {
-        if (false &&
-                !STAGE_1.isLive()) {
-            return;
-        }
         String groupS1 = "Select one widgets";
         String questionS1 = "Select one widget";
         rule.startAtMainMenu()

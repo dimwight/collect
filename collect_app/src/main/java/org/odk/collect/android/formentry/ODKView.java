@@ -14,7 +14,6 @@
 
 package org.odk.collect.android.formentry;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_1;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.settings.keys.ProjectKeys.KEY_EXTERNAL_APP_RECORDING;
@@ -467,12 +466,10 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
             return;
         }
         QuestionWidget forFocus = widgets.get(0);
-        if (STAGE_1.isLive()) {
-            FormIndex focusIndex = FormHierarchyActivity.getFieldlistFocusIndex();
-            for (QuestionWidget widget : widgets) {
-                if (widget.getFormEntryPrompt().getIndex().equals(focusIndex)) {
-                    forFocus = widget;
-                }
+        FormIndex focusIndex = FormHierarchyActivity.getFieldlistFocusIndex();
+        for (QuestionWidget widget : widgets) {
+            if (widget.getFormEntryPrompt().getIndex().equals(focusIndex)) {
+                forFocus = widget;
             }
         }
         forFocus.setFocus(context);

@@ -14,7 +14,6 @@
 
 package org.odk.collect.android.activities;
 
-import static org.odk.collect.android.activities.FormHierarchyActivity.Stages3027.STAGE_1;
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 import android.content.DialogInterface;
@@ -84,10 +83,11 @@ import timber.log.Timber;
 public class FormHierarchyActivity extends LocalizedActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
 
     public static final int RESULT_ADD_REPEAT = 2;
+
     public static final String EXTRA_SESSION_ID = "session_id";
-    public static final String LC = "#3027: ";
-    //Added for #3027
+
     private static FormIndex fieldlistFocusIndex;
+
     /**
      * The questions and repeats at the current level.
      * Recreated every time {@link #refreshView()} is called.
@@ -801,9 +801,7 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         FormController formController = formEntryViewModel.getFormController();
         formController.jumpToIndex(index);
         if (formController.indexIsInFieldList()) {
-            if (STAGE_1.isLive()) {
-                setFieldlistFocusIndex(index);
-            }
+            setFieldlistFocusIndex(index);
             try {
                 formController.stepToPreviousScreenEvent();
             } catch (JavaRosaException e) {
@@ -906,24 +904,5 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
 
     public static FormIndex getFieldlistFocusIndex() {
         return fieldlistFocusIndex;
-    }
-
-    public enum Stages3027 { // For #3027 development
-        // Current behaviour
-        STAGE_0,
-        // questionSelectedInHierarchyIsScrolledToInFormEntry
-        STAGE_1,
-        // formEntryToHierarchyRetracesQuestionSelectionSteps
-        STAGE_2,
-        // scrollingInFormEntrySelectsQuestionInHierarchy
-        STAGE_3,
-        // interactionInFormEntrySelectsQuestionInHierarchy
-        STAGE_4;
-
-        public static Stages3027 latest = STAGE_1;
-
-        public boolean isLive() {
-            return latest.ordinal() >= this.ordinal();
-        }
     }
 }
