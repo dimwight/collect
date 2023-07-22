@@ -139,6 +139,7 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
 
     /**
      * Builds the view for a specified question or field-list of questions.
+     *
      * @param context         the activity creating this view
      * @param questionPrompts the questions to be included in this view
      * @param groups          the group hierarchy that this question or field list is in
@@ -460,34 +461,22 @@ public class ODKView extends SwipeHandler.View implements OnLongClickListener, W
         });
     }
 
-    //For #3027
+    // For #3027
     public void setFocus(Context context) {
         if (widgets.isEmpty()) {
             return;
         }
-        int activeAt = 0;
+        QuestionWidget forFocus = widgets.get(0);
         if (STAGE_1.isLive()) {
-            //Retrieve and clear marker, set active #3027
-            FormIndex activeIndex = FormHierarchyActivity.getFieldlistFocusIndex();
-            for (int at = 0; at < widgets.size(); at++) {
-                //Only set index >=0 if match found
-                FormIndex indexAt = widgets.get(at).getFormEntryPrompt().getIndex();
-                if (indexAt.equals(activeIndex)) {
-                    activeAt = at;
-                    break;
+            FormIndex focusIndex = FormHierarchyActivity.getFieldlistFocusIndex();
+            for (QuestionWidget widget : widgets) {
+                if (widget.getFormEntryPrompt().getIndex().equals(focusIndex)) {
+                    forFocus = widget;
                 }
             }
         }
-        QuestionWidget setActive = widgets.get(activeAt);
-        if (false) {
-            new Handler().postDelayed(() -> {
-                setActive.setFocus(context);
-                scrollTo(setActive);
-            }, 100);
-        } else {
-            setActive.setFocus(context);
-            scrollTo(setActive);
-        }
+        forFocus.setFocus(context);
+        scrollTo(forFocus);
     }
 
     /**

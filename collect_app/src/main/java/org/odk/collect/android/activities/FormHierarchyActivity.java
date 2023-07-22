@@ -792,8 +792,6 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         }
     }
 
-    //For #3027
-
     /**
      * Handles clicks on a question. Jumps to the form filling view with the selected question shown.
      * If the selected question is in a field list, show the entire field list.
@@ -804,7 +802,6 @@ public class FormHierarchyActivity extends LocalizedActivity implements DeleteRe
         formController.jumpToIndex(index);
         if (formController.indexIsInFieldList()) {
             if (STAGE_1.isLive()) {
-                //Record which question should be active
                 setFieldlistFocusIndex(index);
             }
             try {

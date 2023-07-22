@@ -14,7 +14,6 @@ import org.odk.collect.android.support.rules.CollectTestRule;
 import org.odk.collect.android.support.rules.TestRuleChain;
 
 public class FieldlistFocusTest {
-    private static final String WRAPPER_GT = "wrapper > ";
 
     public CollectTestRule rule = new CollectTestRule();
 
@@ -22,7 +21,7 @@ public class FieldlistFocusTest {
     public RuleChain copyFormChain = TestRuleChain.chain().around(rule);
 
     @Test
-    public void questionSelectedInHierarchyIsScrolledToInFormEntry() {
+    public void questionSelectedInHierarchyIsScrolledToInFieldlist() {
         if (false &&
                 !STAGE_1.isLive()) {
             return;
@@ -40,7 +39,7 @@ public class FieldlistFocusTest {
                 .clickGoUpIcon()
                 .clickOnText("wrapper")
                 .clickOnGroup(groupS1)
-                .assertText(WRAPPER_GT + groupS1)
+                .assertText("wrapper > " + groupS1)
                 .clickOnQuestion(questionS1)
                 .assertText(questionS1);
         onView(allOf(withText("Time widget"), isDisplayed()))
