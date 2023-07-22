@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<h:html xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa"
+    xmlns:odk="http://www.opendatakit.org/xforms" xmlns="http://www.w3.org/2002/xforms">
+    <h:head>
+        <h:title>fieldlist-focus</h:title>
+        <model odk:xforms-version="1.0.0">
+            <instance>
+                <data id="fieldlist-focus" version="23-07-22e">
+                    <text_widgets>
+                        <string_widget />
+                        <string_number_widget />
+                    </text_widgets>
+                    <wrapper>
+                        <number_widgets>
+                            <integer_widget />
+                            <integer_thousands_sep_widget />
+                            <decimal_widget />
+                        </number_widgets>
+                        <date_time_widgets>
+                            <date_widget_year />
+                            <time_widget />
+                        </date_time_widgets>
+                        <select_one_widgets>
+                            <select_one_widget />
+                            <spinner_widget />
+                            <select_one_autocomplete_widget />
+                        </select_one_widgets>
+                        <select_multi_widgets>
+                            <select_multi_widget />
+                            <grid_multi_widget_compact />
+                            <spinner_multi_widget />
+                        </select_multi_widgets>
+                    </wrapper>
+                    <meta>
+                        <instanceID />
+                    </meta>
+                </data>
+            </instance>
+            <bind nodeset="/data/text_widgets/string_widget" type="string" />
+            <bind nodeset="/data/text_widgets/string_number_widget" type="string" />
+            <bind nodeset="/data/wrapper/number_widgets/integer_widget" type="int" />
+            <bind nodeset="/data/wrapper/number_widgets/integer_thousands_sep_widget" type="int" />
+            <bind nodeset="/data/wrapper/number_widgets/decimal_widget" type="decimal" />
+            <bind nodeset="/data/wrapper/date_time_widgets/date_widget_year" type="date" />
+            <bind nodeset="/data/wrapper/date_time_widgets/time_widget" type="time" />
+            <bind nodeset="/data/wrapper/select_one_widgets/select_one_widget" type="string" />
+            <bind nodeset="/data/wrapper/select_one_widgets/spinner_widget" type="string" />
+            <bind nodeset="/data/wrapper/select_one_widgets/select_one_autocomplete_widget"
+                type="string" />
+            <bind nodeset="/data/wrapper/select_multi_widgets/select_multi_widget" type="string" />
+            <bind nodeset="/data/wrapper/select_multi_widgets/grid_multi_widget_compact"
+                type="string" />
+            <bind nodeset="/data/wrapper/select_multi_widgets/spinner_multi_widget" type="string" />
+            <bind nodeset="/data/meta/instanceID" readonly="true()" type="string"
+                jr:preload="uid" />
+        </model>
+    </h:head>
+    <h:body>
+        <group ref="/data/text_widgets">
+            <label>Text widgets</label>
+            <input ref="/data/text_widgets/string_widget">
+                <label>String widget</label>
+            </input>
+            <input appearance="numbers" ref="/data/text_widgets/string_number_widget">
+                <label>String number widget</label>
+            </input>
+        </group>
+        <group appearance="field-list" ref="/data/wrapper">
+            <label>wrapper</label>
+            <group ref="/data/wrapper/number_widgets">
+                <label>Numerical widgets</label>
+                <input ref="/data/wrapper/number_widgets/integer_widget">
+                    <label>Integer widget</label>
+                </input>
+                <input appearance="thousands-sep"
+                    ref="/data/wrapper/number_widgets/integer_thousands_sep_widget">
+                    <label>Integer widget with thousands separators</label>
+                </input>
+                <input ref="/data/wrapper/number_widgets/decimal_widget">
+                    <label>Decimal widget</label>
+                </input>
+            </group>
+            <group ref="/data/wrapper/date_time_widgets">
+                <label>Date and time widgets</label>
+                <input appearance="year" ref="/data/wrapper/date_time_widgets/date_widget_year">
+                    <label>Date widget</label>
+                </input>
+                <input ref="/data/wrapper/date_time_widgets/time_widget">
+                    <label>Time widget</label>
+                </input>
+            </group>
+            <group ref="/data/wrapper/select_one_widgets">
+                <label>Select one widgets</label>
+                <select1 ref="/data/wrapper/select_one_widgets/select_one_widget">
+                    <label>Select one widget</label>
+                    <item>
+                        <label>A</label>
+                        <value>a</value>
+                    </item>
+                    <item>
+                        <label>B</label>
+                        <value>b</value>
+                    </item>
+                    <item>
+                        <label>C</label>
+                        <value>c</value>
+                    </item>
+                    <item>
+                        <label>D</label>
+                        <value>d</value>
+                    </item>
+                </select1>
+                <select1 appearance="minimal" ref="/data/wrapper/select_one_widgets/spinner_widget">
+                    <label>Spinner widget</label>
+                    <item>
+                        <label>A</label>
+                        <value>a</value>
+                    </item>
+                    <item>
+                        <label>B</label>
+                        <value>b</value>
+                    </item>
+                    <item>
+                        <label>C</label>
+                        <value>c</value>
+                    </item>
+                    <item>
+                        <label>D</label>
+                        <value>d</value>
+                    </item>
+                </select1>
+                <select1 appearance="autocomplete"
+                    ref="/data/wrapper/select_one_widgets/select_one_autocomplete_widget">
+                    <label>Select one search widget</label>
+                    <item>
+                        <label>A</label>
+                        <value>a</value>
+                    </item>
+                    <item>
+                        <label>B</label>
+                        <value>b</value>
+                    </item>
+                    <item>
+                        <label>C</label>
+                        <value>c</value>
+                    </item>
+                    <item>
+                        <label>D</label>
+                        <value>d</value>
+                    </item>
+                </select1>
+            </group>
+            <group ref="/data/wrapper/select_multi_widgets">
+                <label>Select multi widgets</label>
+                <select ref="/data/wrapper/select_multi_widgets/select_multi_widget">
+                    <label>Multi select widget</label>
+                    <item>
+                        <label>A</label>
+                        <value>a</value>
+                    </item>
+                    <item>
+                        <label>B</label>
+                        <value>b</value>
+                    </item>
+                    <item>
+                        <label>C</label>
+                        <value>c</value>
+                    </item>
+                    <item>
+                        <label>D</label>
+                        <value>d</value>
+                    </item>
+                </select>
+                <select appearance="compact"
+                    ref="/data/wrapper/select_multi_widgets/grid_multi_widget_compact">
+                    <label>Grid select multiple widget</label>
+                    <item>
+                        <label>A</label>
+                        <value>a</value>
+                    </item>
+                    <item>
+                        <label>B</label>
+                        <value>b</value>
+                    </item>
+                    <item>
+                        <label>C</label>
+                        <value>c</value>
+                    </item>
+                    <item>
+                        <label>D</label>
+                        <value>d</value>
+                    </item>
+                </select>
+                <select appearance="minimal"
+                    ref="/data/wrapper/select_multi_widgets/spinner_multi_widget">
+                    <label>Spinner widget: select multiple</label>
+                    <item>
+                        <label>A</label>
+                        <value>a</value>
+                    </item>
+                    <item>
+                        <label>B</label>
+                        <value>b</value>
+                    </item>
+                    <item>
+                        <label>C</label>
+                        <value>c</value>
+                    </item>
+                    <item>
+                        <label>D</label>
+                        <value>d</value>
+                    </item>
+                </select>
+            </group>
+        </group>
+    </h:body>
+</h:html>
