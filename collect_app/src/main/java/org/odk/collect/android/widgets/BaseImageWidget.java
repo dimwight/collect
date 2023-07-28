@@ -47,6 +47,7 @@ import org.odk.collect.androidshared.ui.multiclicksafe.MultiClickGuard;
 import org.odk.collect.imageloader.GlideImageLoader;
 
 import java.io.File;
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -133,7 +134,7 @@ public abstract class BaseImageWidget extends QuestionWidget implements FileWidg
         errorTextView.setVisibility(View.GONE);
 
         if (binaryName != null) {
-            if (binaryName.toLowerCase().endsWith(".gif")) {
+            if (binaryName.toLowerCase(Locale.US).endsWith(".gif")) {
                 binaryName = null;
                 errorTextView.setText(string.selected_gif_image);
                 errorTextView.setVisibility(View.VISIBLE);
