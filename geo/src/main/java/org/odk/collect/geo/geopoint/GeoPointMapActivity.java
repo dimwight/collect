@@ -32,6 +32,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.odk.collect.androidshared.ui.FragmentFactoryBuilder;
 import org.odk.collect.androidshared.ui.ToastUtils;
 import org.odk.collect.externalapp.ExternalAppUtils;
@@ -407,7 +409,22 @@ public class GeoPointMapActivity extends LocalizedActivity {
         setClear = false;
     }
 
-    @VisibleForTesting public String getLocationStatus() {
+    @VisibleForTesting
+    public String getLocationStatus() {
         return locationStatus.getText().toString();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (map != null && true) {
+            new MaterialAlertDialogBuilder(this)
+                    .setMessage(getString(org.odk.collect.strings.R.string.geo_exit_warning_))
+                    .setPositiveButton(org.odk.collect.strings.R.string.discard, (dialog, id) -> finish())
+                    .setNegativeButton(org.odk.collect.strings.R.string.cancel, null)
+                    .show();
+
+        } else {
+            finish();
+        }
     }
 }
