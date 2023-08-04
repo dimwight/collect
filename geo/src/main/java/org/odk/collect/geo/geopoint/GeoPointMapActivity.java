@@ -95,6 +95,7 @@ public class GeoPointMapActivity extends LocalizedActivity {
     private TextView locationInfo;
 
     private MapPoint location;
+    private MapPoint locationThen;
     private ImageButton placeMarkerButton;
 
     private boolean isDragged;
@@ -331,8 +332,8 @@ public class GeoPointMapActivity extends LocalizedActivity {
         if (setClear) {
             placeMarkerButton.setEnabled(true);
         }
-
-        this.location = point;
+        locationThen = location;
+        location = point;
 
         if (point != null) {
             enableZoomButton(true);
@@ -414,9 +415,10 @@ public class GeoPointMapActivity extends LocalizedActivity {
         return locationStatus.getText().toString();
     }
 
+    // https://github.com/getodk/collect/issues/5293
     @Override
     public void onBackPressed() {
-        if (map != null && true) {
+        if (location != null && !location.equals(locationThen)) {
             new MaterialAlertDialogBuilder(this)
                     .setMessage(getString(org.odk.collect.strings.R.string.geo_exit_warning_))
                     .setPositiveButton(org.odk.collect.strings.R.string.discard, (dialog, id) -> finish())
