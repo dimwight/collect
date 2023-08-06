@@ -61,26 +61,26 @@ import timber.log.Timber;
  */
 public class GeoPointMapActivity extends LocalizedActivity {
 
-    private static final String POINT_KEY = "point";
+    public static final String POINT_KEY = "point";
 
-    private static final String IS_DRAGGED_KEY = "is_dragged";
-    private static final String CAPTURE_LOCATION_KEY = "capture_location";
-    private static final String FOUND_FIRST_LOCATION_KEY = "found_first_location";
-    private static final String SET_CLEAR_KEY = "set_clear";
-    private static final String POINT_FROM_INTENT_KEY = "point_from_intent";
-    private static final String INTENT_READ_ONLY_KEY = "intent_read_only";
-    private static final String INTENT_DRAGGABLE_KEY = "intent_draggable";
-    private static final String IS_POINT_LOCKED_KEY = "is_point_locked";
+    public static final String IS_DRAGGED_KEY = "is_dragged";
+    public static final String CAPTURE_LOCATION_KEY = "capture_location";
+    public static final String FOUND_FIRST_LOCATION_KEY = "found_first_location";
+    public static final String SET_CLEAR_KEY = "set_clear";
+    public static final String POINT_FROM_INTENT_KEY = "point_from_intent";
+    public static final String INTENT_READ_ONLY_KEY = "intent_read_only";
+    public static final String INTENT_DRAGGABLE_KEY = "intent_draggable";
+    public static final String IS_POINT_LOCKED_KEY = "is_point_locked";
 
-    private static final String PLACE_MARKER_BUTTON_ENABLED_KEY = "place_marker_button_enabled";
-    private static final String ZOOM_BUTTON_ENABLED_KEY = "zoom_button_enabled";
-    private static final String CLEAR_BUTTON_ENABLED_KEY = "clear_button_enabled";
-    private static final String LOCATION_STATUS_VISIBILITY_KEY = "location_status_visibility";
-    private static final String LOCATION_INFO_VISIBILITY_KEY = "location_info_visibility";
+    public static final String PLACE_MARKER_BUTTON_ENABLED_KEY = "place_marker_button_enabled";
+    public static final String ZOOM_BUTTON_ENABLED_KEY = "zoom_button_enabled";
+    public static final String CLEAR_BUTTON_ENABLED_KEY = "clear_button_enabled";
+    public static final String LOCATION_STATUS_VISIBILITY_KEY = "location_status_visibility";
+    public static final String LOCATION_INFO_VISIBILITY_KEY = "location_info_visibility";
 
     public static final String EXTRA_LOCATION = "gp";
 
-    private Bundle previousState;
+    protected Bundle previousState;
 
     @Inject
     MapFragmentFactory mapFragmentFactory;
@@ -158,44 +158,66 @@ public class GeoPointMapActivity extends LocalizedActivity {
         mapFragment.init(this::initMap, this::finish);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        if (map == null) {
+            // initMap() is called asynchronously, so map can be null if the activity
+            // is stopped (e.g. by screen rotation) before initMap() gets to run.
+            // In this case, preserve any provided instance state.
+            if (previousState != null) {
+                state.putAll(previousState);
+            }
+            return;
+        }
+
+        state.putParcelable(POINT_KEY, map.getMarkerPoint(featureId));
+
+        // Flags
+        state.putBoolean(IS_DRAGGED_KEY, isDragged);
+        state.putBoolean(CAPTURE_LOCATION_KEY, captureLocation);
+        state.putBoolean(FOUND_FIRST_LOCATION_KEY, foundFirstLocation);
+        state.putBoolean(SET_CLEAR_KEY, setClear);
+        state.putBoolean(POINT_FROM_INTENT_KEY, pointFromIntent);
+        state.putBoolean(INTENT_READ_ONLY_KEY, intentReadOnly);
+        state.putBoolean(INTENT_DRAGGABLE_KEY, intentDraggable);
+        state.putBoolean(IS_POINT_LOCKED_KEY, isPointLocked);
+
+        // UI state
+        state.putBoolean(PLACE_MARKER_BUTTON_ENABLED_KEY, placeMarkerButton.isEnabled());
+        state.putBoolean(ZOOM_BUTTON_ENABLED_KEY, zoomButton.isEnabled());
+        state.putBoolean(CLEAR_BUTTON_ENABLED_KEY, clearButton.isEnabled());
+        state.putInt(LOCATION_STATUS_VISIBILITY_KEY, locationStatus.getVisibility());
+        state.putInt(LOCATION_INFO_VISIBILITY_KEY, locationInfo.getVisibility());
+    }
+
+    public void returnLocation() {
+        String result = null;
+        savedLocation = location;
+
+        if (setClear || (intentReadOnly && featureId == -1)) {
+            result = "";
+        } else if (isDragged || intentReadOnly || pointFromIntent) {
+            result = formatResult(map.getMarkerPoint(featureId));
+        } else if (location != null) {
+            result = formatResult(location);
+        }
+
+        if (result != null) {
+            ExternalAppUtils.returnSingleValue(this, result);
+        } else {
+            finish();
+        }
+    }
+
     @SuppressLint("MissingPermission") // Permission handled in Constructor
-    private void initMap(MapFragment newMapFragment) {
+    public void initMap(MapFragment newMapFragment) {
         map = newMapFragment;
-        map.setDragEndListener(draggedFeatureId -> {
-            if (draggedFeatureId == featureId) {
-                isDragged = true;
-                captureLocation = true;
-                setClear = false;
-                map.setCenter(map.getMarkerPoint(featureId), true);
-            }
-        });
-        map.setLongPressListener(point -> {
-            if (intentDraggable && !intentReadOnly && !isPointLocked) {
-                placeMarker(point);
-                enableZoomButton(true);
-                isDragged = true;
-            }
-        });
+        map.setDragEndListener(this::onDragEnd);
+        map.setLongPressListener(this::onLongPress);
 
-        ((ImageButton) findViewById(R.id.accept_location)).setOnClickListener(v -> {
-            String result = null;
-            savedLocation = location;
-            clearButton.setEnabled(true);
-
-            if (setClear || (intentReadOnly && featureId == -1)) {
-                result = "";
-            } else if (isDragged || intentReadOnly || pointFromIntent) {
-                result = formatResult(map.getMarkerPoint(featureId));
-            } else if (location != null) {
-                result = formatResult(location);
-            }
-
-            if (result != null) {
-                ExternalAppUtils.returnSingleValue(this, result);
-            } else {
-                finish();
-            }
-        });
+        ImageButton acceptLocation = findViewById(R.id.accept_location);
+        acceptLocation.setOnClickListener(v -> returnLocation());
 
         placeMarkerButton.setEnabled(false);
         placeMarkerButton.setOnClickListener(v -> {
@@ -252,7 +274,6 @@ public class GeoPointMapActivity extends LocalizedActivity {
                 isPointLocked = true;
                 placeMarker(point);
                 placeMarkerButton.setEnabled(false);
-                clearButton.setEnabled(true);
 
                 captureLocation = true;
                 pointFromIntent = true;
@@ -265,9 +286,7 @@ public class GeoPointMapActivity extends LocalizedActivity {
         }
 
         map.setRetainMockAccuracy(intent.getBooleanExtra(EXTRA_RETAIN_MOCK_ACCURACY, false));
-        map.setGpsLocationListener(point -> {
-            locationSet(point);
-        });
+        map.setGpsLocationListener(this::onLocationChanged);
         map.setGpsLocationEnabled(true);
 
         if (previousState != null) {
@@ -275,120 +294,7 @@ public class GeoPointMapActivity extends LocalizedActivity {
         }
     }
 
-    private void locationSet(MapPoint point) {
-        if (setClear) {
-            placeMarkerButton.setEnabled(true);
-        }
-        if (true) {
-            double longitude = point.longitude + (0.1 * Math.random());
-            double latitude = point.latitude + (0.1 * Math.random());
-            location = point.copy(latitude, longitude, 0, 0);
-            Timber.d("5293: %s", location.toString()
-                    .replaceAll("(\\.\\d\\d)\\d+", "$1"));
-            //5293: MapPoint(latitude=37.42962920256092, longitude=-122.08264671998062, altitude=0.0, accuracy=0.0)
-        }
-
-        if (point != null) {
-            enableZoomButton(true);
-
-            if (!captureLocation && !setClear) {
-                placeMarker(point);
-                placeMarkerButton.setEnabled(true);
-            }
-
-            if (!foundFirstLocation) {
-                map.zoomToPoint(map.getGpsLocation(), true);
-                foundFirstLocation = true;
-            }
-
-            locationStatus.setText(formatLocationStatus(map.getLocationProvider(), point.accuracy));
-        }
-    }
-
-    // https://github.com/getodk/collect/issues/5293
-    @Override
-    public void onBackPressed() {
-        if (location != null
-                && !location.equals(savedLocation)) {
-            new MaterialAlertDialogBuilder(this)
-                    .setMessage(getString(org.odk.collect.strings.R.string.geo_exit_warning1))
-                    .setPositiveButton(org.odk.collect.strings.R.string.discard, (dialog, id) -> finish())
-                    .setNegativeButton(org.odk.collect.strings.R.string.cancel, null)
-                    .show();
-
-        } else {
-            finish();
-        }
-    }
-
-    private void enableZoomButton(boolean shouldEnable) {
-        if (zoomButton != null) {
-            zoomButton.setEnabled(shouldEnable);
-        }
-    }
-
-    private void zoomToMarker(boolean animate) {
-        map.zoomToPoint(map.getMarkerPoint(featureId), animate);
-    }
-
-    /**
-     * Places the marker and enables the button to remove it.
-     */
-    private void placeMarker(@NonNull MapPoint point) {
-        map.clearFeatures();
-        featureId = map.addMarker(new MarkerDescription(point, intentDraggable && !intentReadOnly && !isPointLocked, MapFragment.CENTER, new MarkerIconDescription(org.odk.collect.icons.R.drawable.ic_map_point)));
-        if (!intentReadOnly) {
-            clearButton.setEnabled(true);
-        }
-        captureLocation = true;
-        setClear = false;
-    }
-
-    private void clear() {
-        map.clearFeatures();
-        featureId = -1;
-        clearButton.setEnabled(false);
-
-        isPointLocked = false;
-        isDragged = false;
-        captureLocation = false;
-        setClear = true;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle state) {
-        super.onSaveInstanceState(state);
-        if (map == null) {
-            // initMap() is called asynchronously, so map can be null if the activity
-            // is stopped (e.g. by screen rotation) before initMap() gets to run.
-            // In this case, preserve any provided instance state.
-            if (previousState != null) {
-                state.putAll(previousState);
-            }
-            return;
-        }
-
-        state.putParcelable(POINT_KEY, map.getMarkerPoint(featureId));
-
-        // Flags
-        state.putBoolean(IS_DRAGGED_KEY, isDragged);
-        state.putBoolean(CAPTURE_LOCATION_KEY, captureLocation);
-        state.putBoolean(FOUND_FIRST_LOCATION_KEY, foundFirstLocation);
-        state.putBoolean(SET_CLEAR_KEY, setClear);
-        state.putBoolean(POINT_FROM_INTENT_KEY, pointFromIntent);
-        state.putBoolean(INTENT_READ_ONLY_KEY, intentReadOnly);
-        state.putBoolean(INTENT_DRAGGABLE_KEY, intentDraggable);
-        state.putBoolean(IS_POINT_LOCKED_KEY, isPointLocked);
-
-        // UI state
-        state.putBoolean(PLACE_MARKER_BUTTON_ENABLED_KEY, placeMarkerButton.isEnabled());
-        state.putBoolean(ZOOM_BUTTON_ENABLED_KEY, zoomButton.isEnabled());
-        state.putBoolean(CLEAR_BUTTON_ENABLED_KEY, clearButton.isEnabled());
-        state.putInt(LOCATION_STATUS_VISIBILITY_KEY, locationStatus.getVisibility());
-        state.putInt(LOCATION_INFO_VISIBILITY_KEY, locationInfo.getVisibility());
-    }
-
-    private void restoreFromInstanceState(Bundle state) {
+    protected void restoreFromInstanceState(Bundle state) {
         isDragged = state.getBoolean(IS_DRAGGED_KEY, false);
         captureLocation = state.getBoolean(CAPTURE_LOCATION_KEY, false);
         foundFirstLocation = state.getBoolean(FOUND_FIRST_LOCATION_KEY, false);
@@ -424,18 +330,117 @@ public class GeoPointMapActivity extends LocalizedActivity {
         locationStatus.setVisibility(state.getInt(LOCATION_STATUS_VISIBILITY_KEY, View.GONE));
     }
 
-    public String formatLocationStatus(String provider, double accuracyRadius) { // Test
+    // https://github.com/getodk/collect/issues/5293
+    @Override
+    public void onBackPressed() {
+        if (location != null
+                && !location.equals(savedLocation)) {
+            new MaterialAlertDialogBuilder(this)
+                    .setMessage(getString(org.odk.collect.strings.R.string.geo_exit_warning1))
+                    .setPositiveButton(org.odk.collect.strings.R.string.discard, (dialog, id) -> finish())
+                    .setNegativeButton(org.odk.collect.strings.R.string.cancel, null)
+                    .show();
+
+        } else {
+            finish();
+        }
+    }
+
+    public void onLocationChanged(MapPoint point) {
+        if (setClear) {
+            placeMarkerButton.setEnabled(true);
+        }
+
+        if (true) {
+            double longitude = point.longitude + (0.1 * Math.random());
+            double latitude = point.latitude + (0.1 * Math.random());
+            location = point.copy(latitude, longitude, 0, 0);
+            Timber.d("5293: %s", location.toString()
+                    .replaceAll("(\\.\\d\\d)\\d+", "$1"));
+            //5293: MapPoint(latitude=37.42962920256092, longitude=-122.08264671998062, altitude=0.0, accuracy=0.0)
+        } else {
+            location = point;
+        }
+
+        if (point != null) {
+            enableZoomButton(true);
+
+            if (!captureLocation && !setClear) {
+                placeMarker(point);
+                placeMarkerButton.setEnabled(true);
+            }
+
+            if (!foundFirstLocation) {
+                map.zoomToPoint(map.getGpsLocation(), true);
+                foundFirstLocation = true;
+            }
+
+            locationStatus.setText(formatLocationStatus(map.getLocationProvider(), point.accuracy));
+        }
+    }
+
+    public String formatResult(MapPoint point) {
+        return String.format("%s %s %s %s", point.latitude, point.longitude, point.altitude, point.accuracy);
+    }
+
+    public String formatLocationStatus(String provider, double accuracyRadius) {
         return getString(org.odk.collect.strings.R.string.location_accuracy, new DecimalFormat("#.##").format(accuracyRadius))
                 + " " + getString(org.odk.collect.strings.R.string.location_provider, GeoUtils.capitalizeGps(provider));
     }
 
-    public String formatResult(MapPoint point) { // Test
-        return String.format("%s %s %s %s", point.latitude, point.longitude, point.altitude, point.accuracy);
+    public void onDragEnd(int draggedFeatureId) {
+        if (draggedFeatureId == featureId) {
+            isDragged = true;
+            captureLocation = true;
+            setClear = false;
+            map.setCenter(map.getMarkerPoint(featureId), true);
+        }
+    }
+
+    public void onLongPress(MapPoint point) {
+        if (intentDraggable && !intentReadOnly && !isPointLocked) {
+            placeMarker(point);
+            enableZoomButton(true);
+            isDragged = true;
+        }
+    }
+
+    private void enableZoomButton(boolean shouldEnable) {
+        if (zoomButton != null) {
+            zoomButton.setEnabled(shouldEnable);
+        }
+    }
+
+    public void zoomToMarker(boolean animate) {
+        map.zoomToPoint(map.getMarkerPoint(featureId), animate);
+    }
+
+    private void clear() {
+        map.clearFeatures();
+        featureId = -1;
+        clearButton.setEnabled(false);
+
+        isPointLocked = false;
+        isDragged = false;
+        captureLocation = false;
+        setClear = true;
+    }
+
+    /**
+     * Places the marker and enables the button to remove it.
+     */
+    private void placeMarker(@NonNull MapPoint point) {
+        map.clearFeatures();
+        featureId = map.addMarker(new MarkerDescription(point, intentDraggable && !intentReadOnly && !isPointLocked, MapFragment.CENTER, new MarkerIconDescription(org.odk.collect.icons.R.drawable.ic_map_point)));
+        if (!intentReadOnly) {
+            clearButton.setEnabled(true);
+        }
+        captureLocation = true;
+        setClear = false;
     }
 
     @VisibleForTesting
-    public String getLocationStatus() { // Test
+    public String getLocationStatus() {
         return locationStatus.getText().toString();
     }
-
 }
