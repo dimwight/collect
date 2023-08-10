@@ -15,7 +15,6 @@
 package org.odk.collect.osmdroid;
 
 import static androidx.core.graphics.drawable.DrawableKt.toBitmap;
-
 import static org.odk.collect.maps.MapConsts.POLYGON_FILL_COLOR_OPACITY;
 import static org.odk.collect.maps.MapConsts.POLYLINE_STROKE_WIDTH;
 
@@ -134,17 +133,20 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void init(@Nullable ReadyListener readyListener, @Nullable ErrorListener errorListener) {
+        Timber.d("5540: 138");
         this.readyListener = readyListener;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        Timber.d("5540: 145");
         super.onCreate(savedInstanceState);
         mapFragmentDelegate.onCreate(savedInstanceState);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
+        Timber.d("5540: 153");
         super.onAttach(context);
         OsmDroidDependencyComponent component = ((OsmDroidDependencyComponentProvider) context.getApplicationContext()).getOsmDroidDependencyComponent();
         component.inject(this);
@@ -152,36 +154,42 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void onStart() {
+        Timber.d("5540: 160");
         super.onStart();
         mapFragmentDelegate.onStart();
     }
 
     @Override
     public void onResume() {
+        Timber.d("5540: 167");
         super.onResume();
         enableLocationUpdates(clientWantsLocationUpdates);
     }
 
     @Override
     public void onPause() {
+        Timber.d("5540: 174 onPause");
         super.onPause();
         enableLocationUpdates(false);
     }
 
     @Override
     public void onStop() {
+        Timber.d("5540: 181");
         super.onStop();
         mapFragmentDelegate.onStop();
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
+        Timber.d("5540: 188");
         super.onSaveInstanceState(outState);
         mapFragmentDelegate.onSaveInstanceState(outState);
     }
 
     @Override
     public void onDestroy() {
+        Timber.d("5540: 196");
         clearFeatures();  // prevent a memory leak due to refs held by markers
         MarkerIconCreator.clearCache();
         super.onDestroy();
@@ -190,6 +198,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Timber.d("5540: 203");
         View view = inflater.inflate(R.layout.osm_map_layout, container, false);
         map = view.findViewById(R.id.osm_map_view);
         if (webMapService != null) {
@@ -230,11 +239,13 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     @Override
     public @NonNull
     MapPoint getCenter() {
+        Timber.d("5540: 243");
         return fromGeoPoint(map.getMapCenter());
     }
 
     @Override
     public void setCenter(@Nullable MapPoint center, boolean animate) {
+        Timber.d("5540: 249");
         if (center != null) {
             if (animate) {
                 map.getController().animateTo(toGeoPoint(center));
@@ -253,11 +264,13 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void zoomToPoint(@Nullable MapPoint center, boolean animate) {
+        Timber.d("5540: 268");
         zoomToPoint(center, POINT_ZOOM, animate);
     }
 
     @Override
     public void zoomToPoint(@Nullable MapPoint center, double zoom, boolean animate) {
+        Timber.d("5540: 274");
         // We're ignoring the 'animate' flag because OSMDroid doesn't provide
         // support for simultaneously animating the viewport center and zoom level.
         if (center != null) {
@@ -271,6 +284,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void zoomToBoundingBox(Iterable<MapPoint> points, double scaleFactor, boolean animate) {
+        Timber.d("5540: 288");
         if (points != null) {
             int count = 0;
             List<GeoPoint> geoPoints = new ArrayList<>();
@@ -301,6 +315,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public int addMarker(MarkerDescription markerDescription) {
+        Timber.d("5540: 319");
         int featureId = nextFeatureId++;
         features.put(featureId, new MarkerFeature(map, markerDescription));
         return featureId;
@@ -308,6 +323,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public List<Integer> addMarkers(List<MarkerDescription> markers) {
+        Timber.d("5540: 327");
         List<Integer> featureIds = new ArrayList<>();
         for (MarkerDescription markerDescription : markers) {
             int featureId = addMarker(markerDescription);
@@ -319,6 +335,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void setMarkerIcon(int featureId, MarkerIconDescription markerIconDescription) {
+        Timber.d("5540: 339");
         MapFeature feature = features.get(featureId);
         if (feature instanceof MarkerFeature) {
             ((MarkerFeature) feature).setIcon(markerIconDescription);
@@ -328,12 +345,14 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     @Override
     public @Nullable
     MapPoint getMarkerPoint(int featureId) {
+        Timber.d("5540: 349");
         MapFeature feature = features.get(featureId);
         return feature instanceof MarkerFeature ? ((MarkerFeature) feature).getPoint() : null;
     }
 
     @Override
     public int addPolyLine(@NonNull Iterable<MapPoint> points, boolean closed, boolean draggable) {
+        Timber.d("5540: 356 addPolyLine");
         int featureId = nextFeatureId++;
         if (draggable) {
             features.put(featureId, new DynamicPolyLineFeature(map, points, closed));
@@ -345,6 +364,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public int addPolygon(@NonNull Iterable<MapPoint> points) {
+        Timber.d("5540: 368");
         int featureId = nextFeatureId++;
         features.put(featureId, new StaticPolygonFeature(map, points));
         return featureId;
@@ -352,6 +372,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void appendPointToPolyLine(int featureId, @NonNull MapPoint point) {
+        Timber.d("5540: 376");
         MapFeature feature = features.get(featureId);
         if (feature instanceof DynamicPolyLineFeature) {
             ((DynamicPolyLineFeature) feature).addPoint(point);
@@ -361,6 +382,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     @Override
     public @NonNull
     List<MapPoint> getPolyLinePoints(int featureId) {
+        Timber.d("5540: 386");
         MapFeature feature = features.get(featureId);
         if (feature instanceof DynamicPolyLineFeature) {
             return ((DynamicPolyLineFeature) feature).getPoints();
@@ -370,6 +392,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void removePolyLineLastPoint(int featureId) {
+        Timber.d("5540: 396");
         MapFeature feature = features.get(featureId);
         if (feature instanceof DynamicPolyLineFeature) {
             ((DynamicPolyLineFeature) feature).removeLastPoint();
@@ -378,6 +401,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void clearFeatures() {
+        Timber.d("5540: 405");
         for (MapFeature feature : features.values()) {
             feature.dispose();
         }
@@ -388,46 +412,55 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void setClickListener(@Nullable PointListener listener) {
+        Timber.d("5540: 416");
         clickListener = listener;
     }
 
     @Override
     public void setLongPressListener(@Nullable PointListener listener) {
+        Timber.d("5540: 422");
         longPressListener = listener;
     }
 
     @Override
     public void setFeatureClickListener(@Nullable FeatureListener listener) {
+        Timber.d("5540: 428");
         featureClickListener = listener;
     }
 
     @Override
     public void setDragEndListener(@Nullable FeatureListener listener) {
+        Timber.d("5540: 434");
         dragEndListener = listener;
     }
 
     @Override
     public void setGpsLocationListener(@Nullable PointListener listener) {
+        Timber.d("5540: 440");
         gpsLocationListener = listener;
     }
 
     @Override
     public void setRetainMockAccuracy(boolean retainMockAccuracy) {
+        Timber.d("5540: 446");
         locationClient.setRetainMockAccuracy(retainMockAccuracy);
     }
 
     @Override
     public boolean hasCenter() {
+        Timber.d("5540: 452");
         return hasCenter;
     }
 
     @Override
     public void runOnGpsLocationReady(@NonNull ReadyListener listener) {
+        Timber.d("5540: 458");
         myLocationOverlay.runOnFirstFix(() -> getActivity().runOnUiThread(() -> listener.onReady(this)));
     }
 
     @Override
     public void setGpsLocationEnabled(boolean enable) {
+        Timber.d("5540: 464");
         if (enable != clientWantsLocationUpdates) {
             clientWantsLocationUpdates = enable;
             enableLocationUpdates(clientWantsLocationUpdates);
@@ -437,18 +470,21 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     @Override
     public @Nullable
     MapPoint getGpsLocation() {
+        Timber.d("5540: 474");
         return fromLocation(myLocationOverlay);
     }
 
     @Override
     public @Nullable
     String getLocationProvider() {
+        Timber.d("5540: 481");
         Location fix = myLocationOverlay.getLastFix();
         return fix != null ? fix.getProvider() : null;
     }
 
     @Override
     public void onLocationChanged(Location location) {
+        Timber.d("5540: 488");
         Timber.i("onLocationChanged: location = %s", location);
         if (gpsLocationListener != null) {
             MapPoint point = fromLocation(myLocationOverlay);
@@ -464,6 +500,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void onClientStart() {
+        Timber.d("5540: 504");
         map.getOverlays().add(myLocationOverlay);
         myLocationOverlay.setEnabled(true);
         myLocationOverlay.enableMyLocation();
@@ -474,13 +511,16 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void onClientStartFailure() {
+        Timber.d("5540: 515");
     }
 
     @Override
     public void onClientStop() {
+        Timber.d("5540: 520");
     }
 
     private void enableLocationUpdates(boolean enable) {
+        Timber.d("5540: 524");
         if (enable) {
             Timber.i("Starting LocationClient %s (for MapFragment %s)", locationClient, this);
             locationClient.start(this);
@@ -498,6 +538,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
      * </a>
      **/
     private void safelyDisableOverlayLocationFollowing() {
+        Timber.d("5540: 543 safelyDisable");
         if (map.isAttachedToWindow()) {
             myLocationOverlay.disableFollowLocation();
             myLocationOverlay.disableMyLocation();
@@ -506,6 +547,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     private static @Nullable
     MapPoint fromLocation(@NonNull MyLocationNewOverlay overlay) {
+        Timber.d("5540: 551");
         GeoPoint geoPoint = overlay.getMyLocation();
         if (geoPoint == null) {
             return null;
@@ -518,16 +560,19 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     private static @NonNull
     MapPoint fromGeoPoint(@NonNull IGeoPoint geoPoint) {
+        Timber.d("5540: 564");
         return new MapPoint(geoPoint.getLatitude(), geoPoint.getLongitude());
     }
 
     private static @NonNull
     MapPoint fromGeoPoint(@NonNull GeoPoint geoPoint) {
+        Timber.d("5540: 570");
         return new MapPoint(geoPoint.getLatitude(), geoPoint.getLongitude(), geoPoint.getAltitude());
     }
 
     private static @NonNull
     MapPoint fromMarker(@NonNull Marker marker) {
+        Timber.d("5540: 576");
         GeoPoint geoPoint = marker.getPosition();
         double sd = 0;
         try {
@@ -542,6 +587,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     private static @NonNull
     GeoPoint toGeoPoint(@NonNull MapPoint point) {
+        Timber.d("5540: 591");
         return new GeoPoint(point.latitude, point.longitude, point.altitude);
     }
 
@@ -549,6 +595,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
      * Updates the map to reflect the value of referenceLayerFile.
      */
     private void loadReferenceOverlay() {
+        Timber.d("5540: 599");
         if (referenceOverlay != null) {
             map.getOverlays().remove(referenceOverlay);
             referenceOverlay = null;
@@ -570,6 +617,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
      * screen is resized or rotated in a way that doesn't restart the activity.
      */
     private void addMapLayoutChangeListener(MapView map) {
+        Timber.d("5540: 621");
         lastMapCenter = map.getMapCenter();
         map.setMapListener(new MapListener() {
             @Override
@@ -590,6 +638,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     private Marker createMarker(MapView map, MarkerDescription markerDescription) {
+        Timber.d("5540: 642");
         // A Marker's position is a GeoPoint with latitude, longitude, and
         // altitude fields.  We need to store the standard deviation value
         // somewhere, so it goes in the marker's sub-description field.
@@ -636,6 +685,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     private float getIconAnchorValueX(@IconAnchor String iconAnchor) {
+        Timber.d("5540: 689");
         switch (iconAnchor) {
             case BOTTOM:
             default:
@@ -644,6 +694,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     private float getIconAnchorValueY(@IconAnchor String iconAnchor) {
+        Timber.d("5540: 698");
         switch (iconAnchor) {
             case BOTTOM:
                 return Marker.ANCHOR_BOTTOM;
@@ -656,6 +707,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
      * Finds the feature to which the given marker belongs.
      */
     private int findFeature(Marker marker) {
+        Timber.d("5540: 711");
         for (int featureId : features.keySet()) {
             if (features.get(featureId).ownsMarker(marker)) {
                 return featureId;
@@ -668,6 +720,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
      * Finds the feature to which the given polyline belongs.
      */
     private int findFeature(Polyline polyline) {
+        Timber.d("5540: 724");
         for (int featureId : features.keySet()) {
             if (features.get(featureId).ownsPolyline(polyline)) {
                 return featureId;
@@ -677,6 +730,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     private int findFeature(Polygon polygon) {
+        Timber.d("5540: 734");
         for (int featureId : features.keySet()) {
             if (features.get(featureId).ownsPolygon(polygon)) {
                 return featureId;
@@ -686,6 +740,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     private void updateFeature(int featureId) {
+        Timber.d("5540: 744");
         MapFeature feature = features.get(featureId);
         if (feature != null) {
             feature.update();
@@ -693,6 +748,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     private void addAttributionAndMapEventsOverlays() {
+        Timber.d("5540: 751");
         map.getOverlays().add(new AttributionOverlay(getContext()));
         map.getOverlays().add(
                 new MapEventsOverlay(
@@ -713,6 +769,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     private void onConfigChanged(Bundle config) {
+        Timber.d("5540: 773");
         webMapService = (WebMapService) config.getSerializable(KEY_WEB_MAP_SERVICE);
         referenceLayerFile = MapFragmentReferenceLayerUtils.getReferenceLayerFile(config, referenceLayerRepository);
         if (map != null) {

@@ -22,7 +22,6 @@ import org.odk.collect.androidshared.ui.FragmentFactoryBuilder
 import org.odk.collect.androidshared.ui.ToastUtils
 import org.odk.collect.androidshared.ui.multiclicksafe.setMultiClickSafeOnClickListener
 import org.odk.collect.geo.GeoDependencyComponentProvider
-import org.odk.collect.geo.R
 import org.odk.collect.geo.ReferenceLayerSettingsNavigator
 import org.odk.collect.geo.databinding.SelectionMapLayoutBinding
 import org.odk.collect.maps.MapFragment
@@ -33,6 +32,7 @@ import org.odk.collect.maps.markers.MarkerIconDescription
 import org.odk.collect.material.BottomSheetBehavior
 import org.odk.collect.material.MaterialProgressDialogFragment
 import org.odk.collect.permissions.PermissionsChecker
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -77,6 +77,7 @@ class SelectionMapFragment(
     private var previousState: Bundle? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Timber.d("5540a: 80")
         childFragmentManager.fragmentFactory = FragmentFactoryBuilder()
             .forClass(MapFragment::class.java) {
                 mapFragmentFactory.createMapFragment() as Fragment
@@ -88,6 +89,7 @@ class SelectionMapFragment(
     }
 
     override fun onAttach(context: Context) {
+        Timber.d("5540a: 92")
         super.onAttach(context)
 
         val component =
@@ -119,10 +121,12 @@ class SelectionMapFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Timber.d("5540a: 124")
         return SelectionMapLayoutBinding.inflate(inflater).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d("5540a: 129")
         val binding = SelectionMapLayoutBinding.bind(view)
 
         val mapFragment = binding.mapContainer.getFragment<Fragment?>() as MapFragment
@@ -137,6 +141,7 @@ class SelectionMapFragment(
 
         selectionMapData.getItemCount().observe(viewLifecycleOwner) {
             itemCount = it
+            Timber.d("5540a: 144 observe")
             updateCounts(binding)
         }
 
@@ -144,6 +149,7 @@ class SelectionMapFragment(
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        Timber.d("5540a: 151")
         super.onSaveInstanceState(outState)
 
         if (!::map.isInitialized) {
@@ -159,6 +165,7 @@ class SelectionMapFragment(
     }
 
     override fun onDestroy() {
+        Timber.d("5540a: 166")
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
@@ -168,6 +175,7 @@ class SelectionMapFragment(
 
     @SuppressLint("MissingPermission") // Permission handled in Constructor
     private fun initMap(newMapFragment: MapFragment, binding: SelectionMapLayoutBinding) {
+        Timber.d("5540a: 178")
         map = newMapFragment
 
         binding.zoomToLocation.setMultiClickSafeOnClickListener {
@@ -209,6 +217,7 @@ class SelectionMapFragment(
     }
 
     private fun updateCounts(binding: SelectionMapLayoutBinding) {
+        Timber.d("5540a: 220 updateCounts")
         binding.geometryStatus.text = getString(
             org.odk.collect.strings.R.string.select_item_count,
             selectionMapData.getItemType(),
@@ -218,6 +227,7 @@ class SelectionMapFragment(
     }
 
     private fun setUpSummarySheet(binding: SelectionMapLayoutBinding) {
+        Timber.d("5540a: 229")
         summarySheet = binding.summarySheet
         summarySheetBehavior = BottomSheetBehavior.from(summarySheet)
         summarySheetBehavior.state = STATE_HIDDEN
@@ -266,6 +276,7 @@ class SelectionMapFragment(
     }
 
     private fun onFeatureClicked(featureId: Int, maintainZoom: Boolean = true) {
+        Timber.d("5540a: 278 onFeatureClicked")
         val item = itemsByFeatureId[featureId]
         val selectedItem = selectedItemViewModel.getSelectedItem()
 
@@ -317,10 +328,12 @@ class SelectionMapFragment(
     }
 
     private fun onClick() {
+        Timber.d("5540a: 330")
         summarySheetBehavior.state = STATE_HIDDEN
     }
 
     private fun updateItems(items: List<MappableSelectItem>) {
+        Timber.d("5540a: 335")
         if (!::map.isInitialized) {
             return
         }
@@ -351,6 +364,7 @@ class SelectionMapFragment(
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem) {
+        Timber.d("5540a: 366")
         val featureId = featureIdsByItemId[selectedItem.id]
         if (featureId != null) {
             map.setMarkerIcon(
@@ -364,6 +378,7 @@ class SelectionMapFragment(
      * Clears the existing features on the map and places features for the current form's instances.
      */
     private fun updateFeatures(items: List<MappableSelectItem>) {
+        Timber.d("5540a: 380 updateFeatures")
         points.clear()
         map.clearFeatures()
         itemsByFeatureId.clear()
@@ -383,6 +398,7 @@ class SelectionMapFragment(
         }
 
         val pointIds = map.addMarkers(markerDescriptions)
+        Timber.d("5540a: 401 updateFeatures")
         val polyIds = polys.fold(listOf<Int>()) { ids, item ->
             if (item.points.first() == item.points.last()) {
                 ids + map.addPolygon(item.points)
@@ -398,6 +414,7 @@ class SelectionMapFragment(
         }
 
         featureCount = items.size
+        Timber.d("5540a: 417 ~updateFeatures")
     }
 
     companion object {

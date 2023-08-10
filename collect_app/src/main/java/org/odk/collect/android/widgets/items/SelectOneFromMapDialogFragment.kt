@@ -18,7 +18,6 @@ import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.SelectOneData
 import org.javarosa.core.model.instance.geojson.GeojsonFeature
 import org.javarosa.form.api.FormEntryPrompt
-import org.odk.collect.android.R
 import org.odk.collect.android.databinding.SelectOneFromMapDialogLayoutBinding
 import org.odk.collect.android.formentry.FormEntryViewModel
 import org.odk.collect.android.injection.DaggerUtils
@@ -33,6 +32,7 @@ import org.odk.collect.geo.selection.SelectionMapData
 import org.odk.collect.geo.selection.SelectionMapFragment
 import org.odk.collect.geo.selection.SelectionMapFragment.Companion.REQUEST_SELECT_ITEM
 import org.odk.collect.material.MaterialFullScreenDialogFragment
+import timber.log.Timber
 import javax.inject.Inject
 
 class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProvider.Factory) :
@@ -44,6 +44,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
     private val formEntryViewModel: FormEntryViewModel by activityViewModels { viewModelFactory }
 
     override fun onAttach(context: Context) {
+        Timber.d("5540b: 47")
         super.onAttach(context)
         DaggerUtils.getComponent(context).inject(this)
 
@@ -81,6 +82,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
     }
 
     override fun onBackPressed() {
+        Timber.d("5540b: 85")
         dismiss()
     }
 
@@ -89,6 +91,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
     }
 
     override fun onFragmentResult(requestKey: String, result: Bundle) {
+        Timber.d("5540b: 94 onFragmentResult")
         val selectedIndex = result.getLong(SelectionMapFragment.RESULT_SELECTED_ITEM).toInt()
         val formIndex = requireArguments().getSerializable(ARG_FORM_INDEX) as FormIndex
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
@@ -134,6 +137,7 @@ internal class SelectChoicesMapData(
         selectChoices: MutableList<SelectChoice>,
         prompt: FormEntryPrompt
     ): List<MappableSelectItem> {
+        Timber.d("5540c: 140")
         return selectChoices.foldIndexed(emptyList()) { index, list, selectChoice ->
             val geometry = selectChoice.getChild("geometry")
 
@@ -188,6 +192,7 @@ internal class SelectChoicesMapData(
     }
 
     override fun isLoading(): NonNullLiveData<Boolean> {
+        Timber.d("5540c: 195")
         return isLoading
     }
 
@@ -200,6 +205,7 @@ internal class SelectChoicesMapData(
     }
 
     override fun getItemCount(): NonNullLiveData<Int> {
+        Timber.d("5540c: 204 getItemCount")
         return itemCount
     }
 
