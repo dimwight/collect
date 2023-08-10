@@ -21,6 +21,7 @@ import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapDialogLayoutBinding
 import org.odk.collect.android.formentry.FormEntryViewModel
 import org.odk.collect.android.injection.DaggerUtils
+import org.odk.collect.android.listeners.AdvanceToNextListener
 import org.odk.collect.android.utilities.Appearances
 import org.odk.collect.android.widgets.utilities.GeoWidgetUtils
 import org.odk.collect.androidshared.livedata.MutableNonNullLiveData
@@ -60,7 +61,15 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
                     skipSummary = Appearances.hasAppearance(prompt, Appearances.QUICK),
                     zoomToFitItems = false,
                     showNewItemButton = false,
-                    onBackPressedDispatcher = { (requireDialog() as ComponentDialog).onBackPressedDispatcher }
+                    onBackPressedDispatcher = { (requireDialog() as ComponentDialog).onBackPressedDispatcher },
+                    // 5540 Dodges circular dependency
+                    if (context is AdvanceToNextListener
+                        && Appearances.hasAppearance(prompt, Appearances.QUICK)
+                    ) {
+                        Runnable { context.advance() }
+                    } else {
+                        null
+                    }
                 )
             }
             .build()

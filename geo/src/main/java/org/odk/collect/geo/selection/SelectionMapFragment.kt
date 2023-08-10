@@ -44,7 +44,8 @@ class SelectionMapFragment(
     val skipSummary: Boolean = false,
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
-    val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
+    val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null,
+    val advanceToNext: Runnable? = null
 ) : Fragment() {
 
     @Inject
@@ -285,7 +286,7 @@ class SelectionMapFragment(
                 resetIcon(selectedItem)
             }
 
-            if (!skipSummary) {
+            if (advanceToNext == null) {
                 if (item.points.size > 1) {
                     map.zoomToBoundingBox(item.points, 0.8, true)
                 } else {
@@ -323,6 +324,7 @@ class SelectionMapFragment(
                         it.putLong(RESULT_SELECTED_ITEM, item.id)
                     }
                 )
+                advanceToNext.run()
             }
         }
     }
@@ -444,3 +446,7 @@ interface SelectionMapData {
     fun getItemCount(): NonNullLiveData<Int>
     fun getMappableItems(): LiveData<List<MappableSelectItem>?>
 }
+
+
+
+
