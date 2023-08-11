@@ -41,7 +41,6 @@ import javax.inject.Inject
  */
 class SelectionMapFragment(
     val selectionMapData: SelectionMapData,
-    val skipSummary: Boolean = false,
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null,

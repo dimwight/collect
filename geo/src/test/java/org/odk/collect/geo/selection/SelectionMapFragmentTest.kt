@@ -72,7 +72,9 @@ class SelectionMapFragmentTest {
     val launcherRule = FragmentScenarioLauncherRule(
         object : FragmentFactory() {
             override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-                return SelectionMapFragment(data, onBackPressedDispatcher = { onBackPressedDispatcher })
+                return SelectionMapFragment(
+                    data,
+                    onBackPressedDispatcher = { onBackPressedDispatcher })
             }
         }
     )
@@ -563,7 +565,6 @@ class SelectionMapFragmentTest {
                 .forClass(SelectionMapFragment::class.java) {
                     SelectionMapFragment(
                         data,
-                        skipSummary = true,
                         onBackPressedDispatcher = { onBackPressedDispatcher }
                     )
                 }.build()

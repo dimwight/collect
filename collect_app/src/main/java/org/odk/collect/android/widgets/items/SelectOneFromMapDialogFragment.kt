@@ -58,14 +58,15 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
             .forClass(SelectionMapFragment::class.java) {
                 SelectionMapFragment(
                     selectionMapData,
-                    skipSummary = Appearances.hasAppearance(prompt, Appearances.QUICK),
+//                    skipSummary = Appearances.hasAppearance(prompt, Appearances.QUICK),
                     zoomToFitItems = false,
                     showNewItemButton = false,
                     onBackPressedDispatcher = { (requireDialog() as ComponentDialog).onBackPressedDispatcher },
-                    // 5540 Dodges circular dependency
                     if (context is AdvanceToNextListener
+                        // skipSummary now redundant
                         && Appearances.hasAppearance(prompt, Appearances.QUICK)
                     ) {
+                        // 5540 Dodges circular dependency
                         Runnable { context.advance() }
                     } else {
                         null
