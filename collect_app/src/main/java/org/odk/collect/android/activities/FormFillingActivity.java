@@ -65,7 +65,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -175,7 +174,6 @@ import org.odk.collect.android.widgets.utilities.FormControllerWaitingForDataReg
 import org.odk.collect.android.widgets.utilities.InternalRecordingRequester;
 import org.odk.collect.android.widgets.utilities.ViewModelAudioPlayer;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
-import org.odk.collect.androidshared.data.Consumable;
 import org.odk.collect.androidshared.system.IntentLauncher;
 import org.odk.collect.androidshared.system.ProcessRestoreDetector;
 import org.odk.collect.androidshared.system.SavedInstanceStateProvider;
@@ -550,16 +548,18 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
             }
         });
 
-        MutableLiveData<Consumable<ValidationResult>> data = formEntryViewModel.getValidationResult();
-        data.observe(this, consumable -> {
+        formEntryViewModel.getValidationResult().observe(this, consumable -> {
             if (consumable.isConsumed()) {
                 return;
             }
             ValidationResult value = consumable.getValue();
+            FormController formController = getFormController();
+            if (true && value != null)
+                value = new FailedValidationResult(formController.getFormIndex(), 2);
             if (value instanceof FailedValidationResult failedResult) {
                 try {
                     createConstraintToast(failedResult.getIndex(), failedResult.getStatus());
-                    if (getFormController().indexIsInFieldList() && getFormController().getQuestionPrompts().length > 1) {
+                    if (formController.indexIsInFieldList() && formController.getQuestionPrompts().length > 1) {
                         getCurrentViewIfODKView().highlightWidget(failedResult.getIndex());
                     }
                 } catch (RepeatsInFieldListException e) {
@@ -569,8 +569,8 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
                 swipeHandler.setBeenSwiped(false);
             } else if (value instanceof SuccessValidationResult) {
                 SnackbarUtils.showLongSnackbar(findViewById(R.id.llParent), getString(org.odk.collect.strings.R.string.success_form_validation), findViewById(R.id.buttonholder));
-                consumable.consume();
             }
+            consumable.consume();
         });
 
         formSaveViewModel = viewModelProvider.get(FormSaveViewModel.class);
