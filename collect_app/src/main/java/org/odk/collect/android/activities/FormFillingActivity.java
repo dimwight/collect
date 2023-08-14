@@ -65,7 +65,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -176,6 +175,7 @@ import org.odk.collect.android.widgets.utilities.FormControllerWaitingForDataReg
 import org.odk.collect.android.widgets.utilities.InternalRecordingRequester;
 import org.odk.collect.android.widgets.utilities.ViewModelAudioPlayer;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
+import org.odk.collect.androidshared.data.Consumable;
 import org.odk.collect.androidshared.system.IntentLauncher;
 import org.odk.collect.androidshared.system.ProcessRestoreDetector;
 import org.odk.collect.androidshared.system.SavedInstanceStateProvider;
@@ -550,23 +550,26 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
             }
         });
 
-        LiveData<ValidationResult> validation = formEntryViewModel.getValidationResult();
-        validation.observe(this, validationResult -> {
-            if (validationResult instanceof FailedValidationResult) {
-                FailedValidationResult failedValidationResult = (FailedValidationResult) validationResult;
+        MutableLiveData<Consumable<ValidationResult>> data = formEntryViewModel.getValidationResult();
+        data.observe(this, consumable -> {
+            if (consumable.isConsumed()) {
+                return;
+            }
+            ValidationResult value = consumable.getValue();
+            if (value instanceof FailedValidationResult failedResult) {
                 try {
-                    createConstraintToast(failedValidationResult.getIndex(), failedValidationResult.getStatus());
+                    createConstraintToast(failedResult.getIndex(), failedResult.getStatus());
                     if (getFormController().indexIsInFieldList() && getFormController().getQuestionPrompts().length > 1) {
-                        getCurrentViewIfODKView().highlightWidget(failedValidationResult.getIndex());
+                        getCurrentViewIfODKView().highlightWidget(failedResult.getIndex());
                     }
                 } catch (RepeatsInFieldListException e) {
                     createErrorDialog(new FormError.NonFatal(e.getMessage()));
                 }
 
                 swipeHandler.setBeenSwiped(false);
-            } else if (validationResult instanceof SuccessValidationResult) {
+            } else if (value instanceof SuccessValidationResult) {
                 SnackbarUtils.showLongSnackbar(findViewById(R.id.llParent), getString(org.odk.collect.strings.R.string.success_form_validation), findViewById(R.id.buttonholder));
-                ((MutableLiveData) validation).setValue(null);
+                consumable.consume();
             }
         });
 
