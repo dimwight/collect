@@ -552,22 +552,19 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
             if (consumable.isConsumed()) {
                 return;
             }
-            ValidationResult value = consumable.getValue();
-            FormController formController = getFormController();
-            if (true && value != null)
-                value = new FailedValidationResult(formController.getFormIndex(), 2);
-            if (value instanceof FailedValidationResult failedResult) {
+            ValidationResult validationResult = consumable.getValue();
+            if (validationResult instanceof FailedValidationResult failedValidationResult) {
                 try {
-                    createConstraintToast(failedResult.getIndex(), failedResult.getStatus());
-                    if (formController.indexIsInFieldList() && formController.getQuestionPrompts().length > 1) {
-                        getCurrentViewIfODKView().highlightWidget(failedResult.getIndex());
+                    createConstraintToast(failedValidationResult.getIndex(), failedValidationResult.getStatus());
+                    if (getFormController().indexIsInFieldList() && getFormController().getQuestionPrompts().length > 1) {
+                        getCurrentViewIfODKView().highlightWidget(failedValidationResult.getIndex());
                     }
                 } catch (RepeatsInFieldListException e) {
                     createErrorDialog(new FormError.NonFatal(e.getMessage()));
                 }
 
                 swipeHandler.setBeenSwiped(false);
-            } else if (value instanceof SuccessValidationResult) {
+            } else if (validationResult instanceof SuccessValidationResult) {
                 SnackbarUtils.showLongSnackbar(findViewById(R.id.llParent), getString(org.odk.collect.strings.R.string.success_form_validation), findViewById(R.id.buttonholder));
             }
             consumable.consume();
