@@ -17,6 +17,7 @@
 package org.odk.collect.android.widgets;
 
 import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createAnswerImageView;
+import static org.odk.collect.strings.R.string;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -46,6 +47,7 @@ import org.odk.collect.androidshared.ui.multiclicksafe.MultiClickGuard;
 import org.odk.collect.imageloader.GlideImageLoader;
 
 import java.io.File;
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -132,6 +134,12 @@ public abstract class BaseImageWidget extends QuestionWidget implements FileWidg
         errorTextView.setVisibility(View.GONE);
 
         if (binaryName != null) {
+            if (binaryName.toLowerCase(Locale.US).endsWith(".gif")) {
+                binaryName = null;
+                errorTextView.setText(string.selected_gif_image);
+                errorTextView.setVisibility(View.VISIBLE);
+                return;
+            }
             File f = getFile();
             if (f != null && f.exists()) {
                 imageView.setVisibility(View.VISIBLE);
@@ -153,7 +161,7 @@ public abstract class BaseImageWidget extends QuestionWidget implements FileWidg
     protected void setUpLayout() {
         errorTextView = new TextView(getContext());
         errorTextView.setId(View.generateViewId());
-        errorTextView.setText(org.odk.collect.strings.R.string.selected_invalid_image);
+        errorTextView.setText(string.selected_invalid_image);
 
         answerLayout = new LinearLayout(getContext());
         answerLayout.setOrientation(LinearLayout.VERTICAL);
@@ -271,7 +279,7 @@ public abstract class BaseImageWidget extends QuestionWidget implements FileWidg
             ((Activity) getContext()).startActivityForResult(intent, resourceCode);
         } catch (ActivityNotFoundException e) {
             Toast.makeText(getContext(),
-                    getContext().getString(org.odk.collect.strings.R.string.activity_not_found, getContext().getString(errorStringResource)),
+                    getContext().getString(string.activity_not_found, getContext().getString(errorStringResource)),
                     Toast.LENGTH_SHORT).show();
             waitingForDataRegistry.cancelWaitingForData();
         }

@@ -1,5 +1,16 @@
 package org.odk.collect.android.widgets;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
+import static org.odk.collect.android.support.CollectHelpers.setupFakeReferenceManager;
+import static org.robolectric.Shadows.shadowOf;
+import static java.util.Collections.singletonList;
+
 import android.content.Intent;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -30,17 +41,6 @@ import org.odk.collect.shared.TempFiles;
 
 import java.io.File;
 import java.io.IOException;
-
-import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.when;
-import static org.odk.collect.android.support.CollectHelpers.setupFakeReferenceManager;
-import static org.robolectric.Shadows.shadowOf;
 
 /**
  * @author James Knight
@@ -142,6 +142,24 @@ public class ImageWidgetTest extends FileWidgetTest<ImageWidget> {
         assertThat(widget.getImageView().getDrawable(), nullValue());
 
         assertThat(widget.getErrorTextView().getVisibility(), is(View.VISIBLE));
+    }
+
+    @Test
+    public void whenAnswerImageIsGif_hideImageViewAndShowErrorMessage() throws IOException {
+        String imagePath = File.createTempFile("current", ".gif").getAbsolutePath();
+        currentFile = new File(imagePath);
+
+        formEntryPrompt = new MockFormEntryPromptBuilder()
+                .withAnswerDisplayText(currentFile.getName())
+                .build();
+
+        ImageWidget widget = createWidget();
+
+        assertThat(widget.getImageView().getVisibility(), is(View.GONE));
+        assertThat(widget.getImageView().getDrawable(), nullValue());
+
+        assertThat(widget.getErrorTextView().getVisibility(), is(View.VISIBLE));
+        assertThat(widget.getErrorTextView().getText(), is("Cannot load GIF image"));
     }
 
     @Test

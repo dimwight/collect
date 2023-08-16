@@ -252,6 +252,7 @@
     <string name="capture_image">Take Picture</string>
     <string name="choose_image">Choose Image</string>
     <string name="selected_invalid_image">Selected file is not a valid image</string>
+    <string name="selected_gif_image">Cannot load GIF image</string>
     <string name="take_picture_instruction">Tap the screen to take a picture</string>
     <string name="error_front_camera_unavailable">Front camera not available on this device</string>
     <string name="camera_error">There was an error taking picture</string>
