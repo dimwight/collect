@@ -44,7 +44,8 @@ class SelectionMapFragment(
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null,
-    val advanceToNext: Runnable? = null
+    val advanceToNext: Runnable? = null,
+    val skipSummary: Boolean = advanceToNext != null
 ) : Fragment() {
 
     @Inject
