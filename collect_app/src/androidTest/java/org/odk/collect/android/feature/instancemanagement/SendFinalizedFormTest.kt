@@ -5,7 +5,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
-import org.odk.collect.android.R
 import org.odk.collect.android.support.CollectHelpers.addGDProject
 import org.odk.collect.android.support.TestDependencies
 import org.odk.collect.android.support.pages.FormEntryPage.QuestionAndAnswer
@@ -32,7 +31,7 @@ class SendFinalizedFormTest {
     @Test
     fun canViewFormsBeforeSending() {
         rule.withProject(testDependencies.server.url)
-            .copyForm("one-question.xml", projectName = testDependencies.server.hostName)
+            .copyForm("one-question.xml", testDependencies.server.hostName)
             .startBlankForm("One Question")
             .fillOutAndFinalize(QuestionAndAnswer("what is your age", "52"))
             .clickSendFinalizedForm(1)
@@ -44,7 +43,7 @@ class SendFinalizedFormTest {
     fun whenThereIsAnAuthenticationError_allowsUserToReenterCredentials() {
         testDependencies.server.setCredentials("Draymond", "Green")
         rule.withProject(testDependencies.server.url)
-            .copyForm("one-question.xml", projectName = testDependencies.server.hostName)
+            .copyForm("one-question.xml", testDependencies.server.hostName)
             .startBlankForm("One Question")
             .answerQuestion("what is your age", "123")
             .swipeToEndScreen()
@@ -61,7 +60,7 @@ class SendFinalizedFormTest {
     @Test
     fun canViewSentForms() {
         rule.withProject(testDependencies.server.url)
-            .copyForm("one-question.xml", projectName = testDependencies.server.hostName)
+            .copyForm("one-question.xml", testDependencies.server.hostName)
             .startBlankForm("One Question")
             .answerQuestion("what is your age", "123")
             .swipeToEndScreen()
@@ -80,7 +79,7 @@ class SendFinalizedFormTest {
     @Test
     fun canSendIndividualForms() {
         rule.withProject(testDependencies.server.url)
-            .copyForm("one-question.xml", projectName = testDependencies.server.hostName)
+            .copyForm("one-question.xml", testDependencies.server.hostName)
             .startBlankForm("One Question")
             .fillOutAndFinalize(QuestionAndAnswer("what is your age", "123"))
             .startBlankForm("One Question")
@@ -107,7 +106,7 @@ class SendFinalizedFormTest {
             .scrollToRecyclerViewItemAndClickText(org.odk.collect.strings.R.string.delete_after_send)
             .pressBack(ProjectSettingsPage())
             .pressBack(MainMenuPage())
-            .copyForm("one-question.xml", projectName = testDependencies.server.hostName)
+            .copyForm("one-question.xml", testDependencies.server.hostName)
             .startBlankForm("One Question")
             .answerQuestion("what is your age", "123")
             .swipeToEndScreen()
@@ -139,10 +138,9 @@ class SendFinalizedFormTest {
             .openProjectSettingsDialog()
             .selectProject("GD Project")
             .copyForm("one-question-google.xml", null, false, "GD Project")
-            .startBlankForm("One Question Google")
-            .answerQuestion("what is your age", "47")
-            .swipeToEndScreen()
-            .clickFinalize()
+            .copyInstance("one-question-google_2023-08-08_14-51-00.xml", "GD Project")
+            .clickFillBlankForm()
+            .pressBack(MainMenuPage())
             .clickSendFinalizedForm(1)
             .clickSelectAll()
             .clickSendSelected()
