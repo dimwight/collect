@@ -340,8 +340,12 @@ class SelectionMapFragment(
 
         updateFeatures(items)
 
-        val previouslySelectedItem =
+        // https://github.com/getodk/collect/issues/5540
+        val previouslySelectedItem = if (skipSummary) {
+            null
+        } else {
             itemsByFeatureId.filter { it.value.selected }.map { it.key }.firstOrNull()
+        }
         val selectedItem = selectedItemViewModel.getSelectedItem()
 
         if (selectedItem != null) {
