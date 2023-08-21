@@ -20,6 +20,7 @@ import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Comp
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_SELECTED_INDEX
 import org.odk.collect.androidshared.ui.DialogFragmentUtils
 import org.odk.collect.permissions.PermissionListener
+import timber.log.Timber
 
 @SuppressLint("ViewConstructor")
 class SelectOneFromMapWidget(context: Context, questionDetails: QuestionDetails) :
@@ -37,6 +38,7 @@ class SelectOneFromMapWidget(context: Context, questionDetails: QuestionDetails)
         prompt: FormEntryPrompt,
         answerFontSize: Int
     ): View {
+        Timber.d("5540: 41")
         binding = SelectOneFromMapWidgetAnswerBinding.inflate(LayoutInflater.from(context))
 
         binding.button.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontSize.toFloat())
@@ -67,22 +69,29 @@ class SelectOneFromMapWidget(context: Context, questionDetails: QuestionDetails)
     }
 
     override fun getAnswer(): IAnswerData? {
+        Timber.d("5540: 72")
         return answer
     }
 
     override fun clearAnswer() {
+        Timber.d("5540: 77")
         updateAnswer(null)
         widgetValueChanged()
     }
 
-    override fun setOnLongClickListener(l: OnLongClickListener?) {}
+    override fun setOnLongClickListener(l: OnLongClickListener?) {
+        Timber.d("5540: 83")
+
+    }
 
     override fun setData(answer: Any?) {
+        Timber.d("5540: 89")
         updateAnswer(answer as SelectOneData)
         widgetValueChanged()
     }
 
     private fun updateAnswer(answer: SelectOneData?) {
+        Timber.d("5540: 94")
         this.answer = answer
 
         binding.answer.text = if (answer != null) {

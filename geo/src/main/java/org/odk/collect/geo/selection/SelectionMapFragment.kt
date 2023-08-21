@@ -41,11 +41,10 @@ import javax.inject.Inject
  */
 class SelectionMapFragment(
     val selectionMapData: SelectionMapData,
+    val skipSummary: Boolean = false,
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
-    val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null,
-    val advanceToNext: Runnable? = null,
-    val skipSummary: Boolean = advanceToNext != null
+    val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
 ) : Fragment() {
 
     @Inject
@@ -286,7 +285,7 @@ class SelectionMapFragment(
                 resetIcon(selectedItem)
             }
 
-            if (advanceToNext == null) {
+            if (!skipSummary) {
                 if (item.points.size > 1) {
                     map.zoomToBoundingBox(item.points, 0.8, true)
                 } else {
@@ -324,7 +323,6 @@ class SelectionMapFragment(
                         it.putLong(RESULT_SELECTED_ITEM, item.id)
                     }
                 )
-                advanceToNext.run()
             }
         }
     }
