@@ -14,6 +14,7 @@ import org.javarosa.core.model.data.helper.Selection
 import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapWidgetAnswerBinding
 import org.odk.collect.android.formentry.questions.QuestionDetails
+import org.odk.collect.android.listeners.AdvanceToNextListener
 import org.odk.collect.android.widgets.QuestionWidget
 import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_FORM_INDEX
@@ -23,10 +24,18 @@ import org.odk.collect.permissions.PermissionListener
 import timber.log.Timber
 
 @SuppressLint("ViewConstructor")
-class SelectOneFromMapWidget(context: Context, questionDetails: QuestionDetails) :
+class SelectOneFromMapWidget(
+    context: Context,
+    questionDetails: QuestionDetails,
+    private val autoAdvance: Boolean,
+) :
     QuestionWidget(context, questionDetails), WidgetDataReceiver {
+    private var listener: AdvanceToNextListener? = null
 
     init {
+        if (context is AdvanceToNextListener) {
+            listener = context
+        }
         render()
     }
 
@@ -99,6 +108,9 @@ class SelectOneFromMapWidget(context: Context, questionDetails: QuestionDetails)
             formEntryPrompt.getSelectChoiceText(choice)
         } else {
             ""
+        }
+        if (autoAdvance) {
+            listener?.advance()
         }
     }
 }
