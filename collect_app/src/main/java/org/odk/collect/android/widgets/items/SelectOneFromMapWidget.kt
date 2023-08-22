@@ -94,13 +94,22 @@ class SelectOneFromMapWidget(
     }
 
     override fun setData(answer: Any?) {
-        Timber.d("5540: 89")
+        Timber.d("5540+: setData")
         updateAnswer(answer as SelectOneData)
+        if (autoAdvance) {
+            listener?.advance()
+        }
         widgetValueChanged()
     }
 
     private fun updateAnswer(answer: SelectOneData?) {
-        Timber.d("5540: 94")
+        if (false) {
+            Timber.d("5540+: this=${this.answer == null}")
+            Timber.d("5540+: answer=${answer == null}")
+            val newAnswer = answer != null &&
+                    !answer.equals(this.answer)
+            Timber.d("5540+: newAnswer=${newAnswer}")
+        }
         this.answer = answer
 
         binding.answer.text = if (answer != null) {
@@ -109,8 +118,10 @@ class SelectOneFromMapWidget(
         } else {
             ""
         }
-        if (autoAdvance) {
-            listener?.advance()
-        }
+    }
+
+    override fun widgetValueChanged() {
+        Timber.d("5540+: widgetValueChanged")
+        super.widgetValueChanged()
     }
 }
