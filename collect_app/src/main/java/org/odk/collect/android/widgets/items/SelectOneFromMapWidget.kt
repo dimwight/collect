@@ -27,7 +27,7 @@ import timber.log.Timber
 class SelectOneFromMapWidget(
     context: Context,
     questionDetails: QuestionDetails,
-    private val autoAdvance: Boolean,
+    private val autoAdvance: Boolean = false
 ) :
     QuestionWidget(context, questionDetails), WidgetDataReceiver {
     private var autoAdvanceListener: AdvanceToNextListener? = null
