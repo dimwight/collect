@@ -28,7 +28,7 @@ import org.odk.collect.android.widgets.support.FormEntryPromptSelectChoiceLoader
 /**
  * @author James Knight
  */
-public class SelectOneMapWidgetWithQuickTest extends GeneralSelectOneWidgetTest<SelectOneWidget> {
+public class SelectOneFromMapWidgetQuickTest extends GeneralSelectOneWidgetTest<SelectOneWidget> {
     @Mock
     private AdvanceToNextListener listener;
 
