@@ -30,11 +30,11 @@ class SelectOneFromMapWidget(
     private val autoAdvance: Boolean,
 ) :
     QuestionWidget(context, questionDetails), WidgetDataReceiver {
-    private var listener: AdvanceToNextListener? = null
+    private var autoAdvanceListener: AdvanceToNextListener? = null
 
     init {
         if (context is AdvanceToNextListener) {
-            listener = context
+            autoAdvanceListener = context
         }
         render()
     }
@@ -96,9 +96,12 @@ class SelectOneFromMapWidget(
     override fun setData(answer: Any?) {
         Timber.d("5540+: setData")
         updateAnswer(answer as SelectOneData)
+
+        // https://github.com/getodk/collect/issues/5540
         if (autoAdvance) {
-            listener?.advance()
+            autoAdvanceListener?.advance()
         }
+
         widgetValueChanged()
     }
 

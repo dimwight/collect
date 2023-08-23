@@ -67,6 +67,8 @@ import org.odk.collect.androidshared.system.IntentLauncherImpl;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.permissions.PermissionsProvider;
 
+import timber.log.Timber;
+
 /**
  * Convenience class that handles creation of widgets.
  *
@@ -120,6 +122,7 @@ public class WidgetFactory {
 
     public QuestionWidget createWidgetFromPrompt(FormEntryPrompt prompt, PermissionsProvider permissionsProvider) {
         String appearance = Appearances.getSanitizedAppearanceHint(prompt);
+        Timber.d("5540+%s", appearance);
         QuestionDetails questionDetails = new QuestionDetails(prompt, readOnlyOverride);
 
         final QuestionWidget questionWidget;
@@ -300,6 +303,7 @@ public class WidgetFactory {
     private QuestionWidget getSelectOneWidget(String appearance, QuestionDetails questionDetails) {
         final QuestionWidget questionWidget;
         boolean isQuick = appearance.contains(Appearances.QUICK);
+        Timber.d("5540+: appearance=%s", appearance);
         // search() appearance/function (not part of XForms spec) added by SurveyCTO gets
         // considered in each widget by calls to ExternalDataUtil.getSearchXPathExpression.
         if (appearance.contains(Appearances.MINIMAL)) {
