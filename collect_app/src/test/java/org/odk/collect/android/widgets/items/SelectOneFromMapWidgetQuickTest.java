@@ -26,7 +26,7 @@ import org.odk.collect.android.widgets.base.GeneralSelectOneWidgetTest;
 import org.odk.collect.android.widgets.support.FormEntryPromptSelectChoiceLoader;
 
 /**
- * @author James Knight
+ * Derived from SelectOneWidgetTest for https://github.com/getodk/collect/issues/5540
  */
 public class SelectOneFromMapWidgetQuickTest extends GeneralSelectOneWidgetTest<SelectOneWidget> {
     @Mock
