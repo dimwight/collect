@@ -30,7 +30,9 @@ class SelectOneFromMapWidget(
     private val autoAdvance: Boolean = false
 ) :
     QuestionWidget(context, questionDetails), WidgetDataReceiver {
-    private var autoAdvanceListener: AdvanceToNextListener? = null
+
+    // Allows setting in test
+    lateinit var autoAdvanceListener: AdvanceToNextListener
 
     init {
         if (context is AdvanceToNextListener) {
