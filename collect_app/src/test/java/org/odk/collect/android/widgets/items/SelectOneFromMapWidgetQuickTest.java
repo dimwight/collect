@@ -8,7 +8,6 @@ import static org.odk.collect.testshared.RobolectricHelpers.populateRecyclerView
 import static java.util.Arrays.asList;
 
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 
@@ -19,7 +18,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.AdvanceToNextListener;
 import org.odk.collect.android.support.MockFormEntryPromptBuilder;
@@ -60,7 +58,7 @@ public class SelectOneFromMapWidgetQuickTest extends QuestionWidgetTest<SelectOn
     public MockitoRule rule = MockitoJUnit.rule();
 
     @Test
-    public void whenQuickAppearanceIsUsed_shouldAdvanceToNextListenerBeCalledInButtonsMode() {
+    public void whenQuickAppearanceIsUsed_shouldAdvanceToNextListenerBeCalled() {
         formEntryPrompt = new MockFormEntryPromptBuilder()
                 .withSelectChoices(CHOICES)
                 .withAppearance("quick")
@@ -73,18 +71,6 @@ public class SelectOneFromMapWidgetQuickTest extends QuestionWidgetTest<SelectOn
         assertThat(widget.getAnswer().getDisplayText(), is("AAA"));
 
         verify(listener).advance();
-    }
-
-    private void clickChoice(SelectOneFromMapWidget widget, int index) {
-        if (Appearances.isNoButtonsAppearance(formEntryPrompt)) {
-            widget.binding.choicesRecyclerView.getChildAt(index).performClick();
-        } else {
-            ((AudioVideoImageTextLabel) getChoiceView(widget, index)).getLabelTextView().performClick();
-        }
-    }
-
-    private ViewGroup getChoiceView(SelectOneFromMapWidget widget, int index) {
-        return (ViewGroup) widget.binding.choicesRecyclerView.getChildAt(index);
     }
 
     private boolean isQuick() {
