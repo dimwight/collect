@@ -26,10 +26,16 @@ import org.odk.collect.android.support.MockFormEntryPromptBuilder;
 import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.widgets.base.QuestionWidgetTest;
 
+import java.util.List;
+
 /**
  * From SelectOneWidgetTest for https://github.com/getodk/collect/issues/5540
  */
 public class SelectOneFromMapWidgetQuickTest extends QuestionWidgetTest<SelectOneFromMapWidget, SelectOneData> {
+    public static final List<SelectChoice> CHOICES = asList(
+            new SelectChoice("AAA", "AAA"),
+            new SelectChoice("BBB", "BBB")
+    );
     @Mock
     private AdvanceToNextListener listener;
 
@@ -56,17 +62,14 @@ public class SelectOneFromMapWidgetQuickTest extends QuestionWidgetTest<SelectOn
     @Test
     public void whenQuickAppearanceIsUsed_shouldAdvanceToNextListenerBeCalledInButtonsMode() {
         formEntryPrompt = new MockFormEntryPromptBuilder()
-                .withSelectChoices(asList(
-                        new SelectChoice("AAA", "AAA"),
-                        new SelectChoice("BBB", "BBB")
-                ))
+                .withSelectChoices(CHOICES)
                 .withAppearance("quick")
                 .build();
 
         SelectOneFromMapWidget widget = getWidget();
         populateRecyclerView(widget);
 
-        clickChoice(widget, 0); // Select AAA
+        widget.setData(CHOICES.get(0));
         assertThat(widget.getAnswer().getDisplayText(), is("AAA"));
 
         verify(listener).advance();
