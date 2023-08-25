@@ -96,7 +96,7 @@ class SelectOneFromMapWidget(
     }
 
     override fun setData(answer: Any?) {
-        Timber.d("5540+: setData")
+        Timber.i("5540+ setData:+ answe = %s", answer);
         updateAnswer(answer as SelectOneData)
 
         // https://github.com/getodk/collect/issues/5540
