@@ -96,12 +96,13 @@ class SelectOneFromMapWidget(
     }
 
     override fun setData(answer: Any?) {
-        Timber.i("5540+ setData:+ answe = %s", answer);
+        Timber.i("5540+ setData:+ answer = %s", answer);
+        val answerThen = getAnswer()
         updateAnswer(answer as SelectOneData)
 
         // https://github.com/getodk/collect/issues/5540
-        if (autoAdvance) {
-            autoAdvanceListener?.advance()
+        if (autoAdvance && !answer.equals(answerThen)) {
+            autoAdvanceListener.advance()
         }
 
         widgetValueChanged()
