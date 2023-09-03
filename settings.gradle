@@ -1,5 +1,6 @@
 include ':projects'
 include ':formstest'
+include ':test-forms'
 include ':shared'
 include ':forms'
 include ':analytics'
