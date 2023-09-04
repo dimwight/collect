@@ -8,7 +8,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentActivity
-import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.IAnswerData
 import org.javarosa.core.model.data.SelectOneData
 import org.javarosa.core.model.data.helper.Selection
@@ -98,7 +97,7 @@ class SelectOneFromMapWidget(
 
     override fun setData(answer: Any?) {
         Timber.i("5540+ setData:+ answer = %s", answer);
-        val previousAnswer = getAnswer()
+        val previousAnswer: IAnswerData? = getAnswer()
         updateAnswer(answer as SelectOneData)
 
         // https://github.com/getodk/collect/issues/5540
@@ -107,8 +106,8 @@ class SelectOneFromMapWidget(
                 autoAdvanceListener.advance()
             }
         } else {
-            val index = (answer.value as SelectChoice).index
-            val previousIndex = ((previousAnswer as SelectOneData).value as SelectChoice).index
+            val index = (answer.value as Selection).index
+            val previousIndex = (previousAnswer?.value as? Selection)?.index ?: -1
             if (autoAdvance && index != previousIndex) {
                 autoAdvanceListener.advance()
             }
