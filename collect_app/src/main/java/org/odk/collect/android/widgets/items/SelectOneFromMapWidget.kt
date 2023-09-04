@@ -92,11 +92,11 @@ class SelectOneFromMapWidget(
 
     override fun setData(answer: Any?) {
         // https://github.com/getodk/collect/issues/5540
-        val previousAnswer = getAnswer()
+        val previousAnswer: IAnswerData? = getAnswer()
         updateAnswer(answer as SelectOneData)
 
         val index = (answer.value as SelectChoice).index
-        val previousIndex = ((previousAnswer as SelectOneData).value as SelectChoice).index
+        val previousIndex = (previousAnswer?.value as? Selection)?.index ?: -1
         if (autoAdvance && index != previousIndex) {
             autoAdvanceListener.advance()
         }
