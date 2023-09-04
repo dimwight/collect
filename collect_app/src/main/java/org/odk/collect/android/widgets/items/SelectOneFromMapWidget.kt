@@ -97,7 +97,8 @@ class SelectOneFromMapWidget(
 
     override fun setData(answer: Any?) {
         Timber.i("5540+ setData:+ answer = %s", answer);
-        val previousAnswer: IAnswerData? = getAnswer()
+        val previousAnswer//: IAnswerData?
+                = getAnswer()
         updateAnswer(answer as SelectOneData)
 
         // https://github.com/getodk/collect/issues/5540
@@ -112,8 +113,12 @@ class SelectOneFromMapWidget(
                 autoAdvanceListener.advance()
             }
         } else {
-            if (previousAnswer == null
-                || !previousAnswer.value.equals(answer.value)
+            if (autoAdvance &&
+                (previousAnswer == null
+                        || !previousAnswer//.value
+                    .equals(
+                        answer//.value
+                    ))
             ) {
                 autoAdvanceListener.advance()
             }
