@@ -101,7 +101,7 @@ class SelectOneFromMapWidget(
         updateAnswer(answer as SelectOneData)
 
         // https://github.com/getodk/collect/issues/5540
-        if (autoAdvance && answer != previousAnswer) {
+        if (autoAdvance && !answer.equals(previousAnswer)) {
             autoAdvanceListener.advance()
         }
 
