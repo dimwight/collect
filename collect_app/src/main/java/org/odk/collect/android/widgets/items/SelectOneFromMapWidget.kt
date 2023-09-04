@@ -105,10 +105,16 @@ class SelectOneFromMapWidget(
             if (autoAdvance && !answer.equals(previousAnswer)) {
                 autoAdvanceListener.advance()
             }
-        } else {
+        } else if (false) {
             val index = (answer.value as Selection).index
             val previousIndex = (previousAnswer?.value as? Selection)?.index ?: -1
             if (autoAdvance && index != previousIndex) {
+                autoAdvanceListener.advance()
+            }
+        } else {
+            if (previousAnswer == null
+                || !previousAnswer.value.equals(answer.value)
+            ) {
                 autoAdvanceListener.advance()
             }
         }
