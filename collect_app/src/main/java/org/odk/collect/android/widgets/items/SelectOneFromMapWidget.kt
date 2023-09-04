@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentActivity
+import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.IAnswerData
 import org.javarosa.core.model.data.SelectOneData
 import org.javarosa.core.model.data.helper.Selection
@@ -90,11 +91,13 @@ class SelectOneFromMapWidget(
     override fun setOnLongClickListener(l: OnLongClickListener?) {}
 
     override fun setData(answer: Any?) {
+        // https://github.com/getodk/collect/issues/5540
         val previousAnswer = getAnswer()
         updateAnswer(answer as SelectOneData)
 
-        // https://github.com/getodk/collect/issues/5540
-        if (autoAdvance && !answer.equals(previousAnswer)) {
+        val index = (answer.value as SelectChoice).index
+        val previousIndex = ((previousAnswer as SelectOneData).value as SelectChoice).index
+        if (autoAdvance && index != previousIndex) {
             autoAdvanceListener.advance()
         }
 
