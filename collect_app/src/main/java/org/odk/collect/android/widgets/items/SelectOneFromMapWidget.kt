@@ -102,26 +102,20 @@ class SelectOneFromMapWidget(
         updateAnswer(answer as SelectOneData)
 
         // https://github.com/getodk/collect/issues/5540
-        if (false) {
-            if (autoAdvance && !answer.equals(previousAnswer)) {
-                autoAdvanceListener.advance()
-            }
-        } else if (false) {
-            val index = (answer.value as Selection).index
-            val previousIndex = (previousAnswer?.value as? Selection)?.index ?: -1
-            if (autoAdvance && index != previousIndex) {
-                autoAdvanceListener.advance()
-            }
-        } else {
-            if (autoAdvance &&
-                (previousAnswer == null
-                        || !previousAnswer//.value
-                    .equals(
-                        answer//.value
-                    ))
-            ) {
-                autoAdvanceListener.advance()
-            }
+        val t1 = answer != previousAnswer
+        Timber.i("5540+: t1 = %s", t1);
+
+        val index = (answer.value as Selection).index
+        val previousIndex = (previousAnswer?.value as? Selection)?.index ?: -1
+        val t2 = index != previousIndex
+        Timber.i("5540+: t2 = %s", t2);
+
+        val t3 = (previousAnswer == null
+                || previousAnswer.value != answer.value)
+        Timber.i("5540+: t3 = %s", t3);
+
+        if (autoAdvance && t3) {
+            autoAdvanceListener.advance()
         }
 
         widgetValueChanged()
