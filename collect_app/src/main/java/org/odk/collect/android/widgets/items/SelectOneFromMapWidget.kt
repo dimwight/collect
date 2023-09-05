@@ -8,7 +8,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentActivity
-import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.IAnswerData
 import org.javarosa.core.model.data.SelectOneData
 import org.javarosa.core.model.data.helper.Selection
@@ -22,6 +21,7 @@ import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Comp
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_SELECTED_INDEX
 import org.odk.collect.androidshared.ui.DialogFragmentUtils
 import org.odk.collect.permissions.PermissionListener
+import timber.log.Timber
 
 @SuppressLint("ViewConstructor")
 class SelectOneFromMapWidget(
@@ -91,13 +91,31 @@ class SelectOneFromMapWidget(
     override fun setOnLongClickListener(l: OnLongClickListener?) {}
 
     override fun setData(answer: Any?) {
-        // https://github.com/getodk/collect/issues/5540
-        val previousAnswer: IAnswerData? = getAnswer()
+        val previousAnswer//: IAnswerData?
+                = getAnswer()
         updateAnswer(answer as SelectOneData)
 
-        val index = (answer.value as SelectChoice).index
+        // https://github.com/getodk/collect/issues/5540
+        val t1 = answer != previousAnswer
+        Timber.i("5540+: t1 = %s", t1)
+
+        val t2: Boolean
+        val index = (answer.value as Selection).index
         val previousIndex = (previousAnswer?.value as? Selection)?.index ?: -1
-        if (autoAdvance && index != previousIndex) {
+        t2 = index != previousIndex
+        Timber.i("5540+: t2 = %s", t2)
+
+        val t2a: Boolean
+        val value = answer.value
+        val previousValue = previousAnswer?.value
+        t2a = value != previousValue
+        Timber.i("5540+: t2a = %s", t2a)
+
+        val t3 = (previousAnswer == null
+                || answer.value != previousAnswer.value)
+        Timber.i("5540+: t3 = %s", t3)
+
+        if (autoAdvance && t2) {
             autoAdvanceListener.advance()
         }
 
