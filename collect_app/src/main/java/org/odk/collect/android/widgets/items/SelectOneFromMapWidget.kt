@@ -96,29 +96,23 @@ class SelectOneFromMapWidget(
     }
 
     override fun setData(answer: Any?) {
+        Timber.i("5540+ setData:+ answer = %s", answer);
         val previousAnswer//: IAnswerData?
                 = getAnswer()
         updateAnswer(answer as SelectOneData)
 
         // https://github.com/getodk/collect/issues/5540
         val t1 = answer != previousAnswer
-        Timber.i("5540+: t1 = %s", t1)
+        Timber.i("5540+: t1 = %s", t1);
 
-        val t2: Boolean
         val index = (answer.value as Selection).index
         val previousIndex = (previousAnswer?.value as? Selection)?.index ?: -1
-        t2 = index != previousIndex
-        Timber.i("5540+: t2 = %s", t2)
-
-        val t2a: Boolean
-        val value = answer.value
-        val previousValue = previousAnswer?.value
-        t2a = value != previousValue
-        Timber.i("5540+: t2a = %s", t2a)
+        val t2 = index != previousIndex
+        Timber.i("5540+: t2 = %s", t2);
 
         val t3 = (previousAnswer == null
-                || answer.value != previousAnswer.value)
-        Timber.i("5540+: t3 = %s", t3)
+                || previousAnswer.value != answer.value)
+        Timber.i("5540+: t3 = %s", t3);
 
         if (autoAdvance && t2) {
             autoAdvanceListener.advance()
