@@ -114,7 +114,7 @@ class SelectOneFromMapWidget(
                 || previousAnswer.value != answer.value)
         Timber.i("5540+: t3 = %s", t3);
 
-        if (autoAdvance && t3) {
+        if (autoAdvance && t2) {
             autoAdvanceListener.advance()
         }
 
