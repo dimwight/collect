@@ -48,7 +48,6 @@ import org.odk.collect.android.fragments.dialogs.FormsDownloadResultDialog;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.DownloadFormsTaskListener;
 import org.odk.collect.android.listeners.FormListDownloaderListener;
-import org.odk.collect.androidshared.network.NetworkStateProvider;
 import org.odk.collect.android.openrosa.HttpCredentialsInterface;
 import org.odk.collect.android.tasks.DownloadFormListTask;
 import org.odk.collect.android.tasks.DownloadFormsTask;
@@ -57,6 +56,7 @@ import org.odk.collect.android.utilities.AuthDialogUtility;
 import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 import org.odk.collect.android.views.DayNightProgressDialog;
+import org.odk.collect.androidshared.network.NetworkStateProvider;
 import org.odk.collect.androidshared.ui.DialogFragmentUtils;
 import org.odk.collect.androidshared.ui.ToastUtils;
 import org.odk.collect.forms.FormSourceException;
@@ -138,6 +138,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.i("5358_A onCreate %s", 141);
         DaggerUtils.getComponent(this).inject(this);
 
         setContentView(R.layout.form_download_list);
@@ -150,6 +151,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     private void init(Bundle savedInstanceState) {
+        Timber.i("5358_A init %s", 154);
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             if (bundle.containsKey(DISPLAY_ONLY_UPDATED_FORMS)) {
@@ -257,12 +259,14 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     private void clearChoices() {
+        Timber.i("5358_A clearChoices %s", 262);
         listView.clearChoices();
         downloadButton.setEnabled(false);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Timber.i("5358_A onItemClick %s", 269);
         toggleButtonLabel(toggleButton, listView);
         downloadButton.setEnabled(listView.getCheckedItemCount() > 0);
 
@@ -277,6 +281,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
      * Starts the download task and shows the progress dialog.
      */
     private void downloadFormList() {
+        Timber.i("5358_A downloadFormList %s", 282);
         if (!connectivityProvider.isDeviceOnline()) {
             ToastUtils.showShortToast(this, org.odk.collect.strings.R.string.no_connection);
 
@@ -313,23 +318,27 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
+        Timber.i("5358_A onRestoreInstanceState %s", 321);
         super.onRestoreInstanceState(state);
         updateAdapter();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Timber.i("5358_A onSaveInstanceState %s", 328);
         super.onSaveInstanceState(outState);
         outState.putInt(BUNDLE_SELECTED_COUNT, listView.getCheckedItemCount());
     }
 
     @Override
     protected String getSortingOrderKey() {
+        Timber.i("5358_A getSortingOrderKey %s", 335);
         return FORM_DOWNLOAD_LIST_SORTING_ORDER;
     }
 
     @Override
     protected void updateAdapter() {
+        Timber.i("5358_A updateAdapter %s", 341);
         CharSequence charSequence = getFilterText();
         filteredFormList.clear();
         if (charSequence.length() > 0) {
@@ -356,6 +365,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     protected void checkPreviouslyCheckedItems() {
+        Timber.i("5358_A checkPreviouslyCheckedItems %s", 368);
         listView.clearChoices();
         for (int i = 0; i < listView.getCount(); i++) {
             HashMap<String, String> item =
@@ -367,6 +377,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     private void sortList() {
+        Timber.i("5358_A sortList %s", 380);
         Collections.sort(filteredFormList, new Comparator<HashMap<String, String>>() {
             @Override
             public int compare(HashMap<String, String> lhs, HashMap<String, String> rhs) {
@@ -380,6 +391,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     private ArrayList<ServerFormDetails> getFilesToDownload() {
+        Timber.i("5358_A getFilesToDownload %s", 386);
         ArrayList<ServerFormDetails> filesToDownload = new ArrayList<>();
 
         SparseBooleanArray sba = listView.getCheckedItemPositions();
@@ -398,6 +410,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
      */
     @SuppressWarnings("unchecked")
     private void startFormsDownload(@NonNull ArrayList<ServerFormDetails> filesToDownload) {
+        Timber.i("5358_A startFormsDownload %s", 405);
         int totalCount = filesToDownload.size();
         if (totalCount > 0) {
             // show dialog box
@@ -422,6 +435,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
+        Timber.i("5358_A onRetainCustomNonConfigurationInstance %s", 438);
         if (downloadFormsTask != null) {
             return downloadFormsTask;
         } else {
@@ -442,6 +456,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     protected void onResume() {
+        Timber.i("5358_A onResume %s", 459);
         if (downloadFormListTask != null) {
             downloadFormListTask.setDownloaderListener(this);
         }
@@ -493,6 +508,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     public void formListDownloadingComplete(HashMap<String, ServerFormDetails> formList, FormSourceException exception) {
+        Timber.i("5358_A formListDownloadingComplete %s", 511);
         DialogFragmentUtils.dismissDialog(RefreshFormListDialogFragment.class, getSupportFragmentManager());
         downloadFormListTask.setDownloaderListener(null);
         downloadFormListTask = null;
@@ -561,6 +577,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     private void performDownloadModeDownload() {
+        Timber.i("5358_A performDownloadModeDownload %s", 580);
         //1. First check if all form IDS could be found on the server - Register forms that could not be found
 
         for (String formId : viewModel.getFormIdsToDownload()) {
@@ -592,6 +609,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
      * activity will exit when the user clicks "ok".
      */
     private void createAlertDialog(String title, String message, final boolean shouldExit) {
+        Timber.i("5358_A createAlertDialog %s", 612);
         alertDialog = new MaterialAlertDialogBuilder(this).create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(message);
@@ -632,6 +650,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     private void createCancelDialog() {
+        Timber.i("5358_A createCancelDialog %s", 653);
         cancelDialog = new DayNightProgressDialog(this);
         cancelDialog.setTitle(getString(org.odk.collect.strings.R.string.canceling));
         cancelDialog.setMessage(getString(org.odk.collect.strings.R.string.please_wait));
@@ -643,6 +662,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     public void progressUpdate(String currentFile, int progress, int total) {
+        Timber.i("5358_A progressUpdate %s", 665);
         RefreshFormListDialogFragment fragment = (RefreshFormListDialogFragment) getSupportFragmentManager().findFragmentByTag(RefreshFormListDialogFragment.class.getName());
 
         if (fragment != null) {
@@ -653,6 +673,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     public void formsDownloadingComplete(Map<ServerFormDetails, FormDownloadException> result) {
+        Timber.i("5358_A formsDownloadingComplete %s", 659);
         if (downloadFormsTask != null) {
             downloadFormsTask.setDownloaderListener(null);
         }
@@ -681,6 +702,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     public void formsDownloadingCancelled() {
+        Timber.i("5358_A formsDownloadingCancelled %s", 705);
         if (downloadFormsTask != null) {
             downloadFormsTask.setDownloaderListener(null);
             downloadFormsTask = null;
@@ -721,6 +743,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     private void setReturnResult(boolean successful, @Nullable String message, @Nullable HashMap<String, Boolean> resultFormIds) {
+        Timber.i("5358_A setReturnResult %s", 746);
         Intent intent = new Intent();
         intent.putExtra(ApplicationConstants.BundleKeys.SUCCESS_KEY, successful);
         if (message != null) {
@@ -746,6 +769,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     public void onCancelFormLoading() {
+        Timber.i("5358_A onCancelFormLoading %s", 772);
         if (downloadFormListTask != null) {
             downloadFormListTask.setDownloaderListener(null);
             downloadFormListTask.cancel(true);
@@ -769,6 +793,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Override
     public void onCloseDownloadingResult() {
+        Timber.i("5358_A onCloseDownloadingResult %s", 796);
         finish();
     }
 }

@@ -11,6 +11,7 @@ import org.odk.collect.android.formmanagement.ServerFormDetails
 import org.odk.collect.android.injection.DaggerUtils
 import org.odk.collect.android.utilities.FormsDownloadResultInterpreter
 import org.odk.collect.errors.ErrorActivity
+import timber.log.Timber
 import java.io.Serializable
 
 class FormsDownloadResultDialog : DialogFragment() {
@@ -19,6 +20,7 @@ class FormsDownloadResultDialog : DialogFragment() {
     var listener: FormDownloadResultDialogListener? = null
 
     override fun onAttach(context: Context) {
+        Timber.i("5358_B onAttach %s", 22)
         super.onAttach(context)
         DaggerUtils.getComponent(context).inject(this)
         if (context is FormDownloadResultDialogListener) {
@@ -27,7 +29,8 @@ class FormsDownloadResultDialog : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        isCancelable = false
+        Timber.i("5358_B onCreateDialog %s", 32)
+        isCancelable = true
         result =
             arguments?.getSerializable(ARG_RESULT) as Map<ServerFormDetails, FormDownloadException?>
 
@@ -51,6 +54,7 @@ class FormsDownloadResultDialog : DialogFragment() {
     }
 
     private fun getMessage(): String {
+        Timber.i("5358_B getMessage %s", 57)
         return if (FormsDownloadResultInterpreter.allFormsDownloadedSuccessfully(result)) {
             getString(org.odk.collect.strings.R.string.all_downloads_succeeded)
         } else {

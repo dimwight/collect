@@ -77,6 +77,7 @@ public abstract class AppListActivity extends LocalizedActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Timber.i("5358_AA onCreate %s", 79);
         super.onCreate(savedInstanceState);
         DaggerUtils.getComponent(this).inject(this);
     }
@@ -90,6 +91,7 @@ public abstract class AppListActivity extends LocalizedActivity {
     // if ANY items are unchecked, check them all
     // if ALL items are checked, uncheck them all
     public static boolean toggleChecked(ListView lv) {
+        Timber.i("5358_AA toggleChecked %s", 93);
         // shortcut null case
         if (lv == null) {
             return false;
@@ -101,6 +103,7 @@ public abstract class AppListActivity extends LocalizedActivity {
     }
 
     public static void setAllToCheckedState(ListView lv, boolean check) {
+        Timber.i("5358_AA setAllToCheckedState %s", 105);
         // no-op if ListView null
         if (lv == null) {
             return;
@@ -113,6 +116,7 @@ public abstract class AppListActivity extends LocalizedActivity {
 
     // Function to toggle button label
     public static void toggleButtonLabel(Button toggleButton, ListView lv) {
+        Timber.i("5358_AA toggleButtonLabel %s", 118);
         if (lv.getCheckedItemCount() != lv.getCount()) {
             toggleButton.setText(org.odk.collect.strings.R.string.select_all);
         } else {
@@ -122,17 +126,20 @@ public abstract class AppListActivity extends LocalizedActivity {
 
     @Override
     public void setContentView(View view) {
+        Timber.i("5358_AA setContentView %s", 128);
         super.setContentView(view);
         init();
     }
 
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
+        Timber.i("5358_AA setContentView %s", 135);
         super.setContentView(layoutResID);
         init();
     }
 
     private void init() {
+        Timber.i("5358_AA init %s", 141);
         listView = findViewById(android.R.id.list);
         listView.setOnItemClickListener((AdapterView.OnItemClickListener) this);
         listView.setEmptyView(findViewById(android.R.id.empty));
@@ -154,6 +161,7 @@ public abstract class AppListActivity extends LocalizedActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        Timber.i("5358_AA onSaveInstanceState %s", 163);
         super.onSaveInstanceState(outState);
         outState.putSerializable(SELECTED_INSTANCES, selectedInstances);
 
@@ -167,6 +175,7 @@ public abstract class AppListActivity extends LocalizedActivity {
 
     @Override
     protected void onRestoreInstanceState(Bundle state) {
+        Timber.i("5358_AA onRestoreInstanceState %s", 177);
         super.onRestoreInstanceState(state);
         selectedInstances = (LinkedHashSet<Long>) state.getSerializable(SELECTED_INSTANCES);
         isSearchBoxShown = state.getBoolean(IS_SEARCH_BOX_SHOWN);
@@ -175,6 +184,7 @@ public abstract class AppListActivity extends LocalizedActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
+        Timber.i("5358_AA onCreateOptionsMenu %s", 186);
         getMenuInflater().inflate(R.menu.form_list_menu, menu);
         final MenuItem sortItem = menu.findItem(R.id.menu_sort);
         final MenuItem searchItem = menu.findItem(R.id.menu_filter);
@@ -184,6 +194,7 @@ public abstract class AppListActivity extends LocalizedActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                Timber.i("5358_AA onQueryTextSubmit %s", 197);
                 filterText = query;
                 updateAdapter();
                 searchView.clearFocus();
@@ -192,6 +203,7 @@ public abstract class AppListActivity extends LocalizedActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                Timber.i("5358_AA onQueryTextChange %s", 205);
                 filterText = newText;
                 updateAdapter();
                 return false;
@@ -201,12 +213,14 @@ public abstract class AppListActivity extends LocalizedActivity {
         MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
+                Timber.i("5358_AA onMenuItemActionExpand %s", 215);
                 sortItem.setVisible(false);
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
+                Timber.i("5358_AA onMenuItemActionCollapse %s", 222);
                 sortItem.setVisible(true);
                 return true;
             }
@@ -221,6 +235,7 @@ public abstract class AppListActivity extends LocalizedActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Timber.i("5358_AA onOptionsItemSelected %s", 237);
         if (!MultiClickGuard.allowClick(getClass().getName())) {
             return true;
         }
@@ -242,6 +257,7 @@ public abstract class AppListActivity extends LocalizedActivity {
     }
 
     protected void checkPreviouslyCheckedItems() {
+        Timber.i("5358_AA checkPreviouslyCheckedItems %s", 259);
         listView.clearChoices();
         List<Integer> selectedPositions = new ArrayList<>();
         int listViewPosition = 0;
@@ -266,23 +282,28 @@ public abstract class AppListActivity extends LocalizedActivity {
     protected abstract String getSortingOrderKey();
 
     protected boolean areCheckedItems() {
+        Timber.i("5358_AA areCheckedItems %s", 269);
         return getCheckedCount() > 0;
     }
 
     protected int getCheckedCount() {
+        Timber.i("5358_AA getCheckedCount %s", 274);
         return listView.getCheckedItemCount();
     }
 
     private void saveSelectedSortingOrder(int selectedStringOrder) {
+        Timber.i("5358_AA saveSelectedSortingOrder %s", 278);
         selectedSortingOrder = selectedStringOrder;
         settingsProvider.getUnprotectedSettings().save(getSortingOrderKey(), selectedStringOrder);
     }
 
     protected void restoreSelectedSortingOrder() {
+        Timber.i("5358_AA restoreSelectedSortingOrder %s", 284);
         selectedSortingOrder = settingsProvider.getUnprotectedSettings().getInt(getSortingOrderKey());
     }
 
     protected int getSelectedSortingOrder() {
+        Timber.i("5358_AA getSelectedSortingOrder %s", 289);
         if (selectedSortingOrder == null) {
             restoreSelectedSortingOrder();
         }
@@ -290,14 +311,17 @@ public abstract class AppListActivity extends LocalizedActivity {
     }
 
     protected CharSequence getFilterText() {
+        Timber.i("5358_AA getFilterText %s", 297);
         return filterText != null ? filterText : "";
     }
 
     protected void clearSearchView() {
+        Timber.i("5358_AA clearSearchView %s", 302);
         searchView.setQuery("", false);
     }
 
     protected void hideProgressBarAndAllow() {
+        Timber.i("5358_AA hideProgressBarAndAllow %s", 307);
         hideProgressBar();
     }
 
@@ -306,6 +330,7 @@ public abstract class AppListActivity extends LocalizedActivity {
     }
 
     protected void showProgressBar() {
+        Timber.i("5358_AA showProgressBar %s", 316);
         progressBar.setVisibility(View.VISIBLE);
     }
 }
