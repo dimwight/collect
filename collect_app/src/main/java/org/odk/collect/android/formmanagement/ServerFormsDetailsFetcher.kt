@@ -37,15 +37,18 @@ open class ServerFormsDetailsFetcher(
     private val diskFormsSynchronizer: DiskFormsSynchronizer
 ) {
     open fun updateUrl(url: String) {
+        Timber.i("5358_F updateUrl %s", 40);
         (formSource as OpenRosaFormSource).updateUrl(url)
     }
 
     open fun updateCredentials(webCredentialsUtils: WebCredentialsUtils) {
+        Timber.i("5358_F updateUrl %s", 45);
         (formSource as OpenRosaFormSource).updateWebCredentialsUtils(webCredentialsUtils)
     }
 
     @Throws(FormSourceException::class)
     open fun fetchFormDetails(): List<ServerFormDetails> {
+        Timber.i("5358_F fetchFormDetails %s", 51);
         diskFormsSynchronizer.synchronize()
 
         val formList = formSource.fetchFormList()
@@ -84,12 +87,14 @@ open class ServerFormsDetailsFetcher(
                 manifestFile
             )
         }
+        Timber.i("5358_F fetchFormDetails- %s", 90);
     }
 
     private fun hasUpdatedMediaFiles(
         manifestFile: ManifestFile,
         existingForm: Form
     ): Boolean {
+        Timber.i("5358_F hasUpdatedMediaFiles %s", 96);
         val newMediaFiles = manifestFile.mediaFiles
         return if (newMediaFiles.isNotEmpty()) {
             areNewerMediaFilesAvailable(existingForm, newMediaFiles)
@@ -99,6 +104,7 @@ open class ServerFormsDetailsFetcher(
     }
 
     private fun getManifestFile(formSource: FormSource, manifestUrl: String): ManifestFile? {
+        Timber.i("5358_F getManifestFile %s", 106);
         return try {
             formSource.fetchManifest(manifestUrl)
         } catch (formSourceException: FormSourceException) {
@@ -111,6 +117,7 @@ open class ServerFormsDetailsFetcher(
         existingForm: Form,
         newMediaFiles: List<MediaFile>
     ): Boolean {
+        Timber.i("5358_F areNewerMediaFilesAvailable %s", 119);
         val localMediaFiles = FormUtils.getMediaFiles(existingForm)
         return newMediaFiles.any {
             !isMediaFileAlreadyDownloaded(localMediaFiles, it)
@@ -118,6 +125,7 @@ open class ServerFormsDetailsFetcher(
     }
 
     private fun getFormByHash(hash: String): Form? {
+        Timber.i("5358_F getFormByHash %s", 127);
         return formsRepository.getOneByMd5Hash(hash)
     }
 
@@ -125,6 +133,7 @@ open class ServerFormsDetailsFetcher(
         localMediaFiles: List<File>,
         newMediaFile: MediaFile
     ): Boolean {
+        Timber.i("5358_F isMediaFileAlreadyDownloaded %s", 135);
         // TODO Zip files are ignored we should find a way to take them into account too
         if (newMediaFile.filename.endsWith(".zip")) {
             return true

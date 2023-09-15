@@ -12,6 +12,8 @@ import org.odk.collect.forms.instances.InstancesRepository;
 
 import java.util.List;
 
+import timber.log.Timber;
+
 public class ServerFormsSynchronizer {
 
     private final FormsRepository formsRepository;
@@ -20,6 +22,7 @@ public class ServerFormsSynchronizer {
     private final ServerFormsDetailsFetcher serverFormsDetailsFetcher;
 
     public ServerFormsSynchronizer(ServerFormsDetailsFetcher serverFormsDetailsFetcher, FormsRepository formsRepository, InstancesRepository instancesRepository, FormDownloader formDownloader) {
+        Timber.i("5358_E ServerFormsSynchronizer %s", 23);
         this.serverFormsDetailsFetcher = serverFormsDetailsFetcher;
         this.formsRepository = formsRepository;
         this.instancesRepository = instancesRepository;
@@ -27,6 +30,7 @@ public class ServerFormsSynchronizer {
     }
 
     public void synchronize() throws FormSourceException {
+        Timber.i("5358_E synchronize %s", 33);
         List<ServerFormDetails> formList = serverFormsDetailsFetcher.fetchFormDetails();
         List<Form> formsOnDevice = formsRepository.getAll();
         FormDeleter formDeleter = new FormDeleter(formsRepository, instancesRepository);
