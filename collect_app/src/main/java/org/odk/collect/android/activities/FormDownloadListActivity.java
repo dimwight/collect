@@ -363,6 +363,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         toggleButton.setEnabled(!filteredFormList.isEmpty());
         checkPreviouslyCheckedItems();
         toggleButtonLabel(toggleButton, listView);
+        Timber.i("5358_A updateAdapter- %s", 368);
     }
 
     @Override
@@ -809,6 +810,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     @Override
     public void onDialogCancelled() {
         Timber.i("5358_A onDialogCancelled %s", 803);
+        init(null);
         formListDownloadingComplete(formList_, null);
     }
 }
