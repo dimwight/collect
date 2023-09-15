@@ -480,9 +480,10 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         super.onPause();
     }
 
-    public boolean isLocalFormSuperseded(String formId) {
+    private boolean isFormRecommended(String formId) {
+        Timber.i("5358_A isFormRecommended %s", 483);
         if (formId == null) {
-            Timber.e(new Error("isLocalFormSuperseded: server is not OpenRosa-compliant. <formID> is null!"));
+            Timber.e(new Error("isFormRecommended: server is not OpenRosa-compliant. <formID> is null!"));
             return true;
         }
 
@@ -495,11 +496,12 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
      * This is a prompt and a
      * convenience to users to download the latest version of those forms from the server.
      */
-    private void selectSupersededForms() {
+    private void selectRecommendedForms() {
+        Timber.i("5358_A selectRecommendedForms %s", 499);
         ListView ls = listView;
         for (int idx = 0; idx < filteredFormList.size(); idx++) {
             HashMap<String, String> item = filteredFormList.get(idx);
-            if (isLocalFormSuperseded(item.get(FORM_ID_KEY))) {
+            if (isFormRecommended(item.get(FORM_ID_KEY))) {
                 ls.setItemChecked(idx, true);
                 viewModel.addSelectedFormId(item.get(FORMDETAIL_KEY));
             }
@@ -552,7 +554,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
             filteredFormList.addAll(viewModel.getFormList());
             updateAdapter();
-            selectSupersededForms();
+            selectRecommendedForms();
             downloadButton.setEnabled(listView.getCheckedItemCount() > 0);
             toggleButton.setEnabled(listView.getCount() > 0);
             toggleButtonLabel(toggleButton, listView);
