@@ -6,15 +6,13 @@ import androidx.annotation.NonNull;
 
 import org.odk.collect.material.MaterialProgressDialogFragment;
 
-import timber.log.Timber;
-
 public class RefreshFormListDialogFragment extends MaterialProgressDialogFragment {
 
     protected RefreshFormListDialogFragmentListener listener;
 
     @Override
     public void onAttach(@NonNull Context context) {
-        Timber.i("5358_D onAttach %s", 14);
+//        Timber.i("5358_D onAttach %s", 14);
         super.onAttach(context);
 
         if (context instanceof RefreshFormListDialogFragmentListener) {
@@ -27,13 +25,13 @@ public class RefreshFormListDialogFragment extends MaterialProgressDialogFragmen
 
     @Override
     protected String getCancelButtonText() {
-        Timber.i("5358_D getCancelButtonText %s", 29);
+//        Timber.i("5358_D getCancelButtonText %s", 29);
         return getString(org.odk.collect.strings.R.string.cancel_loading_form);
     }
 
     @Override
     protected OnCancelCallback getOnCancelCallback() {
-        Timber.i("5358_D getOnCancelCallback %s", 35);
+//        Timber.i("5358_D getOnCancelCallback %s", 35);
         return () -> {
             listener.onCancelFormLoading();
             dismiss();

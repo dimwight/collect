@@ -28,6 +28,8 @@ import org.odk.collect.forms.FormSourceException;
 import java.util.HashMap;
 import java.util.List;
 
+import timber.log.Timber;
+
 /**
  * Background task for downloading forms from urls or a formlist from a url. We overload this task
  * a bit so that we don't have to keep track of two separate downloading tasks and it simplifies
@@ -47,11 +49,13 @@ public class DownloadFormListTask extends AsyncTask<Void, String, Pair<List<Serv
     private String password;
 
     public DownloadFormListTask(ServerFormsDetailsFetcher serverFormsDetailsFetcher) {
+        Timber.i("5358_I DownloadFormListTask %s", 50);
         this.serverFormsDetailsFetcher = serverFormsDetailsFetcher;
     }
 
     @Override
     protected Pair<List<ServerFormDetails>, FormSourceException> doInBackground(Void... values) {
+        Timber.i("5358_I doInBackground %s", 58);
         if (webCredentialsUtils != null) {
             setTemporaryCredentials();
         }
@@ -69,12 +73,14 @@ public class DownloadFormListTask extends AsyncTask<Void, String, Pair<List<Serv
             }
         }
 
+        Timber.i("5358_I doInBackground- %s", 77);
         return new Pair<>(formList, exception);
     }
 
     @Override
     protected void onPostExecute(Pair<List<ServerFormDetails>, FormSourceException> result) {
         synchronized (this) {
+            Timber.i("5358_I onPostExecute %s", 81);
             if (stateListener != null) {
                 if (result.first != null) {
                     HashMap<String, ServerFormDetails> detailsHashMap = new HashMap<>();
@@ -87,6 +93,7 @@ public class DownloadFormListTask extends AsyncTask<Void, String, Pair<List<Serv
                     stateListener.formListDownloadingComplete(null, result.second);
                 }
             }
+            Timber.i("5358_I onPostExecute- %s", 95);
         }
     }
 

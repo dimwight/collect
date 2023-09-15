@@ -183,7 +183,18 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         downloadButton = findViewById(R.id.add_button);
         downloadButton.setEnabled(listView.getCheckedItemCount() > 0);
         downloadButton.setOnClickListener(v -> {
-            ArrayList<ServerFormDetails> filesToDownload = getFilesToDownload();
+            Timber.i("5358_A getFilesToDownload %s", 386);
+            ArrayList<ServerFormDetails> filesToDownload1 = new ArrayList<>();
+
+            SparseBooleanArray sba = listView.getCheckedItemPositions();
+            for (int i = 0; i < listView.getCount(); i++) {
+                if (sba.get(i, false)) {
+                    HashMap<String, String> item =
+                            (HashMap<String, String>) listView.getAdapter().getItem(i);
+                    filesToDownload1.add(viewModel.getFormDetailsByFormId().get(item.get(FORMDETAIL_KEY)));
+                }
+            }
+            ArrayList<ServerFormDetails> filesToDownload = filesToDownload1;
             startFormsDownload(filesToDownload);
         });
 
@@ -352,7 +363,17 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         } else {
             filteredFormList.addAll(viewModel.getFormList());
         }
-        sortList();
+        Timber.i("5358_A sortList %s", 380);
+        Collections.sort(filteredFormList, new Comparator<HashMap<String, String>>() {
+            @Override
+            public int compare(HashMap<String, String> lhs, HashMap<String, String> rhs) {
+                if (getSortingOrder().equals(SORT_BY_NAME_ASC)) {
+                    return lhs.get(FORMNAME).compareToIgnoreCase(rhs.get(FORMNAME));
+                } else {
+                    return rhs.get(FORMNAME).compareToIgnoreCase(lhs.get(FORMNAME));
+                }
+            }
+        });
         if (listView.getAdapter() == null) {
             listView.setAdapter(new FormDownloadListAdapter(this, filteredFormList, viewModel.getFormDetailsByFormId()));
         } else {
@@ -363,6 +384,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         toggleButton.setEnabled(!filteredFormList.isEmpty());
         checkPreviouslyCheckedItems();
         toggleButtonLabel(toggleButton, listView);
+        Timber.i("5358_A updateAdapter- %s", 368);
     }
 
     @Override
@@ -376,35 +398,6 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
                 listView.setItemChecked(i, true);
             }
         }
-    }
-
-    private void sortList() {
-        Timber.i("5358_A sortList %s", 380);
-        Collections.sort(filteredFormList, new Comparator<HashMap<String, String>>() {
-            @Override
-            public int compare(HashMap<String, String> lhs, HashMap<String, String> rhs) {
-                if (getSortingOrder().equals(SORT_BY_NAME_ASC)) {
-                    return lhs.get(FORMNAME).compareToIgnoreCase(rhs.get(FORMNAME));
-                } else {
-                    return rhs.get(FORMNAME).compareToIgnoreCase(lhs.get(FORMNAME));
-                }
-            }
-        });
-    }
-
-    private ArrayList<ServerFormDetails> getFilesToDownload() {
-        Timber.i("5358_A getFilesToDownload %s", 386);
-        ArrayList<ServerFormDetails> filesToDownload = new ArrayList<>();
-
-        SparseBooleanArray sba = listView.getCheckedItemPositions();
-        for (int i = 0; i < listView.getCount(); i++) {
-            if (sba.get(i, false)) {
-                HashMap<String, String> item =
-                        (HashMap<String, String>) listView.getAdapter().getItem(i);
-                filesToDownload.add(viewModel.getFormDetailsByFormId().get(item.get(FORMDETAIL_KEY)));
-            }
-        }
-        return filesToDownload;
     }
 
     /**
@@ -493,23 +486,6 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         return form.isNotOnDevice() || form.isUpdated();
     }
 
-    /**
-     * Causes any local forms that have been updated on the server to become checked in the list.
-     * This is a prompt and a
-     * convenience to users to download the latest version of those forms from the server.
-     */
-    private void selectRecommendedForms() {
-        Timber.i("5358_A selectRecommendedForms %s", 499);
-        ListView ls = listView;
-        for (int idx = 0; idx < filteredFormList.size(); idx++) {
-            HashMap<String, String> item = filteredFormList.get(idx);
-            if (isFormRecommended(item.get(FORM_ID_KEY))) {
-                ls.setItemChecked(idx, true);
-                viewModel.addSelectedFormId(item.get(FORMDETAIL_KEY));
-            }
-        }
-    }
-
     @Override
     public void formListDownloadingComplete(HashMap<String, ServerFormDetails> formList, FormSourceException exception) {
         Timber.i("5358_A formListDownloadingComplete %s", 511);
@@ -558,17 +534,56 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
             filteredFormList.addAll(viewModel.getFormList());
             updateAdapter();
-            selectRecommendedForms();
+            Timber.i("5358_A- selectRecommendedForms %s", 499);
+            ListView ls = listView;
+            for (int idx = 0; idx < filteredFormList.size(); idx++) {
+                HashMap<String, String> item = filteredFormList.get(idx);
+                if (isFormRecommended(item.get(FORM_ID_KEY))) {
+                    ls.setItemChecked(idx, true);
+                    viewModel.addSelectedFormId(item.get(FORMDETAIL_KEY));
+                }
+            }
             downloadButton.setEnabled(listView.getCheckedItemCount() > 0);
             toggleButton.setEnabled(listView.getCount() > 0);
             toggleButtonLabel(toggleButton, listView);
 
             if (viewModel.isDownloadOnlyMode()) {
-                performDownloadModeDownload();
+                Timber.i("5358_A- performDownloadModeDownload %s", 580);
+                //1. First check if all form IDS could be found on the server - Register forms that could not be found
+
+                for (String formId : viewModel.getFormIdsToDownload()) {
+                    viewModel.putFormResult(formId, false);
+                }
+
+                ArrayList<ServerFormDetails> filesToDownload = new ArrayList<>();
+
+                for (ServerFormDetails serverFormDetails : viewModel.getFormDetailsByFormId().values()) {
+                    String formId = serverFormDetails.getFormId();
+
+                    if (viewModel.getFormResults().containsKey(formId)) {
+                        filesToDownload.add(serverFormDetails);
+                    }
+                }
+
+                //2. Select forms and start downloading
+                if (!filesToDownload.isEmpty()) {
+                    startFormsDownload(filesToDownload);
+                } else {
+                    // None of the forms was found
+                    setReturnResult(false, "Forms not found on server", viewModel.getFormResults());
+                    finish();
+                }
             }
         } else {
             if (exception instanceof FormSourceException.AuthRequired) {
-                createAuthDialog();
+                viewModel.setAlertShowing(false);
+
+                AuthDialogUtility authDialogUtility = new AuthDialogUtility();
+                if (viewModel.getUrl() != null && viewModel.getUsername() != null && viewModel.getPassword() != null) {
+                    authDialogUtility.setCustomUsername(viewModel.getUsername());
+                    authDialogUtility.setCustomPassword(viewModel.getPassword());
+                }
+                DialogUtils.showDialog(authDialogUtility.createDialog(this, this, viewModel.getUrl()), this);
             } else {
                 String dialogMessage = new FormSourceExceptionMapper(this).getMessage(exception);
                 String dialogTitle = getString(org.odk.collect.strings.R.string.load_remote_form_error);
@@ -582,34 +597,6 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         }
         formList_ = formList;
         Timber.i("5358_A formListDownloadingComplete- %s", 570);
-    }
-
-    private void performDownloadModeDownload() {
-        Timber.i("5358_A performDownloadModeDownload %s", 580);
-        //1. First check if all form IDS could be found on the server - Register forms that could not be found
-
-        for (String formId : viewModel.getFormIdsToDownload()) {
-            viewModel.putFormResult(formId, false);
-        }
-
-        ArrayList<ServerFormDetails> filesToDownload = new ArrayList<>();
-
-        for (ServerFormDetails serverFormDetails : viewModel.getFormDetailsByFormId().values()) {
-            String formId = serverFormDetails.getFormId();
-
-            if (viewModel.getFormResults().containsKey(formId)) {
-                filesToDownload.add(serverFormDetails);
-            }
-        }
-
-        //2. Select forms and start downloading
-        if (!filesToDownload.isEmpty()) {
-            startFormsDownload(filesToDownload);
-        } else {
-            // None of the forms was found
-            setReturnResult(false, "Forms not found on server", viewModel.getFormResults());
-            finish();
-        }
     }
 
     /**
@@ -644,17 +631,6 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         viewModel.setAlertShowing(true);
         viewModel.setShouldExit(shouldExit);
         DialogUtils.showDialog(alertDialog, this);
-    }
-
-    private void createAuthDialog() {
-        viewModel.setAlertShowing(false);
-
-        AuthDialogUtility authDialogUtility = new AuthDialogUtility();
-        if (viewModel.getUrl() != null && viewModel.getUsername() != null && viewModel.getPassword() != null) {
-            authDialogUtility.setCustomUsername(viewModel.getUsername());
-            authDialogUtility.setCustomPassword(viewModel.getPassword());
-        }
-        DialogUtils.showDialog(authDialogUtility.createDialog(this, this, viewModel.getUrl()), this);
     }
 
     private void createCancelDialog() {
@@ -809,6 +785,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     @Override
     public void onDialogCancelled() {
         Timber.i("5358_A onDialogCancelled %s", 803);
+        init(null);
         formListDownloadingComplete(formList_, null);
     }
 }

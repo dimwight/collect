@@ -1,5 +1,19 @@
 package org.odk.collect.android.database.forms;
 
+import static android.provider.BaseColumns._ID;
+import static org.odk.collect.android.database.DatabaseConstants.FORMS_TABLE_NAME;
+import static org.odk.collect.android.database.DatabaseObjectMapper.getFormFromCurrentCursorPosition;
+import static org.odk.collect.android.database.DatabaseObjectMapper.getValuesFromForm;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.DATE;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.DELETED_DATE;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.FORM_FILE_PATH;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.FORM_MEDIA_PATH;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.JRCACHE_FILE_PATH;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.JR_FORM_ID;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.JR_VERSION;
+import static org.odk.collect.android.database.forms.DatabaseFormColumns.MD5_HASH;
+import static org.odk.collect.shared.PathUtils.getRelativeFilePath;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -27,20 +41,6 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import static android.provider.BaseColumns._ID;
-import static org.odk.collect.android.database.DatabaseConstants.FORMS_TABLE_NAME;
-import static org.odk.collect.android.database.DatabaseObjectMapper.getFormFromCurrentCursorPosition;
-import static org.odk.collect.android.database.DatabaseObjectMapper.getValuesFromForm;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.DATE;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.DELETED_DATE;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.FORM_FILE_PATH;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.FORM_MEDIA_PATH;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.JRCACHE_FILE_PATH;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.JR_FORM_ID;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.JR_VERSION;
-import static org.odk.collect.android.database.forms.DatabaseFormColumns.MD5_HASH;
-import static org.odk.collect.shared.PathUtils.getRelativeFilePath;
-
 import timber.log.Timber;
 
 public class DatabaseFormsRepository implements FormsRepository {
@@ -51,6 +51,7 @@ public class DatabaseFormsRepository implements FormsRepository {
     private final Supplier<Long> clock;
 
     public DatabaseFormsRepository(Context context, String dbPath, String formsPath, String cachePath, Supplier<Long> clock) {
+        Timber.i("5358_G DatabaseFormsRepository %s", 54);
         this.formsPath = formsPath;
         this.cachePath = cachePath;
         this.clock = clock;
@@ -66,12 +67,14 @@ public class DatabaseFormsRepository implements FormsRepository {
     @Nullable
     @Override
     public Form get(Long id) {
+        Timber.i("5358_G get %s", 70);
         return queryForForm(_ID + "=?", new String[]{id.toString()});
     }
 
     @Nullable
     @Override
     public Form getLatestByFormIdAndVersion(String jrFormId, @Nullable String jrVersion) {
+        Timber.i("5358_G getLatestByFormIdAndVersion %s", 76);
         List<Form> all = getAllByFormIdAndVersion(jrFormId, jrVersion);
         if (!all.isEmpty()) {
             return all.stream().max(Comparator.comparingLong(Form::getDate)).get();
@@ -83,6 +86,7 @@ public class DatabaseFormsRepository implements FormsRepository {
     @Nullable
     @Override
     public Form getOneByPath(String path) {
+        Timber.i("5358_G getOneByPath %s", 88);
         String selection = FORM_FILE_PATH + "=?";
         String[] selectionArgs = {getRelativeFilePath(formsPath, path)};
         return queryForForm(selection, selectionArgs);
@@ -91,6 +95,7 @@ public class DatabaseFormsRepository implements FormsRepository {
     @Nullable
     @Override
     public Form getOneByMd5Hash(@NotNull String hash) {
+        Timber.i("5358_G getOneByMd5Hash %s", 97);
         if (hash == null) {
             throw new IllegalArgumentException("Missing form hash. ODK-compatible servers must include form hashes in their form lists. Please talk to the person who asked you to collect data.");
         }
@@ -102,11 +107,13 @@ public class DatabaseFormsRepository implements FormsRepository {
 
     @Override
     public List<Form> getAll() {
+        Timber.i("5358_G getAll %s", 109);
         return queryForForms(null, null);
     }
 
     @Override
     public List<Form> getAllByFormIdAndVersion(String jrFormId, @Nullable String jrVersion) {
+        Timber.i("5358_G getAllByFormIdAndVersion %s", 115);
         if (jrVersion != null) {
             return queryForForms(JR_FORM_ID + "=? AND " + JR_VERSION + "=?", new String[]{jrFormId, jrVersion});
         } else {
@@ -116,17 +123,21 @@ public class DatabaseFormsRepository implements FormsRepository {
 
     @Override
     public List<Form> getAllByFormId(String formId) {
+        Timber.i("5358_G getAllByFormId %s", 125);
         return queryForForms(JR_FORM_ID + "=?", new String[]{formId});
     }
 
     @Override
     public List<Form> getAllNotDeletedByFormId(String jrFormId) {
+        Timber.i("5358_G getAllNotDeletedByFormId %s", 131);
+        Timber.i("5358_G getAllNotDeletedByFormId %s", 124);
         return queryForForms(JR_FORM_ID + "=? AND " + DELETED_DATE + " IS NULL", new String[]{jrFormId});
     }
 
 
     @Override
     public List<Form> getAllNotDeletedByFormIdAndVersion(String jrFormId, @Nullable String jrVersion) {
+        Timber.i("5358_G getAllNotDeletedByFormIdAndVersion %s", 139);
         if (jrVersion != null) {
             return queryForForms(DELETED_DATE + " IS NULL AND " + JR_FORM_ID + "=? AND " + JR_VERSION + "=?", new String[]{jrFormId, jrVersion});
         } else {
@@ -136,6 +147,7 @@ public class DatabaseFormsRepository implements FormsRepository {
 
     @Override
     public Form save(@NotNull Form form) {
+        Timber.i("5358_G save %s", 149);
         final ContentValues values = getValuesFromForm(form, formsPath);
 
         String md5Hash = Md5.getMd5Hash(new File(form.getFormFilePath()));
@@ -152,7 +164,9 @@ public class DatabaseFormsRepository implements FormsRepository {
         if (form.getDbId() == null) {
             values.put(DATE, clock.get());
 
-            Long idFromUri = insertForm(values);
+            Timber.i("5358_G insertForm %s", 247);
+            SQLiteDatabase writeableDatabase = databaseConnection.getWriteableDatabase();
+            Long idFromUri = writeableDatabase.insertOrThrow(FORMS_TABLE_NAME, null, values);
             if (idFromUri == -1) {
                 return getOneByMd5Hash(md5Hash);
             }
@@ -193,28 +207,57 @@ public class DatabaseFormsRepository implements FormsRepository {
 
     @Override
     public void restore(Long id) {
+        Timber.i("5358_G restore %s", 207);
         ContentValues values = new ContentValues();
         values.putNull(DELETED_DATE);
         updateForm(id, values);
     }
 
     public Cursor rawQuery(Map<String, String> projectionMap, String[] projection, String selection, String[] selectionArgs, String sortOrder, String groupBy) {
+        Timber.i("5358_G rawQuery %s", 214);
         return queryAndReturnCursor(projectionMap, projection, selection, selectionArgs, sortOrder, groupBy);
     }
 
     @Nullable
     private Form queryForForm(String selection, String[] selectionArgs) {
+        Timber.i("5358_G queryForForm %s", 220);
         List<Form> forms = queryForForms(selection, selectionArgs);
         return !forms.isEmpty() ? forms.get(0) : null;
     }
 
     private List<Form> queryForForms(String selection, String[] selectionArgs) {
+        Timber.i("5358_G queryForForms %s", 226);
         try (Cursor cursor = queryAndReturnCursor(null, null, selection, selectionArgs, null, null)) {
-            return getFormsFromCursor(cursor, formsPath, cachePath);
+            Timber.i("5358_G queryForForms %s", 228);
+            Timber.i("5358_G getFormsFromCursor %s", 271);
+            List<Form> forms = new ArrayList<>();
+            if (cursor != null) {
+                Object cursorSize = null;
+                try {
+                    Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
+                    field.setAccessible(true);
+                    cursorSize = field.get(null);
+                } catch (Throwable e) {
+                    // ignore
+                }
+
+                try {
+                    cursor.moveToPosition(-1);
+                    while (cursor.moveToNext()) {
+                        Form form = getFormFromCurrentCursorPosition(cursor, formsPath, cachePath);
+                        forms.add(form);
+                    }
+                } catch (SQLiteBlobTooBigException e) {
+                    Timber.w("SQLiteBlobTooBigException, sCursorWindowSize: %sB", cursorSize != null ? cursorSize : "?");
+                    throw e;
+                }
+            }
+            return forms;
         }
     }
 
     private Cursor queryAndReturnCursor(Map<String, String> projectionMap, String[] projection, String selection, String[] selectionArgs, String sortOrder, String groupBy) {
+        Timber.i("5358_G queryAndReturnCursor %s", 234);
         SQLiteDatabase readableDatabase = databaseConnection.getReadableDatabase();
         SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
         qb.setTables(FORMS_TABLE_NAME);
@@ -226,73 +269,40 @@ public class DatabaseFormsRepository implements FormsRepository {
         return qb.query(readableDatabase, projection, selection, selectionArgs, groupBy, null, sortOrder);
     }
 
-    private Long insertForm(ContentValues values) {
-        SQLiteDatabase writeableDatabase = databaseConnection.getWriteableDatabase();
-        return writeableDatabase.insertOrThrow(FORMS_TABLE_NAME, null, values);
-    }
-
     private void updateForm(Long id, ContentValues values) {
+        Timber.i("5358_G updateForm %s", 253);
         SQLiteDatabase writeableDatabase = databaseConnection.getWriteableDatabase();
         writeableDatabase.update(FORMS_TABLE_NAME, values, _ID + "=?", new String[]{String.valueOf(id)});
     }
 
     private void deleteForms(String selection, String[] selectionArgs) {
+        Timber.i("5358_G deleteForms %s", 259);
         List<Form> forms = queryForForms(selection, selectionArgs);
         for (Form form : forms) {
-            deleteFilesForForm(form);
+            // Delete form file
+            if (form.getFormFilePath() != null) {
+                new File(form.getFormFilePath()).delete();
+            }
+
+            // Delete cache file
+            if (form.getJrCacheFilePath() != null) {
+                new File(form.getJrCacheFilePath()).delete();
+            }
+
+            // Delete media files
+            if (form.getFormMediaPath() != null) {
+                File mediaDir = new File(form.getFormMediaPath());
+
+                if (mediaDir.isDirectory()) {
+                    DirectoryUtils.deleteDirectory(mediaDir);
+                } else {
+                    mediaDir.delete();
+                }
+            }
         }
 
         SQLiteDatabase writeableDatabase = databaseConnection.getWriteableDatabase();
         writeableDatabase.delete(FORMS_TABLE_NAME, selection, selectionArgs);
     }
 
-    @NotNull
-    private static List<Form> getFormsFromCursor(Cursor cursor, String formsPath, String cachePath) {
-        List<Form> forms = new ArrayList<>();
-        if (cursor != null) {
-            Object cursorSize = null;
-            try {
-                Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
-                field.setAccessible(true);
-                cursorSize = field.get(null);
-            } catch (Throwable e) {
-                // ignore
-            }
-
-            try {
-                cursor.moveToPosition(-1);
-                while (cursor.moveToNext()) {
-                    Form form = getFormFromCurrentCursorPosition(cursor, formsPath, cachePath);
-                    forms.add(form);
-                }
-            } catch (SQLiteBlobTooBigException e) {
-                Timber.w("SQLiteBlobTooBigException, sCursorWindowSize: %sB", cursorSize != null ? cursorSize : "?");
-                throw e;
-            }
-        }
-        return forms;
-    }
-
-    private void deleteFilesForForm(Form form) {
-        // Delete form file
-        if (form.getFormFilePath() != null) {
-            new File(form.getFormFilePath()).delete();
-        }
-
-        // Delete cache file
-        if (form.getJrCacheFilePath() != null) {
-            new File(form.getJrCacheFilePath()).delete();
-        }
-
-        // Delete media files
-        if (form.getFormMediaPath() != null) {
-            File mediaDir = new File(form.getFormMediaPath());
-
-            if (mediaDir.isDirectory()) {
-                DirectoryUtils.deleteDirectory(mediaDir);
-            } else {
-                mediaDir.delete();
-            }
-        }
-    }
 }
