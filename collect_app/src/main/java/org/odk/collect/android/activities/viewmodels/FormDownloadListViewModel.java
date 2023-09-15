@@ -115,7 +115,7 @@ public class FormDownloadListViewModel extends ViewModel {
 
     public ArrayList<HashMap<String, String>> getFormList() {
 //        Timber.i("5358_C getFormList %s", 116);
-        Timber.i("5358_ getFormList: formList = %s", formList.hashCode());
+        Timber.i("5358_C getFormList: %s", formList.hashCode() & 0xffff);
         return formList;
     }
 

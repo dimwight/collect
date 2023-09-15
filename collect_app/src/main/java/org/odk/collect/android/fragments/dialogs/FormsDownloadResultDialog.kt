@@ -2,6 +2,7 @@ package org.odk.collect.android.fragments.dialogs
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
@@ -43,7 +44,13 @@ class FormsDownloadResultDialog : DialogFragment() {
         if (!FormsDownloadResultInterpreter.allFormsDownloadedSuccessfully(result)) {
             builder.setNegativeButton(getString(org.odk.collect.strings.R.string.show_details)) { _, _ ->
                 val intent = Intent(context, ErrorActivity::class.java).apply {
-                    putExtra(ErrorActivity.EXTRA_ERRORS, FormsDownloadResultInterpreter.getFailures(result, requireContext()) as Serializable)
+                    putExtra(
+                        ErrorActivity.EXTRA_ERRORS,
+                        FormsDownloadResultInterpreter.getFailures(
+                            result,
+                            requireContext()
+                        ) as Serializable
+                    )
                 }
                 startActivity(intent)
                 listener?.onCloseDownloadingResult()
@@ -53,17 +60,28 @@ class FormsDownloadResultDialog : DialogFragment() {
         return builder.create()
     }
 
+    override fun onCancel(dialog: DialogInterface) {
+        listener?.onDialogCancelled()
+        super.onCancel(dialog)
+    }
+
     private fun getMessage(): String {
         Timber.i("5358_B getMessage %s", 57)
         return if (FormsDownloadResultInterpreter.allFormsDownloadedSuccessfully(result)) {
             getString(org.odk.collect.strings.R.string.all_downloads_succeeded)
         } else {
-            getString(org.odk.collect.strings.R.string.some_downloads_failed, FormsDownloadResultInterpreter.getNumberOfFailures(result).toString(), result.size.toString())
+            getString(
+                org.odk.collect.strings.R.string.some_downloads_failed,
+                FormsDownloadResultInterpreter.getNumberOfFailures(result).toString(),
+                result.size.toString()
+            )
         }
     }
 
     interface FormDownloadResultDialogListener {
         fun onCloseDownloadingResult()
+        fun onDialogCancelled()
+
     }
 
     companion object {

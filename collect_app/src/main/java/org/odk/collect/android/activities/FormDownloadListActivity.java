@@ -576,6 +576,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
                 createAlertDialog(dialogTitle, dialogMessage, DO_NOT_EXIT);
             }
         }
+        Timber.i("5358_A formListDownloadingComplete- %s", 570);
     }
 
     private void performDownloadModeDownload() {
@@ -797,5 +798,10 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     public void onCloseDownloadingResult() {
         Timber.i("5358_A onCloseDownloadingResult %s", 796);
         finish();
+    }
+
+    @Override
+    public void onDialogCancelled() {
+        Timber.i("5358_A onDialogCancelled %s", 803);
     }
 }
