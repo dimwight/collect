@@ -133,6 +133,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
     @Inject
     FormDownloader formDownloader;
+    private HashMap<String, ServerFormDetails> formList_;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -256,6 +257,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
                         org.odk.collect.strings.R.string.sort_by_name_desc
                 )
         );
+        Timber.i("5358_A -init %s", 260);
     }
 
     private void clearChoices() {
@@ -512,7 +514,9 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     public void formListDownloadingComplete(HashMap<String, ServerFormDetails> formList, FormSourceException exception) {
         Timber.i("5358_A formListDownloadingComplete %s", 511);
         DialogFragmentUtils.dismissDialog(RefreshFormListDialogFragment.class, getSupportFragmentManager());
-        downloadFormListTask.setDownloaderListener(null);
+        if (downloadFormListTask != null) {
+            downloadFormListTask.setDownloaderListener(null);
+        }
         downloadFormListTask = null;
 
         if (exception == null) {
@@ -576,6 +580,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
                 createAlertDialog(dialogTitle, dialogMessage, DO_NOT_EXIT);
             }
         }
+        formList_ = formList;
         Timber.i("5358_A formListDownloadingComplete- %s", 570);
     }
 
@@ -701,6 +706,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
             setReturnResult(true, null, viewModel.getFormResults());
         }
+        Timber.i("5358_A formsDownloadingComplete- %s", 708);
     }
 
     @Override
@@ -803,5 +809,6 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     @Override
     public void onDialogCancelled() {
         Timber.i("5358_A onDialogCancelled %s", 803);
+        formListDownloadingComplete(formList_, null);
     }
 }
