@@ -134,6 +134,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     @Inject
     FormDownloader formDownloader;
     private HashMap<String, ServerFormDetails> formList_;
+    private boolean reInit;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -248,9 +249,10 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
                 DialogFragmentUtils.dismissDialog(RefreshFormListDialogFragment.class, getSupportFragmentManager());
                 downloadFormsTask = null;
             }
-        } else if (viewModel.getFormDetailsByFormId().isEmpty()
-                && getLastCustomNonConfigurationInstance() == null
-                && !viewModel.wasLoadingCanceled()) {
+        } else if (reInit ||
+                viewModel.getFormDetailsByFormId().isEmpty()
+                        && getLastCustomNonConfigurationInstance() == null
+                        && !viewModel.wasLoadingCanceled()) {
             // first time, so get the formlist
             downloadFormList();
         }
@@ -785,6 +787,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     @Override
     public void onDialogCancelled() {
         Timber.i("5358_A onDialogCancelled %s", 803);
+        reInit = true;
         init(null);
         formListDownloadingComplete(formList_, null);
     }

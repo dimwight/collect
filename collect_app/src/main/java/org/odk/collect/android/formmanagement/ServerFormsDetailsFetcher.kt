@@ -54,7 +54,13 @@ open class ServerFormsDetailsFetcher(
         val formList = formSource.fetchFormList()
         return formList.map { listItem ->
             val manifestFile = listItem.manifestURL?.let {
-                getManifestFile(formSource, it)
+                Timber.i("5358_F+ getManifestFile %s", 106)
+                try {
+                    formSource.fetchManifest(it)
+                } catch (formSourceException: FormSourceException) {
+                    Timber.w(formSourceException)
+                    null
+                }
             }
 
             val forms = formsRepository.getAllNotDeletedByFormId(listItem.formID)
@@ -100,16 +106,6 @@ open class ServerFormsDetailsFetcher(
             areNewerMediaFilesAvailable(existingForm, newMediaFiles)
         } else {
             false
-        }
-    }
-
-    private fun getManifestFile(formSource: FormSource, manifestUrl: String): ManifestFile? {
-        Timber.i("5358_F getManifestFile %s", 106);
-        return try {
-            formSource.fetchManifest(manifestUrl)
-        } catch (formSourceException: FormSourceException) {
-            Timber.w(formSourceException)
-            null
         }
     }
 
