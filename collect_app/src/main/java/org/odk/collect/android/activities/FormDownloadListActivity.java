@@ -787,8 +787,9 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     @Override
     public void onDialogCancelled() {
         Timber.i("5358_A onDialogCancelled %s", 803);
-        reInit = true;
-        init(null);
-        formListDownloadingComplete(formList_, null);
+        // From toggleButton
+        viewModel.clearSelectedFormIds();
+        // From refreshButton
+        downloadFormList();
     }
 }

@@ -140,7 +140,8 @@ public class FormDownloadListViewModel extends ViewModel {
     }
 
     public void addSelectedFormId(String selectedFormId) {
-        Timber.i("5358_C addSelectedFormId %s", 141);
+//        Timber.i("5358_C addSelectedFormId %s", 141);
+        Timber.i("5358_C addSelectedFormId: %s", selectedFormId);
         selectedFormIds.add(selectedFormId);
     }
 

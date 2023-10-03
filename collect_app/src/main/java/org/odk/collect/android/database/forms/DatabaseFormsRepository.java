@@ -108,7 +108,9 @@ public class DatabaseFormsRepository implements FormsRepository {
     @Override
     public List<Form> getAll() {
         Timber.i("5358_G getAll %s", 109);
-        return queryForForms(null, null);
+        List<Form> all = queryForForms(null, null);
+        Timber.i("5358_G getAll: all = %s", all.size());
+        return all;
     }
 
     @Override
