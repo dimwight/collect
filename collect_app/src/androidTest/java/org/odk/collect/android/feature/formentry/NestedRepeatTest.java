@@ -1,19 +1,14 @@
 package org.odk.collect.android.feature.formentry;
 
-import android.Manifest;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.pages.FormEntryPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.rules.CollectTestRule;
+import org.odk.collect.android.support.rules.TestRuleChain;
 
 @RunWith(AndroidJUnit4.class)
 public class NestedRepeatTest {
@@ -21,15 +16,13 @@ public class NestedRepeatTest {
     private final CollectTestRule rule = new CollectTestRule();
 
     @Rule
-    public RuleChain copyFormChain = RuleChain
-            .outerRule(GrantPermissionRule.grant(Manifest.permission.READ_PHONE_STATE))
-            .around(new ResetStateRule())
-            .around(new CopyFormRule("NestedRepeats.xml"))
+    public RuleChain copyFormChain = TestRuleChain.chain()
             .around(rule);
 
     @Test
     public void nestedRepeatsCreatedWithOuterRepeat() {
-        new MainMenuPage()
+        rule.startAtMainMenu()
+                .copyForm("NestedRepeats.xml")
                 .startBlankForm("NestedRepeats")
                 .assertText("Person > 1")
                 .clickPlus("Person")
