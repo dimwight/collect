@@ -26,7 +26,7 @@ public class NestedRepeatTest {
                 .startBlankForm("NestedRepeats")
                 .assertText("Person > 1")
                 .clickPlus("Person")
-                .clickOnAdd(new FormEntryPage(""))
+                .clickOnAdd(new FormEntryPage("NestedRepeats"))
                 .assertText("Person > 2")
                 .swipeToNextQuestion("name?")//Already there?
                 .assertText("Person > 2 > Child > 1")
