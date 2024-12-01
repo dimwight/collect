@@ -1,6 +1,7 @@
 package dependencies
 
-object Dependencies {
+object
+Dependencies {
     const val desugar = "com.android.tools:desugar_jdk_libs:2.0.4"
     const val androidx_startup = "androidx.startup:startup-runtime:1.1.1"
     const val androidx_lifecycle_runtime_ktx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
@@ -36,7 +37,7 @@ object Dependencies {
     const val opencsv = "com.opencsv:opencsv:5.9"
     const val javarosa_online = "org.getodk:javarosa:5.0.0-SNAPSHOT-0d6c2ea"
     const val javarosa_local = "org.getodk:javarosa:local"
-    const val javarosa = javarosa_online
+    const val javarosa = javarosa_local
     const val karumi_dexter = "com.karumi:dexter:6.2.3"
     const val zxing_android_embedded = "com.journeyapps:zxing-android-embedded:4.3.0"
     const val dagger = "com.google.dagger:dagger:${Versions.dagger}"

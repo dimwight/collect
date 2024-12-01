@@ -230,7 +230,11 @@ configurations.all {
     transitive = true
 }
 
+repositories {
+    mavenLocal() // Only used for javarosa_local dependency
+}
 dependencies {
+    testImplementation project(':collect_app')
     coreLibraryDesugaring Dependencies.desugar
 
     implementation project(':shared')
