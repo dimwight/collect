@@ -53,7 +53,7 @@
         app:srcCompat="@drawable/ic_my_location" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/layer_menu"
+        android:id="@+id/zoom_in"
         style="@style/Widget.Geo.FloatingActionButton.Map.Small.Surface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,6 +64,34 @@
         android:theme="@style/Theme.Geo.ForceLightSurface.Overlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/zoom"
+        app:srcCompat="@drawable/ic_backspace" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/zoom_out"
+        style="@style/Widget.Geo.FloatingActionButton.Map.Small.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_standard"
+        android:layout_marginEnd="@dimen/margin_standard"
+        android:layout_marginBottom="@dimen/margin_standard"
+        android:contentDescription="@string/layer_data_file"
+        android:theme="@style/Theme.Geo.ForceLightSurface.Overlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/zoom_in"
+        app:srcCompat="@drawable/ic_backspace" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/layer_menu"
+        style="@style/Widget.Geo.FloatingActionButton.Map.Small.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_standard"
+        android:layout_marginEnd="@dimen/margin_standard"
+        android:layout_marginBottom="@dimen/margin_standard"
+        android:contentDescription="@string/layer_data_file"
+        android:theme="@style/Theme.Geo.ForceLightSurface.Overlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/zoom_out"
         app:srcCompat="@drawable/ic_layers" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

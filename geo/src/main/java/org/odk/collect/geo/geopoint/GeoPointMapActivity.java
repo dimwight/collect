@@ -112,6 +112,8 @@ public class GeoPointMapActivity extends LocalizedActivity {
     private boolean isDragged;
 
     private ImageButton zoomButton;
+    private ImageButton zoomOut;
+    private ImageButton zoomIn;
     private ImageButton clearButton;
 
     private boolean captureLocation;
@@ -163,6 +165,8 @@ public class GeoPointMapActivity extends LocalizedActivity {
         locationInfo = findViewById(R.id.location_info);
         placeMarkerButton = findViewById(R.id.place_marker);
         zoomButton = findViewById(R.id.zoom);
+        zoomOut = findViewById(R.id.zoom_out);
+        zoomIn = findViewById(R.id.zoom_in);
 
         MapFragment mapFragment = ((FragmentContainerView) findViewById(R.id.map_container)).getFragment();
         mapFragment.init(this::initMap, this::finish);
@@ -239,6 +243,14 @@ public class GeoPointMapActivity extends LocalizedActivity {
         // Focuses on marked location
         zoomButton.setEnabled(false);
         zoomButton.setOnClickListener(v -> map.zoomToPoint(map.getGpsLocation(), true));
+        zoomIn.setOnClickListener(v -> {
+            double zoom = map.getZoom();
+            map.zoomToPoint(map.getGpsLocation(), zoom + 1, true);
+        });
+        zoomOut.setOnClickListener(v -> {
+            double zoom = map.getZoom();
+            map.zoomToPoint(map.getGpsLocation(), zoom - 1, true);
+        });
 
         // Menu Layer Toggle
         findViewById(R.id.layer_menu).setOnClickListener(v -> {
