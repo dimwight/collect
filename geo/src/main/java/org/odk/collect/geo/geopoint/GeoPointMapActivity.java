@@ -377,7 +377,9 @@ public class GeoPointMapActivity extends LocalizedActivity {
     }
 
     public String formatResult(MapPoint point) {
-        return String.format("%s %s %s %s", point.latitude, point.longitude, point.altitude, point.accuracy);
+        return String.format("%s %s %s %s %s",
+                point.latitude, point.longitude, point.altitude, point.accuracy,
+                map.getZoom());
     }
 
     public String formatLocationStatus(String provider, double accuracyRadius) {
