@@ -236,7 +236,8 @@ public class GeoPointMapActivity extends LocalizedActivity {
             MapPoint mapPoint = map.getGpsLocation();
             if (mapPoint != null) {
                 placeMarker(mapPoint);
-                zoomToMarker(true);
+                //#6136
+                if (false) zoomToMarker(true);
             }
         });
 
@@ -244,14 +245,18 @@ public class GeoPointMapActivity extends LocalizedActivity {
         zoomButton.setEnabled(false);
         zoomButton.setOnClickListener(v -> map.zoomToPoint(map.getGpsLocation(), true));
 
-        //Adjust zoom
+        //Adjust zoom #6136
         zoomInButton.setOnClickListener(v -> {
             double zoom = map.getZoom();
             map.zoomToPoint(map.getGpsLocation(), zoom + 1, true);
+            zoom = map.getZoom();
+            System.out.println("6136: zoom = " + zoom);
         });
         zoomOutButton.setOnClickListener(v -> {
             double zoom = map.getZoom();
             map.zoomToPoint(map.getGpsLocation(), zoom - 1, true);
+            zoom = map.getZoom();
+            System.out.println("6136: zoom = " + zoom);
         });
 
         // Menu Layer Toggle
@@ -377,9 +382,11 @@ public class GeoPointMapActivity extends LocalizedActivity {
     }
 
     public String formatResult(MapPoint point) {
-        return String.format("%s %s %s %s %s",
+        String formatted = String.format("%s %s %s %s %s",
                 point.latitude, point.longitude, point.altitude, point.accuracy,
                 map.getZoom());
+        System.out.println("6136: formatted = " + formatted);
+        return formatted;
     }
 
     public String formatLocationStatus(String provider, double accuracyRadius) {
