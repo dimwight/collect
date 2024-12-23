@@ -2,7 +2,6 @@ package org.odk.collect.android.widgets.utilities
 
 import android.content.Context
 import android.location.Location
-import org.odk.collect.android.R
 import org.odk.collect.maps.MapPoint
 import org.odk.collect.shared.strings.StringUtils.removeEnd
 import timber.log.Timber
@@ -50,7 +49,9 @@ object GeoWidgetUtils {
                     sa[0].toDouble(),
                     if (sa.size > 1) sa[1].toDouble() else 0.0,
                     if (sa.size > 2) sa[2].toDouble() else 0.0,
-                    if (sa.size > 3) sa[3].toDouble() else 0.0
+                    if (sa.size > 3) sa[3].toDouble() else 0.0,
+                    //#6136
+                    if (sa.size > 4) sa[4].toDouble() else 0.0
                 )
             } catch (e: Throwable) {
                 null
