@@ -224,21 +224,29 @@ class GeoPointMapActivity : LocalizedActivity() {
     @android.annotation.SuppressLint("MissingPermission") // Permission handled in Constructor
     fun initMap(newMapFragment: MapFragment) {
         map = newMapFragment
-        map?.setDragEndListener { draggedFeatureId: Int ->
-            this.onDragEnd(
-                draggedFeatureId
-            )
+        map?.setDragEndListener { // raggedFeatureId: Int ->
+            if (it == featureId) {
+                isDragged = true
+                captureLocation = true
+                setClear = false
+                map?.setCenter(map?.getMarkerPoint(featureId!!), true)
+            }
         }
-        map?.setLongPressListener { point: MapPoint? ->
-            this.onLongPress(point!!)
+        map?.setLongPressListener { // oint: MapPoint? ->
+            if (intentDraggable && !intentReadOnly && !isPointLocked) {
+                placeMarker(it)
+                enableZoomButton()
+                isDragged = true
+            }
         }
 
         val acceptLocation: ImageButton? = findViewById(R.id.accept_location)
-        acceptLocation!!.setOnClickListener { _: View? -> returnLocation() }
+        acceptLocation!!.setOnClickListener { // : View? ->
+            returnLocation()
+        }
 
         placeMarkerButton.isEnabled = false
-//        placeMarkerButton.setOnClickListener { _: android.view.View? ->
-        placeMarkerButton.setOnClickListener {
+        placeMarkerButton.setOnClickListener { // _: android.view.View? ->
             val mapPoint: MapPoint? = map?.getGpsLocation()
             if (mapPoint != null) {
                 placeMarker(mapPoint)
@@ -248,13 +256,13 @@ class GeoPointMapActivity : LocalizedActivity() {
 
         // Focuses on marked location
         zoomButton.isEnabled = false
-        zoomButton.setOnClickListener { //_: android.view.View? ->
+        zoomButton.setOnClickListener { // : android.view.View? ->
             map?.zoomToPoint(map?.getGpsLocation(), true)
         }
 
         // Menu Layer Toggle
         findViewById<View?>(R.id.layer_menu).setOnClickListener {
-            //_: android.view.View? ->
+            // : android.view.View? ->
             DialogFragmentUtils.showIfNotShowing(
                 OfflineMapLayersPickerBottomSheetDialogFragment::class.java,
                 supportFragmentManager
@@ -263,7 +271,7 @@ class GeoPointMapActivity : LocalizedActivity() {
 
         clearButton = findViewById(R.id.clear)
         clearButton.isEnabled = false
-        clearButton.setOnClickListener { //v: android.view.View? ->
+        clearButton.setOnClickListener { // : android.view.View? ->
             clear()
             if (map?.getGpsLocation() != null) {
                 placeMarkerButton.isEnabled = true
@@ -290,9 +298,7 @@ class GeoPointMapActivity : LocalizedActivity() {
             }
 
             if (intent.hasExtra(EXTRA_LOCATION)) {
-                val point = intent.getParcelableExtra<MapPoint?>(
-                    EXTRA_LOCATION
-                )
+                val point = intent.getParcelableExtra<MapPoint?>(EXTRA_LOCATION)
 
                 // If the point is initially set from the intent, the "place marker"
                 // button, dragging, and long-pressing are all initially disabled.
@@ -312,10 +318,8 @@ class GeoPointMapActivity : LocalizedActivity() {
         }
 
         map?.setRetainMockAccuracy(intent!!.getBooleanExtra(EXTRA_RETAIN_MOCK_ACCURACY, false))
-        map?.setGpsLocationListener { point: MapPoint? ->
-            this.onLocationChanged(
-                point
-            )
+        map?.setGpsLocationListener { // point: MapPoint? ->
+            this.onLocationChanged(it)
         }
         map?.setGpsLocationEnabled(true)
 
@@ -407,28 +411,11 @@ class GeoPointMapActivity : LocalizedActivity() {
         ))
     }
 
-    private fun onDragEnd(draggedFeatureId: Int) {
-        if (draggedFeatureId == featureId) {
-            isDragged = true
-            captureLocation = true
-            setClear = false
-            map?.setCenter(map?.getMarkerPoint(featureId!!), true)
-        }
-    }
-
-    private fun onLongPress(point: MapPoint) {
-        if (intentDraggable && !intentReadOnly && !isPointLocked) {
-            placeMarker(point)
-            enableZoomButton()
-            isDragged = true
-        }
-    }
-
     private fun enableZoomButton() {
         zoomButton.isEnabled = true
     }
 
-    fun zoomToMarker(animate: Boolean) {
+    private fun zoomToMarker(animate: Boolean) {
         map?.zoomToPoint(map?.getMarkerPoint(featureId!!), animate)
     }
 
