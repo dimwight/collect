@@ -97,7 +97,13 @@ class SelectionMapFragment(
                 mapFragmentFactory.createMapFragment() as Fragment
             }
             .forClass(OfflineMapLayersPickerBottomSheetDialogFragment::class) {
-                OfflineMapLayersPickerBottomSheetDialogFragment(requireActivity().activityResultRegistry, referenceLayerRepository, scheduler, settingsProvider, externalWebPageHelper)
+                OfflineMapLayersPickerBottomSheetDialogFragment(
+                    requireActivity().activityResultRegistry,
+                    referenceLayerRepository,
+                    scheduler,
+                    settingsProvider,
+                    externalWebPageHelper
+                )
             }
             .build()
 
