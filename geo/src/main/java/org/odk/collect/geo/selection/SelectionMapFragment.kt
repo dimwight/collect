@@ -92,7 +92,7 @@ class SelectionMapFragment(
     private var previousState: Bundle? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("geo: onCreate")
+        println("6136: onCreate")
         childFragmentManager.fragmentFactory = FragmentFactoryBuilder()
             .forClass(MapFragment::class.java) {
                 mapFragmentFactory.createMapFragment() as Fragment
@@ -113,7 +113,7 @@ class SelectionMapFragment(
     }
 
     override fun onAttach(context: Context) {
-        println("geo: onAttach")
+        println("6136: onAttach")
         super.onAttach(context)
 
         val component =
@@ -145,12 +145,12 @@ class SelectionMapFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        println("geo: onCreateView")
+        println("6136: onCreateView")
         return SelectionMapLayoutBinding.inflate(inflater).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        println("geo: onViewCreated")
+        println("6136: onViewCreated")
         val binding = SelectionMapLayoutBinding.bind(view)
 
         val mapFragment = binding.mapContainer.getFragment<Fragment?>() as MapFragment
@@ -187,7 +187,7 @@ class SelectionMapFragment(
     }
 
     override fun onDestroy() {
-        println("geo: onDestroy")
+        println("6136: onDestroy")
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
@@ -197,7 +197,7 @@ class SelectionMapFragment(
 
     @SuppressLint("MissingPermission") // Permission handled in Constructor
     private fun initMap(newMapFragment: MapFragment, binding: SelectionMapLayoutBinding) {
-        println("geo: initMap")
+        println("6136: initMap")
         map = newMapFragment
 
         binding.zoomToLocation.setMultiClickSafeOnClickListener {
@@ -251,7 +251,7 @@ class SelectionMapFragment(
     }
 
     private fun setUpSummarySheet(binding: SelectionMapLayoutBinding) {
-        println("geo: setUpSummarySheet")
+        println("6136: setUpSummarySheet")
         summarySheet = binding.summarySheet
         summarySheetBehavior = BottomSheetBehavior.from(summarySheet)
         summarySheetBehavior.state = STATE_HIDDEN
@@ -306,7 +306,7 @@ class SelectionMapFragment(
         maintainZoom: Boolean = true,
         selectedByUser: Boolean = true
     ) {
-        println("geo: onFeatureSelected")
+        println("6136: onFeatureSelected")
         val item = itemsByFeatureId[featureId]
         val selectedItem = selectedItemViewModel.getSelectedItem()
 
@@ -360,12 +360,12 @@ class SelectionMapFragment(
     }
 
     private fun onClick() {
-        println("geo: onClick")
+        println("6136: onClick")
         summarySheetBehavior.state = STATE_HIDDEN
     }
 
     private fun updateItems(items: List<MappableSelectItem>) {
-        println("geo: updateItems")
+        println("6136: updateItems")
         if (!::map.isInitialized) {
             return
         }
@@ -396,7 +396,7 @@ class SelectionMapFragment(
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
-        println("geo: resetIcon")
+        println("6136: resetIcon")
         val featureId = featureIdsByItemId[selectedItem.id]
         if (featureId != null) {
             map.setMarkerIcon(
@@ -410,7 +410,7 @@ class SelectionMapFragment(
      * Clears the existing features on the map and places features for the current form's instances.
      */
     private fun updateFeatures(items: List<MappableSelectItem>) {
-        println("geo: updateFeatures")
+        println("6136: updateFeatures")
         points.clear()
         map.clearFeatures()
         itemsByFeatureId.clear()
@@ -461,12 +461,12 @@ internal class SelectedItemViewModel : ViewModel() {
     private var selectedItem: MappableSelectItem? = null
 
     fun getSelectedItem(): MappableSelectItem? {
-        println("geo: getSelectedItem")
+        println("6136: getSelectedItem")
         return selectedItem
     }
 
     fun setSelectedItem(item: MappableSelectItem?) {
-        println("geo: setSelectedItem")
+        println("6136: setSelectedItem")
         selectedItem = item
     }
 }
