@@ -220,6 +220,8 @@ class SelectionMapFragment(
 
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
             map.zoomToBoundingBox(points, 0.8, false)
+            var zoom = map.zoom
+            println("6136: zoom+ = $zoom")
         }
 
         binding.layerMenu.setMultiClickSafeOnClickListener {
