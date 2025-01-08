@@ -113,7 +113,7 @@ class SelectionMapFragment(
     }
 
     override fun onAttach(context: Context) {
-        println("6136: onAttach")
+        println("6136A: onAttach")
         super.onAttach(context)
 
         val component =
@@ -145,12 +145,12 @@ class SelectionMapFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        println("6136: onCreateView")
+        println("6136A: onCreateView")
         return SelectionMapLayoutBinding.inflate(inflater).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        println("6136: onViewCreated")
+        println("6136A: onViewCreated")
         val binding = SelectionMapLayoutBinding.bind(view)
 
         val mapFragment = binding.mapContainer.getFragment<Fragment?>() as MapFragment
@@ -187,7 +187,7 @@ class SelectionMapFragment(
     }
 
     override fun onDestroy() {
-        println("6136: onDestroy")
+        println("6136A: onDestroy")
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
@@ -197,7 +197,7 @@ class SelectionMapFragment(
 
     @SuppressLint("MissingPermission") // Permission handled in Constructor
     private fun initMap(newMapFragment: MapFragment, binding: SelectionMapLayoutBinding) {
-        println("6136: initMap")
+        println("6136A: initMap")
         map = newMapFragment
 
         binding.zoomToLocation.setMultiClickSafeOnClickListener {
@@ -209,19 +209,19 @@ class SelectionMapFragment(
             var zoom = map.zoom
             map.zoomToPoint(map.gpsLocation, zoom + 1, true)
             zoom = map.zoom
-            println("6136: zoom = $zoom")
+            println("6136A: zoom = $zoom")
         }
         binding.zoomOut.setMultiClickSafeOnClickListener {
             var zoom = map.zoom
             map.zoomToPoint(map.gpsLocation, zoom - 1, true)
             zoom = map.zoom
-            println("6136: zoom = $zoom")
+            println("6136A: zoom = $zoom")
         }
 
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
             map.zoomToBoundingBox(points, 0.8, false)
             var zoom = map.zoom
-            println("6136: zoom+ = $zoom")
+            println("6136A: zoom+ = $zoom")
         }
 
         binding.layerMenu.setMultiClickSafeOnClickListener {
@@ -267,7 +267,7 @@ class SelectionMapFragment(
     }
 
     private fun setUpSummarySheet(binding: SelectionMapLayoutBinding) {
-        println("6136: setUpSummarySheet")
+        println("6136A: setUpSummarySheet")
         summarySheet = binding.summarySheet
         summarySheetBehavior = BottomSheetBehavior.from(summarySheet)
         summarySheetBehavior.state = STATE_HIDDEN
@@ -323,7 +323,7 @@ class SelectionMapFragment(
         maintainZoom: Boolean = true,
         selectedByUser: Boolean = true
     ) {
-        println("6136: onFeatureSelected")
+        println("6136A: onFeatureSelected")
         val item = itemsByFeatureId[featureId]
         val selectedItem = selectedItemViewModel.getSelectedItem()
 
@@ -377,12 +377,12 @@ class SelectionMapFragment(
     }
 
     private fun onClick() {
-        println("6136: onClick")
+        println("6136A: onClick")
         summarySheetBehavior.state = STATE_HIDDEN
     }
 
     private fun updateItems(items: List<MappableSelectItem>) {
-        println("6136: updateItems")
+        println("6136A: updateItems")
         if (!::map.isInitialized) {
             return
         }
@@ -413,7 +413,7 @@ class SelectionMapFragment(
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
-        println("6136: resetIcon")
+        println("6136A: resetIcon")
         val featureId = featureIdsByItemId[selectedItem.id]
         if (featureId != null) {
             map.setMarkerIcon(
@@ -427,7 +427,7 @@ class SelectionMapFragment(
      * Clears the existing features on the map and places features for the current form's instances.
      */
     private fun updateFeatures(items: List<MappableSelectItem>) {
-        println("6136: updateFeatures")
+        println("6136A: updateFeatures")
         points.clear()
         map.clearFeatures()
         itemsByFeatureId.clear()
@@ -478,12 +478,12 @@ internal class SelectedItemViewModel : ViewModel() {
     private var selectedItem: MappableSelectItem? = null
 
     fun getSelectedItem(): MappableSelectItem? {
-        println("6136: getSelectedItem")
+        println("6136A: getSelectedItem")
         return selectedItem
     }
 
     fun setSelectedItem(item: MappableSelectItem?) {
-        println("6136: setSelectedItem")
+        println("6136A: setSelectedItem")
         selectedItem = item
     }
 }
