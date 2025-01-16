@@ -94,6 +94,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectedChoice = prompt.selectChoices[selectedIndex]
         val hi = result.getString("Hi")
+        println("6136C: $hi")
         formEntryViewModel.answerQuestion(formIndex, SelectOneData(selectedChoice.selection()))
         dismiss()
     }

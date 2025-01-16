@@ -202,27 +202,18 @@ class SelectionMapFragment(
 
         binding.zoomToLocation.setMultiClickSafeOnClickListener {
             map.zoomToPoint(map.gpsLocation, true)
-            println("6136C: zoomToLocation ${map.center}")
         }
 
         // Adjust zoom #6136
         binding.zoomIn.setMultiClickSafeOnClickListener {
-            var zoom = map.zoom
-            map.zoomToPoint(map.gpsLocation, zoom + 1, true)
-            zoom = map.zoom
-            println("6136A: zoom = $zoom")
+            map.zoomToPoint(map.center, map.zoom + 1, true)
         }
         binding.zoomOut.setMultiClickSafeOnClickListener {
-            var zoom = map.zoom
-            map.zoomToPoint(map.gpsLocation, zoom - 1, true)
-            zoom = map.zoom
-            println("6136A: zoom = $zoom")
+            map.zoomToPoint(map.center, map.zoom - 1, true)
         }
 
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
             map.zoomToBoundingBox(points, 0.8, false)
-            var zoom = map.zoom
-            println("6136C: zoomToBounds ${map.center}")
         }
 
         binding.layerMenu.setMultiClickSafeOnClickListener {
@@ -312,7 +303,10 @@ class SelectionMapFragment(
                     REQUEST_SELECT_ITEM,
                     Bundle().also {
                         it.putLong(RESULT_SELECTED_ITEM, id)
-                        it.putString("Hi", "Hi")
+                        it.putString(
+                            "Hi",
+                            map.center.toString() + ", " + map.zoom
+                        )
                     }
                 )
             }
