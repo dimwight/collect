@@ -202,7 +202,7 @@ class SelectionMapFragment(
 
         binding.zoomToLocation.setMultiClickSafeOnClickListener {
             map.zoomToPoint(map.gpsLocation, true)
-            println("6136A: center = ${map.center}")
+            println("6136C: zoomToLocation ${map.center}")
         }
 
         // Adjust zoom #6136
@@ -222,8 +222,7 @@ class SelectionMapFragment(
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
             map.zoomToBoundingBox(points, 0.8, false)
             var zoom = map.zoom
-            println("6136A: zoom+ = $zoom")
-            println("6136A: center = ${map.center}")
+            println("6136C: zoomToBounds ${map.center}")
         }
 
         binding.layerMenu.setMultiClickSafeOnClickListener {
