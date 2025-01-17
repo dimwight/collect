@@ -141,5 +141,6 @@ public class SelectOneWidget extends BaseSelectListWidget {
 
     @Override
     public void setOnLongClickListener(OnLongClickListener l) {
+
     }
 }

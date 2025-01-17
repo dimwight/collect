@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import org.javarosa.core.model.FormIndex
 import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.SelectOneData
+import org.javarosa.core.model.data.helper.Selection
 import org.javarosa.core.model.instance.geojson.GeojsonFeature
 import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapDialogLayoutBinding
@@ -90,6 +91,10 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
     override fun onCloseClicked() {
         // No toolbar so not relevant
     }
+    class SelectOneFromMapData(
+        val selection: Selection,
+        val focus: DoubleArray?
+    ) : SelectOneData(selection)
 
     override fun onFragmentResult(requestKey: String, result: Bundle) {
         val selectedIndex = result.getLong(SelectionMapFragment.RESULT_SELECTED_ITEM).toInt()
@@ -99,7 +104,10 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         // #6136 +MapFocus in SelectOneFromMapData
         val hi = result.getDoubleArray("Hi")
         println("6136C: ${hi?.size}")
-        formEntryViewModel.answerQuestion(formIndex, SelectOneData(selectedChoice.selection()))
+        formEntryViewModel.answerQuestion(
+            formIndex,
+            SelectOneFromMapData(selectedChoice.selection(), hi)
+        )
         dismiss()
     }
 

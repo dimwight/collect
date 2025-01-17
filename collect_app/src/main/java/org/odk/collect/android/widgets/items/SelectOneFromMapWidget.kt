@@ -20,6 +20,7 @@ import org.odk.collect.android.widgets.QuestionWidget
 import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_FORM_INDEX
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_SELECTED_INDEX
+import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.SelectOneFromMapData
 import org.odk.collect.androidshared.ui.DialogFragmentUtils
 import org.odk.collect.permissions.PermissionListener
 
@@ -94,7 +95,6 @@ class SelectOneFromMapWidget(
         }
     }
 
-    // #6136 Store MapFocus
     private fun updateAnswer(answer: SelectOneData?) {
         this.answer = answer
 
@@ -109,5 +109,23 @@ class SelectOneFromMapWidget(
         } else {
             binding.answer.visibility = VISIBLE
         }
+        // #6136
+        if (answer !is SelectOneFromMapData) {
+            return
+        }
+        val focus = answer.focus
+        val store = "${focus?.get(0)} ${focus?.get(1)} ${focus?.get(2)}"
+
+        val focus2 = DoubleArray(3)
+        var at = 0
+        for (s in store.split(" ")) {
+            focus2[at++] = s.toDouble()
+        }
+
+        val list = ArrayList<Double>()
+        store.split(" ").forEach {
+            list.add(it.toDouble())
+        }
+        val focus3 = list.toTypedArray<Double>()
     }
 }
