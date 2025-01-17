@@ -14,6 +14,7 @@ import org.javarosa.core.model.data.helper.Selection
 import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapWidgetAnswerBinding
 import org.odk.collect.android.formentry.questions.QuestionDetails
+import org.odk.collect.android.javarosawrapper.FormController
 import org.odk.collect.android.listeners.AdvanceToNextListener
 import org.odk.collect.android.widgets.QuestionWidget
 import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver
@@ -27,6 +28,7 @@ class SelectOneFromMapWidget(
     context: Context,
     questionDetails: QuestionDetails,
     private val autoAdvance: Boolean,
+    private val formController: FormController,
     private val autoAdvanceListener: AdvanceToNextListener
 ) : QuestionWidget(context, questionDetails), WidgetDataReceiver {
 

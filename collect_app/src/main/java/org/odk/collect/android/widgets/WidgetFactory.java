@@ -323,9 +323,17 @@ public class WidgetFactory {
         } else if (appearance.contains(Appearances.IMAGE_MAP)) {
             questionWidget = new SelectOneImageMapWidget(activity, questionDetails, isQuick, formEntryViewModel);
         } else if (appearance.contains(Appearances.MAP)) {
-            questionWidget = new SelectOneFromMapWidget(activity, questionDetails, isQuick, advanceToNextListener);
+            questionWidget = new SelectOneFromMapWidget(activity,
+                    questionDetails,
+                    isQuick,
+                    formController, // #6136
+                    advanceToNextListener);
         } else {
-            questionWidget = new SelectOneWidget(activity, questionDetails, isQuick, formController, formEntryViewModel);
+            questionWidget = new SelectOneWidget(activity,
+                    questionDetails,
+                    isQuick,
+                    formController,
+                    formEntryViewModel);
         }
         return questionWidget;
     }
