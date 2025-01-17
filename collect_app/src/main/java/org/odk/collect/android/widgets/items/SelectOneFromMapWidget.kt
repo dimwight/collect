@@ -28,12 +28,14 @@ class SelectOneFromMapWidget(
     context: Context,
     questionDetails: QuestionDetails,
     private val autoAdvance: Boolean,
+    // #6136 For MapFocus
     private val formController: FormController,
     private val autoAdvanceListener: AdvanceToNextListener
 ) : QuestionWidget(context, questionDetails), WidgetDataReceiver {
 
     init {
         render()
+        // #6136 Find MapFocus
     }
 
     lateinit var binding: SelectOneFromMapWidgetAnswerBinding
@@ -55,6 +57,7 @@ class SelectOneFromMapWidget(
                             SelectOneFromMapDialogFragment::class.java,
                             Bundle().also {
                                 it.putSerializable(ARG_FORM_INDEX, prompt.index)
+                                // #6136 +MapFocus
                                 (answer?.value as? Selection)?.index?.let { index ->
                                     it.putInt(ARG_SELECTED_INDEX, index)
                                 }
@@ -91,6 +94,7 @@ class SelectOneFromMapWidget(
         }
     }
 
+    // #6136 Store MapFocus
     private fun updateAnswer(answer: SelectOneData?) {
         this.answer = answer
 

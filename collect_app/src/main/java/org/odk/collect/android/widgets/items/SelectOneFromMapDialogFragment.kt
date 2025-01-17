@@ -48,6 +48,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         DaggerUtils.getComponent(context).inject(this)
 
         val formIndex = requireArguments().getSerializable(ARG_FORM_INDEX) as FormIndex
+        // #6136 +MapFocus
         val selectedIndex = requireArguments().getSerializable(ARG_SELECTED_INDEX) as Int?
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectionMapData = SelectChoicesMapData(resources, scheduler, prompt, selectedIndex)
@@ -59,7 +60,9 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
                     skipSummary = Appearances.hasAppearance(prompt, Appearances.QUICK),
                     zoomToFitItems = false,
                     showNewItemButton = false,
-                    onBackPressedDispatcher = { (requireDialog() as ComponentDialog).onBackPressedDispatcher }
+                    // #6136
+                    focus = null,
+                    onBackPressedDispatcher = { (requireDialog() as ComponentDialog).onBackPressedDispatcher },
                 )
             }
             .build()
@@ -93,8 +96,9 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         val formIndex = requireArguments().getSerializable(ARG_FORM_INDEX) as FormIndex
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectedChoice = prompt.selectChoices[selectedIndex]
-        val hi = result.getString("Hi")
-        println("6136C: $hi")
+        // #6136 +MapFocus in SelectOneFromMapData
+        val hi = result.getDoubleArray("Hi")
+        println("6136C: ${hi?.size}")
         formEntryViewModel.answerQuestion(formIndex, SelectOneData(selectedChoice.selection()))
         dismiss()
     }

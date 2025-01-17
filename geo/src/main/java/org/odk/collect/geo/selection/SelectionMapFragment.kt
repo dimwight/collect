@@ -46,10 +46,12 @@ import javax.inject.Inject
  * implementation of [SelectionMapData].
  */
 class SelectionMapFragment(
+    // #6136 +MapFocus
     val selectionMapData: SelectionMapData,
     val skipSummary: Boolean = false,
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
+    private var focus: MapFocus?,
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
 ) : Fragment() {
 
@@ -247,6 +249,15 @@ class SelectionMapFragment(
                 updateCounts(binding)
             }
         }
+        // #6136 ?MapFocus
+
+        if (focus == null) updateFocus()
+        map.zoomToPoint(focus!!.center, focus!!.zoom, true)
+
+    }
+
+    private fun updateFocus() {
+        focus = MapFocus(map.center, map.zoom)
     }
 
     private fun updateCounts(binding: SelectionMapLayoutBinding) {
@@ -299,14 +310,14 @@ class SelectionMapFragment(
             override fun selectionAction(id: Long) {
                 summarySheetBehavior.state = STATE_HIDDEN
 
+                // #6136
+                updateFocus()
+
                 parentFragmentManager.setFragmentResult(
                     REQUEST_SELECT_ITEM,
                     Bundle().also {
                         it.putLong(RESULT_SELECTED_ITEM, id)
-                        it.putString(
-                            "Hi",
-                            map.center.toString() + ", " + map.zoom
-                        )
+                        it.putDoubleArray("Hi", focus!!.asDoubles)
                     }
                 )
             }
@@ -466,6 +477,17 @@ class SelectionMapFragment(
         const val RESULT_SELECTED_ITEM = "selected_item"
         const val RESULT_CREATE_NEW_ITEM = "create_new_item"
     }
+}
+
+class MapFocus(
+    val center: MapPoint,
+    val zoom: Double
+) {
+    val asDoubles: DoubleArray
+        get() {
+            return doubleArrayOf(center.latitude, center.longitude, zoom)
+        }
+
 }
 
 internal class SelectedItemViewModel : ViewModel() {
