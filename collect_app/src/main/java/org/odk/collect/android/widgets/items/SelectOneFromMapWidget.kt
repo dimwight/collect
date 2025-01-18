@@ -104,10 +104,10 @@ class SelectOneFromMapWidget(
         } else {
             ""
         }
-        if (binding.answer.text.isBlank()) {
-            binding.answer.visibility = GONE
+        binding.answer.visibility = if (binding.answer.text.isBlank()) {
+            GONE
         } else {
-            binding.answer.visibility = VISIBLE
+            VISIBLE
         }
         // #6136
         if (answer !is SelectOneFromMapData) {
