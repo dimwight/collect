@@ -34,7 +34,7 @@ class SelectOneFromMapWidget(
     questionDetails: QuestionDetails,
     private val autoAdvance: Boolean,
     // #6136
-    private val controller: FormController,
+    private val controller: FormController? = null,
     private val autoAdvanceListener: AdvanceToNextListener
 ) : QuestionWidget(context, questionDetails), WidgetDataReceiver {
 
@@ -43,13 +43,14 @@ class SelectOneFromMapWidget(
 
     init {
         render()
-        // #6136
-        if (true)
+    }
+
+    private fun findFocusPrompt(): FormEntryPrompt? {
+        var prompt: FormEntryPrompt? = null
         try {
-            val thisIndex = controller.getQuestionPrompt()?.index
-            var prompt: FormEntryPrompt? = null
-            var nameLast: String? = null
-            while (controller.currentPromptIsQuestion()) {
+            val thisIndex = controller?.getQuestionPrompt()?.index
+            var nameLast: String?
+            while (controller?.currentPromptIsQuestion() == true) {
                 controller.stepToNextScreenEvent()
                 prompt = controller.getQuestionPrompt()
                 nameLast = prompt?.index?.reference?.nameLast
@@ -57,13 +58,11 @@ class SelectOneFromMapWidget(
                     break
                 }
             }
-            controller.saveAnswer(prompt?.index, StringData("Hi"))
-            val data = controller.getAnswer(prompt?.index?.reference)
-            controller.jumpToIndex(thisIndex)
+            controller?.jumpToIndex(thisIndex)
         } catch (e: JavaRosaException) {
             Timber.d(e)
         }
-
+        return prompt
     }
 
     lateinit var binding: SelectOneFromMapWidgetAnswerBinding
@@ -74,8 +73,27 @@ class SelectOneFromMapWidget(
         prompt: FormEntryPrompt,
         answerFontSize: Int
     ): View {
-        // val children = prompt.question.children
         binding = SelectOneFromMapWidgetAnswerBinding.inflate(LayoutInflater.from(context))
+
+        var focus1: Any? = null
+        val focus2 = DoubleArray(3)
+        if (controller != null) {
+            focus1 = controller.getAnswer(
+                findFocusPrompt()?.index?.reference
+            )?.value
+            if (focus1 != null) {
+                val split = (focus1 as String).split(" ")
+                split.forEachIndexed() { at, it ->
+                    focus2[at] = it.toDouble()
+                }
+
+                val list = ArrayList<Double>()
+                split.forEach {
+                    list.add(it.toDouble())
+                }
+                val focus3 = list.toTypedArray<Double>()
+            }
+        }
 
         binding.button.setOnClickListener {
             permissionsProvider.requestEnabledLocationPermissions(
@@ -86,7 +104,10 @@ class SelectOneFromMapWidget(
                             SelectOneFromMapDialogFragment::class.java,
                             Bundle().also {
                                 it.putSerializable(ARG_FORM_INDEX, prompt.index)
-                                // #6136 +MapFocus
+                                // #6136
+                                if (focus1 != null) {
+                                    it.putDoubleArray("Hi", focus2)
+                                }
                                 (answer?.value as? Selection)?.index?.let { index ->
                                     it.putInt(ARG_SELECTED_INDEX, index)
                                 }
@@ -99,7 +120,6 @@ class SelectOneFromMapWidget(
         }
 
         binding.answer.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontSize.toFloat())
-        updateAnswer(questionDetails.prompt.answerValue as? SelectOneData)
 
         return binding.root
     }
@@ -143,17 +163,8 @@ class SelectOneFromMapWidget(
         }
         val focus = answer.focus
         val store = "${focus?.get(0)} ${focus?.get(1)} ${focus?.get(2)}"
-
-        val focus2 = DoubleArray(3)
-        var at = 0
-        for (s in store.split(" ")) {
-            focus2[at++] = s.toDouble()
+        if (controller != null) {
+            controller.saveAnswer(findFocusPrompt()?.index, StringData(store))
         }
-
-        val list = ArrayList<Double>()
-        store.split(" ").forEach {
-            list.add(it.toDouble())
-        }
-        val focus3 = list.toTypedArray<Double>()
     }
 }
