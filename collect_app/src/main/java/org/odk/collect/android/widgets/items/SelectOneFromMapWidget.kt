@@ -8,11 +8,14 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentActivity
+import org.javarosa.core.model.FormIndex
 import org.javarosa.core.model.data.IAnswerData
 import org.javarosa.core.model.data.SelectOneData
+import org.javarosa.core.model.data.StringData
 import org.javarosa.core.model.data.helper.Selection
 import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapWidgetAnswerBinding
+import org.odk.collect.android.exception.JavaRosaException
 import org.odk.collect.android.formentry.questions.QuestionDetails
 import org.odk.collect.android.javarosawrapper.FormController
 import org.odk.collect.android.listeners.AdvanceToNextListener
@@ -23,20 +26,39 @@ import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Comp
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.SelectOneFromMapData
 import org.odk.collect.androidshared.ui.DialogFragmentUtils
 import org.odk.collect.permissions.PermissionListener
+import timber.log.Timber
 
 @SuppressLint("ViewConstructor")
 class SelectOneFromMapWidget(
     context: Context,
     questionDetails: QuestionDetails,
     private val autoAdvance: Boolean,
-    // #6136 For MapFocus
-    private val formController: FormController,
+    // #6136
+    private val controller: FormController,
     private val autoAdvanceListener: AdvanceToNextListener
 ) : QuestionWidget(context, questionDetails), WidgetDataReceiver {
 
+    lateinit var focusStore: FormIndex
+    lateinit var focusSource: FormIndex
+
     init {
         render()
-        // #6136 Find MapFocus
+        // #6136
+        if (true)
+        try {
+            val thisIndex = controller.getQuestionPrompt()!!.index
+            var prompt: FormEntryPrompt
+            // while (controller.currentPromptIsQuestion()) {
+                controller.stepToNextScreenEvent()
+                prompt = controller.getQuestionPrompt()!!
+            //  }
+            controller.saveAnswer(prompt.index, StringData("Hi"))
+            val data = controller.getAnswer(prompt.index.reference)
+            controller.jumpToIndex(thisIndex)
+        } catch (e: JavaRosaException) {
+            Timber.d(e)
+        }
+
     }
 
     lateinit var binding: SelectOneFromMapWidgetAnswerBinding
@@ -47,6 +69,7 @@ class SelectOneFromMapWidget(
         prompt: FormEntryPrompt,
         answerFontSize: Int
     ): View {
+        // val children = prompt.question.children
         binding = SelectOneFromMapWidgetAnswerBinding.inflate(LayoutInflater.from(context))
 
         binding.button.setOnClickListener {
