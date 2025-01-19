@@ -46,14 +46,19 @@ class SelectOneFromMapWidget(
         // #6136
         if (true)
         try {
-            val thisIndex = controller.getQuestionPrompt()!!.index
-            var prompt: FormEntryPrompt
-            // while (controller.currentPromptIsQuestion()) {
+            val thisIndex = controller.getQuestionPrompt()?.index
+            var prompt: FormEntryPrompt? = null
+            var nameLast: String? = null
+            while (controller.currentPromptIsQuestion()) {
                 controller.stepToNextScreenEvent()
-                prompt = controller.getQuestionPrompt()!!
-            //  }
-            controller.saveAnswer(prompt.index, StringData("Hi"))
-            val data = controller.getAnswer(prompt.index.reference)
+                prompt = controller.getQuestionPrompt()
+                nameLast = prompt?.index?.reference?.nameLast
+                if (nameLast == "focus") {
+                    break
+                }
+            }
+            controller.saveAnswer(prompt?.index, StringData("Hi"))
+            val data = controller.getAnswer(prompt?.index?.reference)
             controller.jumpToIndex(thisIndex)
         } catch (e: JavaRosaException) {
             Timber.d(e)
