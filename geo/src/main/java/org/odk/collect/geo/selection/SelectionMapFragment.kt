@@ -51,9 +51,11 @@ class SelectionMapFragment(
     val skipSummary: Boolean = false,
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
-    private var focus: MapFocus? = null,
+    private var doubles: DoubleArray? = null,
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
 ) : Fragment() {
+
+    private var focus: MapFocus? = null
 
     @Inject
     lateinit var mapFragmentFactory: MapFragmentFactory
@@ -251,7 +253,8 @@ class SelectionMapFragment(
         }
         // #6136 ?MapFocus
 
-        if (focus == null) updateFocus()
+        if (doubles == null) updateFocus()
+        else focus = MapFocus.fromDoubles(doubles!!)
         map.zoomToPoint(focus!!.center, focus!!.zoom, true)
 
     }
@@ -487,6 +490,12 @@ class MapFocus(
         get() {
             return doubleArrayOf(center.latitude, center.longitude, zoom)
         }
+
+    companion object {
+        fun fromDoubles(d: DoubleArray): MapFocus {
+            return MapFocus(MapPoint(d[0], d[1]), d[2])
+        }
+    }
 
 }
 

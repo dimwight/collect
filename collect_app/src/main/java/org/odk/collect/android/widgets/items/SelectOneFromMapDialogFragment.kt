@@ -52,7 +52,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         val formIndex = bundle.getSerializable(ARG_FORM_INDEX) as FormIndex
         val selectedIndex = bundle.getSerializable(ARG_SELECTED_INDEX) as Int?
         // #6136
-        val focus = bundle.getSerializable("Hi") as DoubleArray?
+        val doubles = bundle.getSerializable("Hi") as DoubleArray?
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectionMapData = SelectChoicesMapData(resources, scheduler, prompt, selectedIndex)
 
@@ -64,7 +64,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
                     zoomToFitItems = false,
                     showNewItemButton = false,
                     // #6136
-                    focus = null,
+                    doubles = doubles,
                     onBackPressedDispatcher = { (requireDialog() as ComponentDialog).onBackPressedDispatcher },
                 )
             }
