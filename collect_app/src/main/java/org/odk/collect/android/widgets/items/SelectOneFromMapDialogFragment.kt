@@ -48,9 +48,11 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         super.onAttach(context)
         DaggerUtils.getComponent(context).inject(this)
 
-        val formIndex = requireArguments().getSerializable(ARG_FORM_INDEX) as FormIndex
-        // #6136 +MapFocus
-        val selectedIndex = requireArguments().getSerializable(ARG_SELECTED_INDEX) as Int?
+        val bundle = requireArguments()
+        val formIndex = bundle.getSerializable(ARG_FORM_INDEX) as FormIndex
+        val selectedIndex = bundle.getSerializable(ARG_SELECTED_INDEX) as Int?
+        // #6136
+        val focus = bundle.getSerializable("Hi") as DoubleArray?
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectionMapData = SelectChoicesMapData(resources, scheduler, prompt, selectedIndex)
 

@@ -49,12 +49,12 @@ class SelectOneFromMapWidget(
         var prompt: FormEntryPrompt? = null
         try {
             val thisIndex = controller?.getQuestionPrompt()?.index
-            var nameLast: String?
+            var name: String?
             while (controller?.currentPromptIsQuestion() == true) {
                 controller.stepToNextScreenEvent()
                 prompt = controller.getQuestionPrompt()
-                nameLast = prompt?.index?.reference?.nameLast
-                if (nameLast == "focus") {
+                name = prompt?.index?.reference?.nameLast
+                if (name == "focus") {
                     break
                 }
             }
