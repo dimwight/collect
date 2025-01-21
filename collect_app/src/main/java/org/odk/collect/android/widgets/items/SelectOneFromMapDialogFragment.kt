@@ -33,6 +33,8 @@ import org.odk.collect.geo.selection.MappableSelectItem
 import org.odk.collect.geo.selection.SelectionMapData
 import org.odk.collect.geo.selection.SelectionMapFragment
 import org.odk.collect.geo.selection.SelectionMapFragment.Companion.REQUEST_SELECT_ITEM
+import org.odk.collect.geo.selection.SelectionMapFragment.Companion.RESULT_FOCUS_DOUBLES
+import org.odk.collect.geo.selection.SelectionMapFragment.Companion.RESULT_SELECTED_ITEM
 import org.odk.collect.material.MaterialFullScreenDialogFragment
 import javax.inject.Inject
 
@@ -51,10 +53,10 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         val bundle = requireArguments()
         val formIndex = bundle.getSerializable(ARG_FORM_INDEX) as FormIndex
         val selectedIndex = bundle.getSerializable(ARG_SELECTED_INDEX) as Int?
-        // #6136
-        val doubles = bundle.getSerializable("Hi") as DoubleArray?
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectionMapData = SelectChoicesMapData(resources, scheduler, prompt, selectedIndex)
+        // #6136
+        val doubles = bundle.getSerializable(ARG_FOCUS_DOUBLES) as DoubleArray?
 
         childFragmentManager.fragmentFactory = FragmentFactoryBuilder()
             .forClass(SelectionMapFragment::class.java) {
@@ -93,22 +95,22 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
     override fun onCloseClicked() {
         // No toolbar so not relevant
     }
+
     class SelectOneFromMapData(
         val selection: Selection,
         val focus: DoubleArray?
     ) : SelectOneData(selection)
 
     override fun onFragmentResult(requestKey: String, result: Bundle) {
-        val selectedIndex = result.getLong(SelectionMapFragment.RESULT_SELECTED_ITEM).toInt()
+        val selectedIndex = result.getLong(RESULT_SELECTED_ITEM).toInt()
         val formIndex = requireArguments().getSerializable(ARG_FORM_INDEX) as FormIndex
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectedChoice = prompt.selectChoices[selectedIndex]
-        // #6136 +MapFocus in SelectOneFromMapData
-        val hi = result.getDoubleArray("Hi")
-        println("6136C: ${hi?.size}")
+        // #6136
+        val doubles = result.getDoubleArray(RESULT_FOCUS_DOUBLES)
         formEntryViewModel.answerQuestion(
             formIndex,
-            SelectOneFromMapData(selectedChoice.selection(), hi)
+            SelectOneFromMapData(selectedChoice.selection(), doubles)
         )
         dismiss()
     }
@@ -116,6 +118,9 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
     companion object {
         const val ARG_FORM_INDEX = "form_index"
         const val ARG_SELECTED_INDEX = "selected_index"
+
+        // #6136
+        const val ARG_FOCUS_DOUBLES = "focus_doubles"
     }
 }
 

@@ -21,6 +21,7 @@ import org.odk.collect.android.javarosawrapper.FormController
 import org.odk.collect.android.listeners.AdvanceToNextListener
 import org.odk.collect.android.widgets.QuestionWidget
 import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver
+import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_FOCUS_DOUBLES
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_FORM_INDEX
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Companion.ARG_SELECTED_INDEX
 import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.SelectOneFromMapData
@@ -45,6 +46,7 @@ class SelectOneFromMapWidget(
         render()
     }
 
+    // #6136
     private fun findFocusPrompt(): FormEntryPrompt? {
         var prompt: FormEntryPrompt? = null
         try {
@@ -75,23 +77,18 @@ class SelectOneFromMapWidget(
     ): View {
         binding = SelectOneFromMapWidgetAnswerBinding.inflate(LayoutInflater.from(context))
 
-        var focus1: Any? = null
-        val focus2 = DoubleArray(3)
+        // #6136
+        var doubles: DoubleArray? = null
         if (controller != null) {
-            focus1 = controller.getAnswer(
+            val focus = controller.getAnswer(
                 findFocusPrompt()?.index?.reference
             )?.value
-            if (focus1 != null) {
-                val split = (focus1 as String).split(" ")
-                split.forEachIndexed() { at, it ->
-                    focus2[at] = it.toDouble()
+            if (focus != null) {
+                val split = (focus as String).split(" ")
+                doubles = DoubleArray(3)
+                split.forEachIndexed { i, s ->
+                    doubles[i] = s.toDouble()
                 }
-
-                val list = ArrayList<Double>()
-                split.forEach {
-                    list.add(it.toDouble())
-                }
-                val focus3 = list.toTypedArray<Double>()
             }
         }
 
@@ -105,8 +102,8 @@ class SelectOneFromMapWidget(
                             Bundle().also {
                                 it.putSerializable(ARG_FORM_INDEX, prompt.index)
                                 // #6136
-                                if (focus1 != null) {
-                                    it.putDoubleArray("Hi", focus2)
+                                if (doubles != null) {
+                                    it.putDoubleArray(ARG_FOCUS_DOUBLES, doubles)
                                 }
                                 (answer?.value as? Selection)?.index?.let { index ->
                                     it.putInt(ARG_SELECTED_INDEX, index)

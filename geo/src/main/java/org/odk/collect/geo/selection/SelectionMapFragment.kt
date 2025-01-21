@@ -46,16 +46,16 @@ import javax.inject.Inject
  * implementation of [SelectionMapData].
  */
 class SelectionMapFragment(
-    // #6136 +MapFocus
     val selectionMapData: SelectionMapData,
     val skipSummary: Boolean = false,
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
-    private var doubles: DoubleArray? = null,
+    // #6136
+    private val doubles: DoubleArray? = null,
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
 ) : Fragment() {
 
-    private var focus: MapFocus? = null
+    private var focus: FocusRecord? = null
 
     @Inject
     lateinit var mapFragmentFactory: MapFragmentFactory
@@ -96,7 +96,6 @@ class SelectionMapFragment(
     private var previousState: Bundle? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("6136: onCreate")
         childFragmentManager.fragmentFactory = FragmentFactoryBuilder()
             .forClass(MapFragment::class.java) {
                 mapFragmentFactory.createMapFragment() as Fragment
@@ -117,7 +116,6 @@ class SelectionMapFragment(
     }
 
     override fun onAttach(context: Context) {
-        println("6136A: onAttach")
         super.onAttach(context)
 
         val component =
@@ -129,7 +127,10 @@ class SelectionMapFragment(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         ) {
-            ToastUtils.showLongToast(requireContext(), org.odk.collect.strings.R.string.not_granted_permission)
+            ToastUtils.showLongToast(
+                requireContext(),
+                org.odk.collect.strings.R.string.not_granted_permission
+            )
             requireActivity().finish()
         }
 
@@ -149,12 +150,10 @@ class SelectionMapFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        println("6136A: onCreateView")
         return SelectionMapLayoutBinding.inflate(inflater).root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        println("6136A: onViewCreated")
         val binding = SelectionMapLayoutBinding.bind(view)
 
         val mapFragment = binding.mapContainer.getFragment<Fragment?>() as MapFragment
@@ -191,7 +190,6 @@ class SelectionMapFragment(
     }
 
     override fun onDestroy() {
-        println("6136A: onDestroy")
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
@@ -201,7 +199,6 @@ class SelectionMapFragment(
 
     @SuppressLint("MissingPermission") // Permission handled in Constructor
     private fun initMap(newMapFragment: MapFragment, binding: SelectionMapLayoutBinding) {
-        println("6136A: initMap")
         map = newMapFragment
 
         binding.zoomToLocation.setMultiClickSafeOnClickListener {
@@ -251,16 +248,32 @@ class SelectionMapFragment(
                 updateCounts(binding)
             }
         }
-        // #6136 ?MapFocus
 
-        if (doubles == null) updateFocus()
-        else focus = MapFocus.fromDoubles(doubles!!)
-        map.zoomToPoint(focus!!.center, focus!!.zoom, true)
+        // #6136
+        focus = if (doubles == null) {
+            recordFocus()
+        } else {
+            FocusRecord.fromDoubles(doubles)
+        }
+        map.zoomToPoint(focus?.center, focus!!.zoom, true)
 
     }
 
-    private fun updateFocus() {
-        focus = MapFocus(map.center, map.zoom)
+    private class FocusRecord(
+        val center: MapPoint,
+        val zoom: Double
+    ) {
+        val toDoubles: DoubleArray
+            get() = doubleArrayOf(center.latitude, center.longitude, zoom)
+
+        companion object {
+            fun fromDoubles(d: DoubleArray): FocusRecord = FocusRecord(MapPoint(d[0], d[1]), d[2])
+        }
+
+    }
+
+    private fun recordFocus(): FocusRecord {
+        return FocusRecord(map.center, map.zoom)
     }
 
     private fun updateCounts(binding: SelectionMapLayoutBinding) {
@@ -273,7 +286,6 @@ class SelectionMapFragment(
     }
 
     private fun setUpSummarySheet(binding: SelectionMapLayoutBinding) {
-        println("6136A: setUpSummarySheet")
         summarySheet = binding.summarySheet
         summarySheetBehavior = BottomSheetBehavior.from(summarySheet)
         summarySheetBehavior.state = STATE_HIDDEN
@@ -284,7 +296,8 @@ class SelectionMapFragment(
             }
         }
 
-        (onBackPressedDispatcher?.invoke() ?: requireActivity().onBackPressedDispatcher).addCallback(
+        (onBackPressedDispatcher?.invoke()
+            ?: requireActivity().onBackPressedDispatcher).addCallback(
             viewLifecycleOwner,
             closeSummarySheet
         )
@@ -314,13 +327,13 @@ class SelectionMapFragment(
                 summarySheetBehavior.state = STATE_HIDDEN
 
                 // #6136
-                updateFocus()
+                focus = recordFocus()
 
                 parentFragmentManager.setFragmentResult(
                     REQUEST_SELECT_ITEM,
                     Bundle().also {
                         it.putLong(RESULT_SELECTED_ITEM, id)
-                        it.putDoubleArray("Hi", focus!!.asDoubles)
+                        it.putDoubleArray(RESULT_FOCUS_DOUBLES, focus?.toDoubles)
                     }
                 )
             }
@@ -332,7 +345,6 @@ class SelectionMapFragment(
         maintainZoom: Boolean = true,
         selectedByUser: Boolean = true
     ) {
-        println("6136A: onFeatureSelected")
         val item = itemsByFeatureId[featureId]
         val selectedItem = selectedItemViewModel.getSelectedItem()
 
@@ -350,13 +362,27 @@ class SelectionMapFragment(
                 )
             } else {
                 when (item) {
-                    is MappableSelectItem.MappableSelectLine -> map.zoomToBoundingBox(item.points, 0.8, true)
-                    is MappableSelectItem.MappableSelectPolygon -> map.zoomToBoundingBox(item.points, 0.8, true)
+                    is MappableSelectItem.MappableSelectLine -> map.zoomToBoundingBox(
+                        item.points,
+                        0.8,
+                        true
+                    )
+
+                    is MappableSelectItem.MappableSelectPolygon -> map.zoomToBoundingBox(
+                        item.points,
+                        0.8,
+                        true
+                    )
+
                     is MappableSelectItem.MappableSelectPoint -> {
                         val point = item.point
 
                         if (maintainZoom) {
-                            map.zoomToPoint(MapPoint(point.latitude, point.longitude), map.zoom, true)
+                            map.zoomToPoint(
+                                MapPoint(point.latitude, point.longitude),
+                                map.zoom,
+                                true
+                            )
                         } else {
                             map.zoomToPoint(MapPoint(point.latitude, point.longitude), true)
                         }
@@ -386,12 +412,10 @@ class SelectionMapFragment(
     }
 
     private fun onClick() {
-        println("6136A: onClick")
         summarySheetBehavior.state = STATE_HIDDEN
     }
 
     private fun updateItems(items: List<MappableSelectItem>) {
-        println("6136A: updateItems")
         if (!::map.isInitialized) {
             return
         }
@@ -422,12 +446,15 @@ class SelectionMapFragment(
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
-        println("6136A: resetIcon")
         val featureId = featureIdsByItemId[selectedItem.id]
         if (featureId != null) {
             map.setMarkerIcon(
                 featureId,
-                MarkerIconDescription(selectedItem.smallIcon, selectedItem.color, selectedItem.symbol)
+                MarkerIconDescription(
+                    selectedItem.smallIcon,
+                    selectedItem.color,
+                    selectedItem.symbol
+                )
             )
         }
     }
@@ -436,7 +463,6 @@ class SelectionMapFragment(
      * Clears the existing features on the map and places features for the current form's instances.
      */
     private fun updateFeatures(items: List<MappableSelectItem>) {
-        println("6136A: updateFeatures")
         points.clear()
         map.clearFeatures()
         itemsByFeatureId.clear()
@@ -459,18 +485,26 @@ class SelectionMapFragment(
             ids + map.addPolyLine(LineDescription(item.points, item.strokeWidth, item.strokeColor))
         }
         val polygonIds = polygons.fold(listOf<Int>()) { ids, item ->
-            ids + map.addPolygon(PolygonDescription(item.points, item.strokeWidth, item.strokeColor, item.fillColor))
+            ids + map.addPolygon(
+                PolygonDescription(
+                    item.points,
+                    item.strokeWidth,
+                    item.strokeColor,
+                    item.fillColor
+                )
+            )
         }
 
-        (singlePoints + lines + polygons).zip(pointIds + lineIds + polygonIds).forEach { (item, featureId) ->
-            itemsByFeatureId[featureId] = item
-            featureIdsByItemId[item.id] = featureId
-            when (item) {
-                is MappableSelectItem.MappableSelectPoint -> points.add(item.point)
-                is MappableSelectItem.MappableSelectLine -> points.addAll(item.points)
-                is MappableSelectItem.MappableSelectPolygon -> points.addAll(item.points)
+        (singlePoints + lines + polygons).zip(pointIds + lineIds + polygonIds)
+            .forEach { (item, featureId) ->
+                itemsByFeatureId[featureId] = item
+                featureIdsByItemId[item.id] = featureId
+                when (item) {
+                    is MappableSelectItem.MappableSelectPoint -> points.add(item.point)
+                    is MappableSelectItem.MappableSelectLine -> points.addAll(item.points)
+                    is MappableSelectItem.MappableSelectPolygon -> points.addAll(item.points)
+                }
             }
-        }
 
         featureCount = items.size
     }
@@ -479,24 +513,10 @@ class SelectionMapFragment(
         const val REQUEST_SELECT_ITEM = "select_item"
         const val RESULT_SELECTED_ITEM = "selected_item"
         const val RESULT_CREATE_NEW_ITEM = "create_new_item"
+
+        // #6136
+        const val RESULT_FOCUS_DOUBLES = "focus_doubles"
     }
-}
-
-class MapFocus(
-    val center: MapPoint,
-    val zoom: Double
-) {
-    val asDoubles: DoubleArray
-        get() {
-            return doubleArrayOf(center.latitude, center.longitude, zoom)
-        }
-
-    companion object {
-        fun fromDoubles(d: DoubleArray): MapFocus {
-            return MapFocus(MapPoint(d[0], d[1]), d[2])
-        }
-    }
-
 }
 
 internal class SelectedItemViewModel : ViewModel() {
@@ -504,12 +524,10 @@ internal class SelectedItemViewModel : ViewModel() {
     private var selectedItem: MappableSelectItem? = null
 
     fun getSelectedItem(): MappableSelectItem? {
-        println("6136A: getSelectedItem")
         return selectedItem
     }
 
     fun setSelectedItem(item: MappableSelectItem?) {
-        println("6136A: setSelectedItem")
         selectedItem = item
     }
 }
