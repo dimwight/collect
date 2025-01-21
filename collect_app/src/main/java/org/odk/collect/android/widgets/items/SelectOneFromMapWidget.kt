@@ -46,6 +46,8 @@ class SelectOneFromMapWidget(
         render()
     }
 
+    private var doubles: DoubleArray? = null
+
     // #6136
     private fun findFocusPrompt(): FormEntryPrompt? {
         var prompt: FormEntryPrompt? = null
@@ -78,16 +80,17 @@ class SelectOneFromMapWidget(
         binding = SelectOneFromMapWidgetAnswerBinding.inflate(LayoutInflater.from(context))
 
         // #6136
-        var doubles: DoubleArray? = null
         if (controller != null) {
             val focus = controller.getAnswer(
                 findFocusPrompt()?.index?.reference
             )?.value
             if (focus != null) {
                 val split = (focus as String).split(" ")
-                doubles = DoubleArray(3)
+                if (doubles == null) {
+                    doubles = DoubleArray(3)
+                }
                 split.forEachIndexed { i, s ->
-                    doubles[i] = s.toDouble()
+                    doubles!![i] = s.toDouble()
                 }
             }
         }
@@ -158,10 +161,8 @@ class SelectOneFromMapWidget(
         if (answer !is SelectOneFromMapData) {
             return
         }
-        val focus = answer.focus
-        val store = "${focus?.get(0)} ${focus?.get(1)} ${focus?.get(2)}"
-        if (controller != null) {
-            controller.saveAnswer(findFocusPrompt()?.index, StringData(store))
-        }
+        this.doubles = answer.focus
+        val store = "${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}"
+        controller?.saveAnswer(findFocusPrompt()?.index, StringData(store))
     }
 }
