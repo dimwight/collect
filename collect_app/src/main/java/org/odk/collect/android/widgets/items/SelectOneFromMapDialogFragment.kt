@@ -16,7 +16,10 @@ import androidx.lifecycle.ViewModelProvider
 import org.javarosa.core.model.FormIndex
 import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.SelectOneData
+import org.javarosa.core.model.data.StringData
 import org.javarosa.core.model.data.helper.Selection
+import org.javarosa.core.model.instance.AbstractTreeElement
+import org.javarosa.core.model.instance.TreeElement
 import org.javarosa.core.model.instance.geojson.GeojsonFeature
 import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapDialogLayoutBinding
@@ -46,6 +49,22 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
 
     private val formEntryViewModel: FormEntryViewModel by activityViewModels { viewModelFactory }
 
+    private fun findFocusStore(prompt: FormEntryPrompt): TreeElement? {
+        fun accessField(obj: Any?, name: String): Any? {
+            val field = obj?.javaClass?.getDeclaredField(name)
+            field?.isAccessible = true
+            return field?.get(obj)
+        }
+
+        val mTreeElement = accessField(prompt, "mTreeElement")
+        val parent = accessField(mTreeElement, "parent")
+        val focus = (parent as AbstractTreeElement<*>).getChildAt(1)
+        return if (focus.hasChildren()) {
+            focus.getChildAt(0) as TreeElement
+        } else {
+            null
+        }
+    }
     override fun onAttach(context: Context) {
         super.onAttach(context)
         DaggerUtils.getComponent(context).inject(this)
@@ -55,8 +74,21 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         val selectedIndex = bundle.getSerializable(ARG_SELECTED_INDEX) as Int?
         val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
         val selectionMapData = SelectChoicesMapData(resources, scheduler, prompt, selectedIndex)
+
         // #6136
-        val doubles = bundle.getSerializable(ARG_FOCUS_DOUBLES) as DoubleArray?
+        var doubles: DoubleArray? = null
+
+        val focus = findFocusStore(prompt)?.value
+        if (focus != null) {
+            val split = (focus as String).split(" ")
+            if (doubles == null) {
+                doubles = DoubleArray(3)
+            }
+            split.forEachIndexed { i, s ->
+                doubles!![i] = s.toDouble()
+            }
+        }
+
 
         childFragmentManager.fragmentFactory = FragmentFactoryBuilder()
             .forClass(SelectionMapFragment::class.java) {
@@ -108,9 +140,17 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         val selectedChoice = prompt.selectChoices[selectedIndex]
         // #6136
         val doubles = result.getDoubleArray(RESULT_FOCUS_DOUBLES)
+        val store = StringData("${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}")
+
+        findFocusStore(prompt)?.setAnswer(store)
+
         formEntryViewModel.answerQuestion(
             formIndex,
-            SelectOneFromMapData(selectedChoice.selection(), doubles)
+            if (false) {
+                SelectOneFromMapData(selectedChoice.selection(), doubles)
+            } else {
+                SelectOneData(selectedChoice.selection())
+            }
         )
         dismiss()
     }
