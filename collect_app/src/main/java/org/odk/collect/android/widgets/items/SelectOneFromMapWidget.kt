@@ -8,12 +8,10 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.FragmentActivity
-import org.javarosa.core.model.FormIndex
 import org.javarosa.core.model.data.IAnswerData
 import org.javarosa.core.model.data.SelectOneData
 import org.javarosa.core.model.data.StringData
 import org.javarosa.core.model.data.helper.Selection
-import org.javarosa.core.model.instance.AbstractTreeElement
 import org.javarosa.core.model.instance.TreeElement
 import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapWidgetAnswerBinding
@@ -32,26 +30,23 @@ import org.odk.collect.permissions.PermissionListener
 import timber.log.Timber
 
 
-private const val USE_CONTROLLER = false
 
 @SuppressLint("ViewConstructor")
 class SelectOneFromMapWidget(
     context: Context,
     questionDetails: QuestionDetails,
     private val autoAdvance: Boolean,
-    // #6136
+    // #6136?
     private val controller: FormController? = null,
     private val autoAdvanceListener: AdvanceToNextListener
 ) : QuestionWidget(context, questionDetails), WidgetDataReceiver {
-
-    lateinit var focusStore: FormIndex
-    lateinit var focusSource: FormIndex
 
     init {
         render()
     }
 
     private var doubles: DoubleArray? = null
+    private val useController = controller != null && false
 
     // #6136
     private fun findFocusPrompt(): FormEntryPrompt? {
@@ -59,7 +54,7 @@ class SelectOneFromMapWidget(
         try {
             val thisIndex = controller?.getQuestionPrompt()?.index
             var name: String?
-            while (controller?.currentPromptIsQuestion() == USE_CONTROLLER) {
+            while (controller?.currentPromptIsQuestion() == useController) {
                 controller.stepToNextScreenEvent()
                 prompt = controller.getQuestionPrompt()
                 name = prompt?.index?.reference?.nameLast
@@ -83,14 +78,10 @@ class SelectOneFromMapWidget(
             field?.isAccessible = true
             return field?.get(obj)
         }
+
         val mTreeElement = accessField(prompt, "mTreeElement")
         val parent = accessField(mTreeElement, "parent")
-        val focus = (parent as AbstractTreeElement<*>).getChildAt(1)
-        return if (focus.hasChildren()) {
-            focus.getChildAt(0) as TreeElement
-        } else {
-            null
-        }
+        return (parent as TreeElement).getChildAt(1)
     }
 
     override fun onCreateAnswerView(
@@ -101,23 +92,21 @@ class SelectOneFromMapWidget(
         binding = SelectOneFromMapWidgetAnswerBinding.inflate(LayoutInflater.from(context))
 
         // #6136
-        if (controller != null) {
-            val focus = if (USE_CONTROLLER) {
-                controller.getAnswer(
-                    findFocusPrompt()?.index?.reference
-                )?.value
-            } else {
-                findFocus(prompt)?.value
-            }
+        val focus = if (controller != null && useController) {
+            controller.getAnswer(
+                findFocusPrompt()?.index?.reference
+            )?.value
+        } else {
+            findFocus(prompt)?.value
+        }
 
-            if (focus != null) {
-                val split = (focus as String).split(" ")
-                if (doubles == null) {
-                    doubles = DoubleArray(3)
-                }
-                split.forEachIndexed { i, s ->
-                    doubles!![i] = s.toDouble()
-                }
+        if (focus != null) {
+            val split = (focus as String).split(" ")
+            if (doubles == null) {
+                doubles = DoubleArray(3)
+            }
+            split.forEachIndexed { i, s ->
+                doubles!![i] = s.toDouble()
             }
         }
 
@@ -191,7 +180,7 @@ class SelectOneFromMapWidget(
 
         val store = StringData("${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}")
 
-        if (USE_CONTROLLER) {
+        if (useController) {
             controller?.saveAnswer(findFocusPrompt()?.index, store)
         } else {
             findFocus(formEntryPrompt)
