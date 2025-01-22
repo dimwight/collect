@@ -32,6 +32,8 @@ import org.odk.collect.permissions.PermissionListener
 import timber.log.Timber
 
 
+private const val USE_CONTROLLER = false
+
 @SuppressLint("ViewConstructor")
 class SelectOneFromMapWidget(
     context: Context,
@@ -57,7 +59,7 @@ class SelectOneFromMapWidget(
         try {
             val thisIndex = controller?.getQuestionPrompt()?.index
             var name: String?
-            while (controller?.currentPromptIsQuestion() == true) {
+            while (controller?.currentPromptIsQuestion() == USE_CONTROLLER) {
                 controller.stepToNextScreenEvent()
                 prompt = controller.getQuestionPrompt()
                 name = prompt?.index?.reference?.nameLast
@@ -100,7 +102,7 @@ class SelectOneFromMapWidget(
 
         // #6136
         if (controller != null) {
-            val focus = if (false) {
+            val focus = if (USE_CONTROLLER) {
                 controller.getAnswer(
                     findFocusPrompt()?.index?.reference
                 )?.value
@@ -189,10 +191,11 @@ class SelectOneFromMapWidget(
 
         val store = StringData("${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}")
 
-        if (false) {
+        if (USE_CONTROLLER) {
             controller?.saveAnswer(findFocusPrompt()?.index, store)
         } else {
-            findFocus(formEntryPrompt)?.setAnswer(store)
+            findFocus(formEntryPrompt)
+                ?.setAnswer(store)
         }
     }
 }
