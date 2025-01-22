@@ -13,6 +13,8 @@ import org.javarosa.core.model.data.IAnswerData
 import org.javarosa.core.model.data.SelectOneData
 import org.javarosa.core.model.data.StringData
 import org.javarosa.core.model.data.helper.Selection
+import org.javarosa.core.model.instance.AbstractTreeElement
+import org.javarosa.core.model.instance.TreeElement
 import org.javarosa.form.api.FormEntryPrompt
 import org.odk.collect.android.databinding.SelectOneFromMapWidgetAnswerBinding
 import org.odk.collect.android.exception.JavaRosaException
@@ -28,6 +30,7 @@ import org.odk.collect.android.widgets.items.SelectOneFromMapDialogFragment.Sele
 import org.odk.collect.androidshared.ui.DialogFragmentUtils
 import org.odk.collect.permissions.PermissionListener
 import timber.log.Timber
+
 
 @SuppressLint("ViewConstructor")
 class SelectOneFromMapWidget(
@@ -72,6 +75,22 @@ class SelectOneFromMapWidget(
     lateinit var binding: SelectOneFromMapWidgetAnswerBinding
     private var answer: SelectOneData? = null
 
+    private fun findFocus(prompt: FormEntryPrompt): TreeElement? {
+        fun accessField(obj: Any?, name: String): Any? {
+            val field = obj?.javaClass?.getDeclaredField(name)
+            field?.isAccessible = true
+            return field?.get(obj)
+        }
+        val mTreeElement = accessField(prompt, "mTreeElement")
+        val parent = accessField(mTreeElement, "parent")
+        val focus = (parent as AbstractTreeElement<*>).getChildAt(1)
+        return if (focus.hasChildren()) {
+            focus.getChildAt(0) as TreeElement
+        } else {
+            null
+        }
+    }
+
     override fun onCreateAnswerView(
         context: Context,
         prompt: FormEntryPrompt,
@@ -81,9 +100,14 @@ class SelectOneFromMapWidget(
 
         // #6136
         if (controller != null) {
-            val focus = controller.getAnswer(
-                findFocusPrompt()?.index?.reference
-            )?.value
+            val focus = if (false) {
+                controller.getAnswer(
+                    findFocusPrompt()?.index?.reference
+                )?.value
+            } else {
+                findFocus(prompt)?.value
+            }
+
             if (focus != null) {
                 val split = (focus as String).split(" ")
                 if (doubles == null) {
@@ -162,7 +186,13 @@ class SelectOneFromMapWidget(
             return
         }
         this.doubles = answer.focus
-        val store = "${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}"
-        controller?.saveAnswer(findFocusPrompt()?.index, StringData(store))
+
+        val store = StringData("${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}")
+
+        if (false) {
+            controller?.saveAnswer(findFocusPrompt()?.index, store)
+        } else {
+            findFocus(formEntryPrompt)?.setAnswer(store)
+        }
     }
 }
