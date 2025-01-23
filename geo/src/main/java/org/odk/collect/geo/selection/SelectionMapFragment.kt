@@ -25,6 +25,7 @@ import org.odk.collect.androidshared.ui.multiclicksafe.setMultiClickSafeOnClickL
 import org.odk.collect.async.Scheduler
 import org.odk.collect.geo.GeoDependencyComponentProvider
 import org.odk.collect.geo.databinding.SelectionMapLayoutBinding
+import org.odk.collect.geo.selection.SelectionMapFragment.FocusRecord.Companion.SET_FOCUS
 import org.odk.collect.maps.LineDescription
 import org.odk.collect.maps.MapFragment
 import org.odk.collect.maps.MapFragmentFactory
@@ -255,8 +256,14 @@ class SelectionMapFragment(
         } else {
             FocusRecord.fromDoubles(doubles)
         }
-        map.zoomToPoint(focus?.center, focus!!.zoom, true)
+        setFocus()
 
+    }
+
+    private fun setFocus() {
+        if (SET_FOCUS) {
+            map.zoomToPoint(focus?.center, focus!!.zoom, true)
+        }
     }
 
     private class FocusRecord(
@@ -268,12 +275,15 @@ class SelectionMapFragment(
 
         companion object {
             fun fromDoubles(d: DoubleArray): FocusRecord = FocusRecord(MapPoint(d[0], d[1]), d[2])
+            const val SET_FOCUS = false
         }
 
     }
 
     private fun recordFocus(): FocusRecord {
-        return FocusRecord(map.center, map.zoom)
+        val record = FocusRecord(map.center, map.zoom)
+        println("6136: zoom = ${focus?.zoom}")
+        return record
     }
 
     private fun updateCounts(binding: SelectionMapLayoutBinding) {
