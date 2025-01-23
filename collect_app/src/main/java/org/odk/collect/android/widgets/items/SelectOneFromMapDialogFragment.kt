@@ -17,8 +17,6 @@ import org.javarosa.core.model.FormIndex
 import org.javarosa.core.model.SelectChoice
 import org.javarosa.core.model.data.SelectOneData
 import org.javarosa.core.model.data.StringData
-import org.javarosa.core.model.data.helper.Selection
-import org.javarosa.core.model.instance.AbstractTreeElement
 import org.javarosa.core.model.instance.TreeElement
 import org.javarosa.core.model.instance.geojson.GeojsonFeature
 import org.javarosa.form.api.FormEntryPrompt
@@ -55,15 +53,9 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
             field?.isAccessible = true
             return field?.get(obj)
         }
-
         val mTreeElement = accessField(prompt, "mTreeElement")
         val parent = accessField(mTreeElement, "parent")
-        val focus = (parent as AbstractTreeElement<*>).getChildAt(1)
-        return if (focus.hasChildren()) {
-            focus.getChildAt(0) as TreeElement
-        } else {
-            null
-        }
+        return (parent as TreeElement).getChildAt(1)
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -76,19 +68,15 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         val selectionMapData = SelectChoicesMapData(resources, scheduler, prompt, selectedIndex)
 
         // #6136
+        val focus = findFocusStore(prompt)?.value?.value
         var doubles: DoubleArray? = null
-
-        val focus = findFocusStore(prompt)?.value
         if (focus != null) {
             val split = (focus as String).split(" ")
-            if (doubles == null) {
-                doubles = DoubleArray(3)
-            }
+            doubles = DoubleArray(3)
             split.forEachIndexed { i, s ->
-                doubles!![i] = s.toDouble()
+                doubles[i] = s.toDouble()
             }
         }
-
 
         childFragmentManager.fragmentFactory = FragmentFactoryBuilder()
             .forClass(SelectionMapFragment::class.java) {
@@ -105,6 +93,24 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
             .build()
 
         childFragmentManager.setFragmentResultListener(REQUEST_SELECT_ITEM, this, this)
+    }
+
+    override fun onFragmentResult(requestKey: String, result: Bundle) {
+        val selectedIndex = result.getLong(RESULT_SELECTED_ITEM).toInt()
+        val formIndex = requireArguments().getSerializable(ARG_FORM_INDEX) as FormIndex
+        val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
+        val selectedChoice = prompt.selectChoices[selectedIndex]
+
+        // #6136
+        val doubles = result.getDoubleArray(RESULT_FOCUS_DOUBLES)
+        val value = StringData("${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}")
+        findFocusStore(prompt)?.value = value
+
+        formEntryViewModel.answerQuestion(
+            formIndex,
+            SelectOneData(selectedChoice.selection())
+        )
+        dismiss()
     }
 
     override fun onCreateView(
@@ -128,39 +134,9 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
         // No toolbar so not relevant
     }
 
-    class SelectOneFromMapData(
-        val selection: Selection,
-        val focus: DoubleArray?
-    ) : SelectOneData(selection)
-
-    override fun onFragmentResult(requestKey: String, result: Bundle) {
-        val selectedIndex = result.getLong(RESULT_SELECTED_ITEM).toInt()
-        val formIndex = requireArguments().getSerializable(ARG_FORM_INDEX) as FormIndex
-        val prompt = formEntryViewModel.getQuestionPrompt(formIndex)
-        val selectedChoice = prompt.selectChoices[selectedIndex]
-        // #6136
-        val doubles = result.getDoubleArray(RESULT_FOCUS_DOUBLES)
-        val store = StringData("${doubles?.get(0)} ${doubles?.get(1)} ${doubles?.get(2)}")
-
-        findFocusStore(prompt)?.setAnswer(store)
-
-        formEntryViewModel.answerQuestion(
-            formIndex,
-            if (false) {
-                SelectOneFromMapData(selectedChoice.selection(), doubles)
-            } else {
-                SelectOneData(selectedChoice.selection())
-            }
-        )
-        dismiss()
-    }
-
     companion object {
         const val ARG_FORM_INDEX = "form_index"
         const val ARG_SELECTED_INDEX = "selected_index"
-
-        // #6136
-        const val ARG_FOCUS_DOUBLES = "focus_doubles"
     }
 }
 

@@ -326,7 +326,6 @@ public class WidgetFactory {
             questionWidget = new SelectOneFromMapWidget(activity,
                     questionDetails,
                     isQuick,
-                    formController, // #6136
                     advanceToNextListener);
         } else {
             questionWidget = new SelectOneWidget(activity,
