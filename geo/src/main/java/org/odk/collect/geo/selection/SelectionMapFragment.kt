@@ -333,6 +333,7 @@ class SelectionMapFragment(
                     REQUEST_SELECT_ITEM,
                     Bundle().also {
                         it.putLong(RESULT_SELECTED_ITEM, id)
+                        // #6136
                         it.putDoubleArray(RESULT_FOCUS_DOUBLES, focus?.toDoubles)
                     }
                 )
