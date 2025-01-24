@@ -40,7 +40,10 @@ import org.odk.collect.material.MaterialProgressDialogFragment
 import org.odk.collect.permissions.PermissionsChecker
 import org.odk.collect.settings.SettingsProvider
 import org.odk.collect.webpage.ExternalWebPageHelper
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.timer
+import kotlin.math.roundToInt
 
 /**
  * Can be used to allow an item to be selected from a map. Items can be provided using an
@@ -194,6 +197,7 @@ class SelectionMapFragment(
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
+        tracker.cancel()
 
         super.onDestroy()
     }
@@ -251,18 +255,42 @@ class SelectionMapFragment(
         }
 
         // #6136
-        focus = if (doubles == null) {
-            recordFocus()
-        } else {
-            FocusRecord.fromDoubles(doubles)
+        tracker = timer(period = 5000) {
+            val record = FocusRecord(map.center, map.zoom)
+            val gpsLocation = map.gpsLocation
+            val ready = gpsLocation != null &&
+                    !record.center.closeEnough(gpsLocation)
+            println("6136: $record $ready")
+            if (!ready) return@timer
+            if (focus == null) {
+                focus = if (doubles == null) {
+                    record
+                } else {
+                    FocusRecord.fromDoubles(doubles)
+                }
+            } else {
+                focus = record
+            }
+            if (SET_FOCUS) {
+                map.zoomToPoint(focus?.center, focus!!.zoom, true)
+            }
         }
-        setFocus()
 
     }
 
+    private lateinit var tracker: Timer
+
     private fun setFocus() {
-        if (SET_FOCUS) {
-            map.zoomToPoint(focus?.center, focus!!.zoom, true)
+        if (!SET_FOCUS) return
+        map.zoomToPoint(focus?.center, focus!!.zoom, true)
+    }
+
+    private fun MapPoint.closeEnough(o: MapPoint?): Boolean {
+        return if (o == null) {
+            false
+        } else {
+            latitude.roundToInt() == o.latitude.roundToInt()
+                    && longitude.roundToInt() == o.longitude.roundToInt()
         }
     }
 
@@ -273,17 +301,15 @@ class SelectionMapFragment(
         val toDoubles: DoubleArray
             get() = doubleArrayOf(center.latitude, center.longitude, zoom)
 
+        override fun toString(): String =
+            " ${fx2(center.latitude)} ${fx2(center.longitude)} ${zoom.roundToInt()}"
+
         companion object {
+            private fun fx2(d: Double) = (d * 1000).roundToInt() / 1000f
             fun fromDoubles(d: DoubleArray): FocusRecord = FocusRecord(MapPoint(d[0], d[1]), d[2])
             const val SET_FOCUS = false
         }
 
-    }
-
-    private fun recordFocus(): FocusRecord {
-        val record = FocusRecord(map.center, map.zoom)
-        println("6136: zoom = ${focus?.zoom}")
-        return record
     }
 
     private fun updateCounts(binding: SelectionMapLayoutBinding) {
@@ -335,9 +361,6 @@ class SelectionMapFragment(
         summarySheet.listener = object : SelectionSummarySheet.Listener {
             override fun selectionAction(id: Long) {
                 summarySheetBehavior.state = STATE_HIDDEN
-
-                // #6136
-                focus = recordFocus()
 
                 parentFragmentManager.setFragmentResult(
                     REQUEST_SELECT_ITEM,
