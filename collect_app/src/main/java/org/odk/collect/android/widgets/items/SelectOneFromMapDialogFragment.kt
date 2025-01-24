@@ -47,6 +47,7 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
 
     private val formEntryViewModel: FormEntryViewModel by activityViewModels { viewModelFactory }
 
+    // #6136
     private fun findFocusStore(prompt: FormEntryPrompt): TreeElement? {
         fun accessField(obj: Any?, name: String): Any? {
             val field = obj?.javaClass?.getDeclaredField(name)
