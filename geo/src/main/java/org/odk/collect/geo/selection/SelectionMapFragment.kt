@@ -260,6 +260,7 @@ class SelectionMapFragment(
             val gpsLocation = map.gpsLocation
             val ready = gpsLocation != null &&
                     !record.center.closeEnough(gpsLocation)
+            println("6136: $record $ready")
             if (!ready) return@timer
             if (focus == null) {
                 focus = if (doubles == null) {
