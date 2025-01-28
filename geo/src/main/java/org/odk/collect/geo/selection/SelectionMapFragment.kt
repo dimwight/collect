@@ -26,7 +26,6 @@ import org.odk.collect.androidshared.ui.multiclicksafe.setMultiClickSafeOnClickL
 import org.odk.collect.async.Scheduler
 import org.odk.collect.geo.GeoDependencyComponentProvider
 import org.odk.collect.geo.databinding.SelectionMapLayoutBinding
-import org.odk.collect.geo.selection.SelectionMapFragment.FocusRecord.Companion.SET_FOCUS
 import org.odk.collect.maps.LineDescription
 import org.odk.collect.maps.MapFragment
 import org.odk.collect.maps.MapFragmentFactory
@@ -198,7 +197,7 @@ class SelectionMapFragment(
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
-        tracker.cancel()
+        focusMonitor.cancel()
 
         super.onDestroy()
     }
@@ -256,40 +255,32 @@ class SelectionMapFragment(
         }
 
         // #6136
-        tracker = timer(period = 1000) {
-            val record = FocusRecord(map.center, map.zoom)
-            val gpsLocation = map.gpsLocation
-            val ready = gpsLocation != null &&
-                    !record.center.closeEnough(gpsLocation)
-            println("6136: $record $ready")
-            if (!ready) return@timer
-            if (focus == null) {
-                focus = if (doubles == null) {
-                    record
+        focusMonitor = timer(period = 1000) {
+            val latest = FocusRecord(map.center, map.zoom)
+            val noAssign = latest.center.let {
+                val gps = map.gpsLocation
+                gps == null ||
+                        (it.latitude.roundToInt() == gps.latitude.roundToInt() &&
+                                it.longitude.roundToInt() == gps.longitude.roundToInt())
+            }
+            println("6136: $latest $noAssign")
+            if (noAssign) return@timer
+            focus = if (focus == null) {
+                if (doubles == null) {
+                    latest
                 } else {
                     FocusRecord.fromDoubles(doubles)
                 }
             } else {
-                focus = record
+                latest
             }
-            if (SET_FOCUS) {
-                (requireContext() as Activity).runOnUiThread {
-                    map.zoomToPoint(focus?.center, focus!!.zoom, true)
-                }
+            (requireContext() as Activity).runOnUiThread {
+                map.zoomToPoint(focus?.center, focus!!.zoom, true)
             }
         }
     }
 
-    private lateinit var tracker: Timer
-
-    private fun MapPoint.closeEnough(o: MapPoint?): Boolean {
-        return if (o == null) {
-            false
-        } else {
-            latitude.roundToInt() == o.latitude.roundToInt() &&
-                    longitude.roundToInt() == o.longitude.roundToInt()
-        }
-    }
+    private lateinit var focusMonitor: Timer
 
     private class FocusRecord(
         val center: MapPoint,
