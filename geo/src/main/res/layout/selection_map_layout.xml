@@ -73,6 +73,28 @@
                     app:srcCompat="@drawable/ic_my_location" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/zoom_out"
+                    style="@style/Widget.Geo.FloatingActionButton.Map.Small.Surface"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/margin_standard"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:contentDescription="@string/zoom_to_fit_all"
+                    android:theme="@style/Theme.Geo.ForceLightSurface.Overlay"
+                    app:srcCompat="@drawable/baseline_arrow_drop_up_24" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/zoom_in"
+                    style="@style/Widget.Geo.FloatingActionButton.Map.Small.Surface"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="@dimen/margin_standard"
+                    android:layout_marginTop="@dimen/margin_standard"
+                    android:contentDescription="@string/show_my_location"
+                    android:theme="@style/Theme.Geo.ForceLightSurface.Overlay"
+                    app:srcCompat="@drawable/baseline_arrow_drop_down_24" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/zoom_to_bounds"
                     style="@style/Widget.Geo.FloatingActionButton.Map.Small.Surface"
                     android:layout_width="wrap_content"

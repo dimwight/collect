@@ -2,6 +2,7 @@ package org.odk.collect.geo.selection
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -25,6 +26,7 @@ import org.odk.collect.androidshared.ui.multiclicksafe.setMultiClickSafeOnClickL
 import org.odk.collect.async.Scheduler
 import org.odk.collect.geo.GeoDependencyComponentProvider
 import org.odk.collect.geo.databinding.SelectionMapLayoutBinding
+import org.odk.collect.geo.selection.SelectionMapFragment.FocusRecord.Companion.SET_FOCUS
 import org.odk.collect.maps.LineDescription
 import org.odk.collect.maps.MapFragment
 import org.odk.collect.maps.MapFragmentFactory
@@ -39,7 +41,10 @@ import org.odk.collect.material.MaterialProgressDialogFragment
 import org.odk.collect.permissions.PermissionsChecker
 import org.odk.collect.settings.SettingsProvider
 import org.odk.collect.webpage.ExternalWebPageHelper
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.timer
+import kotlin.math.roundToInt
 
 /**
  * Can be used to allow an item to be selected from a map. Items can be provided using an
@@ -50,8 +55,12 @@ class SelectionMapFragment(
     val skipSummary: Boolean = false,
     val zoomToFitItems: Boolean = true,
     val showNewItemButton: Boolean = true,
+    // #6136
+    private val doubles: DoubleArray? = null,
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
 ) : Fragment() {
+
+    private var focus: FocusRecord? = null
 
     @Inject
     lateinit var mapFragmentFactory: MapFragmentFactory
@@ -97,7 +106,13 @@ class SelectionMapFragment(
                 mapFragmentFactory.createMapFragment() as Fragment
             }
             .forClass(OfflineMapLayersPickerBottomSheetDialogFragment::class) {
-                OfflineMapLayersPickerBottomSheetDialogFragment(requireActivity().activityResultRegistry, referenceLayerRepository, scheduler, settingsProvider, externalWebPageHelper)
+                OfflineMapLayersPickerBottomSheetDialogFragment(
+                    requireActivity().activityResultRegistry,
+                    referenceLayerRepository,
+                    scheduler,
+                    settingsProvider,
+                    externalWebPageHelper
+                )
             }
             .build()
 
@@ -117,7 +132,10 @@ class SelectionMapFragment(
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
         ) {
-            ToastUtils.showLongToast(requireContext(), org.odk.collect.strings.R.string.not_granted_permission)
+            ToastUtils.showLongToast(
+                requireContext(),
+                org.odk.collect.strings.R.string.not_granted_permission
+            )
             requireActivity().finish()
         }
 
@@ -180,6 +198,7 @@ class SelectionMapFragment(
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
+        tracker.cancel()
 
         super.onDestroy()
     }
@@ -190,6 +209,14 @@ class SelectionMapFragment(
 
         binding.zoomToLocation.setMultiClickSafeOnClickListener {
             map.zoomToPoint(map.gpsLocation, true)
+        }
+
+        // Adjust zoom #6136
+        binding.zoomIn.setMultiClickSafeOnClickListener {
+            map.zoomToPoint(map.center, map.zoom + 1, true)
+        }
+        binding.zoomOut.setMultiClickSafeOnClickListener {
+            map.zoomToPoint(map.center, map.zoom - 1, true)
         }
 
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
@@ -226,6 +253,58 @@ class SelectionMapFragment(
                 updateItems(it)
                 updateCounts(binding)
             }
+        }
+
+        // #6136
+        tracker = timer(period = 1000) {
+            val record = FocusRecord(map.center, map.zoom)
+            val gpsLocation = map.gpsLocation
+            val ready = gpsLocation != null &&
+                    !record.center.closeEnough(gpsLocation)
+            println("6136: $record $ready")
+            if (!ready) return@timer
+            if (focus == null) {
+                focus = if (doubles == null) {
+                    record
+                } else {
+                    FocusRecord.fromDoubles(doubles)
+                }
+            } else {
+                focus = record
+            }
+            if (SET_FOCUS) {
+                (requireContext() as Activity).runOnUiThread {
+                    map.zoomToPoint(focus?.center, focus!!.zoom, true)
+                }
+            }
+        }
+    }
+
+    private lateinit var tracker: Timer
+
+    private fun MapPoint.closeEnough(o: MapPoint?): Boolean {
+        return if (o == null) {
+            false
+        } else {
+            latitude.roundToInt() == o.latitude.roundToInt() &&
+                    longitude.roundToInt() == o.longitude.roundToInt()
+        }
+    }
+
+    private class FocusRecord(
+        val center: MapPoint,
+        val zoom: Double
+    ) {
+        val toDoubles: DoubleArray
+            get() = doubleArrayOf(center.latitude, center.longitude, zoom)
+
+        override fun toString(): String =
+            " ${fx2(center.latitude)} ${fx2(center.longitude)} ${zoom.roundToInt()}"
+
+        companion object {
+            private fun fx2(d: Double) = (d * 1000).roundToInt() / 1000f
+            fun fromDoubles(d: DoubleArray): FocusRecord = FocusRecord(MapPoint(d[0], d[1]), d[2])
+            const val SET_FOCUS = true
         }
     }
 
@@ -282,6 +361,8 @@ class SelectionMapFragment(
                     REQUEST_SELECT_ITEM,
                     Bundle().also {
                         it.putLong(RESULT_SELECTED_ITEM, id)
+                        // #6136
+                        it.putDoubleArray(RESULT_FOCUS_DOUBLES, focus?.toDoubles)
                     }
                 )
             }
@@ -431,6 +512,9 @@ class SelectionMapFragment(
         const val REQUEST_SELECT_ITEM = "select_item"
         const val RESULT_SELECTED_ITEM = "selected_item"
         const val RESULT_CREATE_NEW_ITEM = "create_new_item"
+
+        // #6136
+        const val RESULT_FOCUS_DOUBLES = "focus_doubles"
     }
 }
 
