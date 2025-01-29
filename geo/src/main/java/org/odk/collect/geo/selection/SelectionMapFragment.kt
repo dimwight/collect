@@ -59,8 +59,6 @@ class SelectionMapFragment(
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
 ) : Fragment() {
 
-    private var focus: FocusRecord? = null
-
     @Inject
     lateinit var mapFragmentFactory: MapFragmentFactory
 
@@ -98,6 +96,10 @@ class SelectionMapFragment(
     private var featureCount: Int = 0
 
     private var previousState: Bundle? = null
+
+    // #6136
+    private var zoomedToPoints: Boolean? = false
+    private var focus: FocusRecord? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         childFragmentManager.fragmentFactory = FragmentFactoryBuilder()
@@ -210,7 +212,7 @@ class SelectionMapFragment(
             map.zoomToPoint(map.gpsLocation, true)
         }
 
-        // Adjust zoom #6136
+        // #6136
         binding.zoomIn.setMultiClickSafeOnClickListener {
             map.zoomToPoint(map.center, map.zoom + 1, true)
         }
@@ -219,7 +221,7 @@ class SelectionMapFragment(
         }
 
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
-            map.zoomToBoundingBox(points, 0.8, false)
+            map.zoomToPoints()
         }
 
         binding.layerMenu.setMultiClickSafeOnClickListener {
@@ -255,16 +257,11 @@ class SelectionMapFragment(
         }
 
         // #6136
-        focusMonitor = timer(period = 1000) {
+        focusMonitor = timer(period = 1500) {
+            if (!map.hasCenter()) return@timer
             val latest = FocusRecord(map.center, map.zoom)
-            val noAssign = latest.center.let {
-                val gps = map.gpsLocation
-                gps == null ||
-                        (it.latitude.roundToInt() == gps.latitude.roundToInt() &&
-                                it.longitude.roundToInt() == gps.longitude.roundToInt())
-            }
-            println("6136: $latest $noAssign")
-            if (noAssign) return@timer
+            println("6136: $latest $zoomedToPoints")
+            if (!zoomedToPoints!!) return@timer
             focus = if (focus == null) {
                 if (doubles == null) {
                     latest
@@ -295,7 +292,6 @@ class SelectionMapFragment(
         companion object {
             private fun fx2(d: Double) = (d * 1000).roundToInt() / 1000f
             fun fromDoubles(d: DoubleArray): FocusRecord = FocusRecord(MapPoint(d[0], d[1]), d[2])
-            const val SET_FOCUS = true
         }
     }
 
@@ -388,6 +384,7 @@ class SelectionMapFragment(
                         } else {
                             map.zoomToPoint(MapPoint(point.latitude, point.longitude), true)
                         }
+                        zoomedToPoints = true
 
                         map.setMarkerIcon(
                             featureId,
@@ -437,14 +434,21 @@ class SelectionMapFragment(
             onFeatureSelected(previouslySelectedItem, maintainZoom = false, selectedByUser = false)
         } else if (!map.hasCenter()) {
             if (zoomToFitItems && points.isNotEmpty()) {
-                map.zoomToBoundingBox(points, 0.8, false)
+                map.zoomToPoints()
             } else {
                 map.setGpsLocationListener { point ->
                     map.zoomToPoint(point, true)
                     map.setGpsLocationListener(null)
+                    zoomedToPoints = false
                 }
             }
         }
+    }
+
+    // #6136
+    private fun MapFragment.zoomToPoints() {
+        zoomToBoundingBox(points, 0.8, false)
+        zoomedToPoints = true
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
