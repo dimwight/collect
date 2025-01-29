@@ -257,15 +257,8 @@ class SelectionMapFragment(
 
         // #6136
         focusMonitor = timer(period = 500) {
+            if (!zoomedToPoints!! || !map.hasCenter()) return@timer
             val latest = FocusRecord(map.center, map.zoom)
-            val gps = map.gpsLocation
-            val assign = latest.center.let {
-                gps != null &&
-                        (it.latitude.roundToInt() != gps.latitude.roundToInt() ||
-                                it.longitude.roundToInt() != gps.longitude.roundToInt())
-            }
-            println("6136: $latest $assign $gps")
-            if (!assign) return@timer
             focus = if (focus == null) {
                 if (doubles == null) {
                     latest
@@ -443,6 +436,7 @@ class SelectionMapFragment(
                 map.setGpsLocationListener { point ->
                     map.zoomToPoint(point, true)
                     map.setGpsLocationListener(null)
+                    zoomedToPoints = false
                 }
             }
         }
