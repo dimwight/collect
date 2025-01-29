@@ -59,6 +59,7 @@ class SelectionMapFragment(
     val onBackPressedDispatcher: (() -> OnBackPressedDispatcher)? = null
 ) : Fragment() {
 
+    private var zoomedToPoints: Boolean? = false
     private var focus: FocusRecord? = null
 
     @Inject
@@ -219,7 +220,7 @@ class SelectionMapFragment(
         }
 
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
-            map.zoomToBoundingBox(points, 0.8, false)
+            map.zoomToPoints()
         }
 
         binding.layerMenu.setMultiClickSafeOnClickListener {
@@ -255,16 +256,16 @@ class SelectionMapFragment(
         }
 
         // #6136
-        focusMonitor = timer(period = 1000) {
+        focusMonitor = timer(period = 500) {
             val latest = FocusRecord(map.center, map.zoom)
-            val noAssign = latest.center.let {
-                val gps = map.gpsLocation
-                gps == null ||
-                        (it.latitude.roundToInt() == gps.latitude.roundToInt() &&
-                                it.longitude.roundToInt() == gps.longitude.roundToInt())
+            val gps = map.gpsLocation
+            val assign = latest.center.let {
+                gps != null &&
+                        (it.latitude.roundToInt() != gps.latitude.roundToInt() ||
+                                it.longitude.roundToInt() != gps.longitude.roundToInt())
             }
-            println("6136: $latest $noAssign")
-            if (noAssign) return@timer
+            println("6136: $latest $assign $gps")
+            if (!assign) return@timer
             focus = if (focus == null) {
                 if (doubles == null) {
                     latest
@@ -437,7 +438,7 @@ class SelectionMapFragment(
             onFeatureSelected(previouslySelectedItem, maintainZoom = false, selectedByUser = false)
         } else if (!map.hasCenter()) {
             if (zoomToFitItems && points.isNotEmpty()) {
-                map.zoomToBoundingBox(points, 0.8, false)
+                map.zoomToPoints()
             } else {
                 map.setGpsLocationListener { point ->
                     map.zoomToPoint(point, true)
@@ -445,6 +446,11 @@ class SelectionMapFragment(
                 }
             }
         }
+    }
+
+    private fun MapFragment.zoomToPoints() {
+        zoomToBoundingBox(points, 0.8, false)
+        zoomedToPoints = true
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
