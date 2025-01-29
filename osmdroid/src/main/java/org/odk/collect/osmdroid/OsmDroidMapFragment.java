@@ -110,6 +110,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
             this,
             () -> mapConfigurator,
             () -> settingsProvider.getUnprotectedSettings(),
+            () -> settingsProvider.getMetaSettings(),
             this::onConfigChanged
     );
 
@@ -130,6 +131,8 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     private File referenceLayerFile;
     private TilesOverlay referenceOverlay;
     private boolean hasCenter;
+    private boolean isSystemZooming;
+    private @Nullable Float lastZoomLevelChangedByUser;
 
     @Override
     public void init(@Nullable ReadyListener readyListener, @Nullable ErrorListener errorListener) {
@@ -203,6 +206,20 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         map.setTilesScaledToDpi(true);
         map.setFlingEnabled(false);
         map.getOverlays().add(new ScaleBarOverlay(map));
+        map.addMapListener(new MapListener() {
+            @Override
+            public boolean onZoom(ZoomEvent event) {
+                if (!isSystemZooming) {
+                    lastZoomLevelChangedByUser = (float) event.getZoomLevel();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onScroll(ScrollEvent event) {
+                return false;
+            }
+        });
         addAttributionAndMapEventsOverlays();
         loadReferenceOverlay();
         addMapLayoutChangeListener(map);
@@ -225,6 +242,21 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
             }
         }, 100);
         return view;
+    }
+
+    @Nullable
+    @Override
+    public Float getZoomLevelSetByUser() {
+        return lastZoomLevelChangedByUser;
+    }
+
+    @Override
+    public void setZoomLevelSetByUser(@Nullable Float zoomLevel) {
+        if (zoomLevel != null && zoomLevel < 2) {
+            lastZoomLevelChangedByUser = 2f;
+        } else {
+            lastZoomLevelChangedByUser = zoomLevel;
+        }
     }
 
     @Override
@@ -252,6 +284,11 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     @Override
+    public void zoomToCurrentLocation(@Nullable MapPoint center) {
+        zoomToPoint(center, POINT_ZOOM, true);
+    }
+
+    @Override
     public void zoomToPoint(@Nullable MapPoint center, boolean animate) {
         zoomToPoint(center, POINT_ZOOM, animate);
     }
@@ -261,9 +298,11 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         // We're ignoring the 'animate' flag because OSMDroid doesn't provide
         // support for simultaneously animating the viewport center and zoom level.
         if (center != null) {
+            isSystemZooming = true;
             // setCenter() must be done last; setZoom() does not preserve the center.
             map.getController().setZoom((int) Math.round(zoom));
             map.getController().setCenter(toGeoPoint(center));
+            isSystemZooming = false;
         }
 
         hasCenter = true;
@@ -292,7 +331,11 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
                 // did it, not because it's known to be the best solution.
                 final BoundingBox box = BoundingBox.fromGeoPoints(geoPoints)
                         .increaseByScale((float) (1 / scaleFactor));
-                new Handler().postDelayed(() -> map.zoomToBoundingBox(box, animate), 100);
+                new Handler().postDelayed(() -> {
+                    isSystemZooming = true;
+                    map.zoomToBoundingBox(box, animate);
+                    isSystemZooming = false;
+                }, 100);
             }
         }
 

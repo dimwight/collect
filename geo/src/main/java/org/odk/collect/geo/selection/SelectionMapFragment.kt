@@ -368,7 +368,7 @@ class SelectionMapFragment(
                 map.zoomToBoundingBox(points, 0.8, false)
             } else {
                 map.setGpsLocationListener { point ->
-                    map.zoomToPoint(point, true)
+                    map.zoomToCurrentLocation(point)
                     map.setGpsLocationListener(null)
                 }
             }

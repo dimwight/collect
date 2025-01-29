@@ -98,9 +98,8 @@ public class GoogleMapFragment extends Fragment implements
     private final MapFragmentDelegate mapFragmentDelegate = new MapFragmentDelegate(
             this,
             this::createConfigurator,
-            () -> {
-                return settingsProvider.getUnprotectedSettings();
-            },
+            () -> settingsProvider.getUnprotectedSettings(),
+            () -> settingsProvider.getMetaSettings(),
             this::onConfigChanged
     );
 
@@ -127,6 +126,8 @@ public class GoogleMapFragment extends Fragment implements
     private File referenceLayerFile;
     private TileOverlay referenceOverlay;
     private boolean hasCenter;
+    private boolean isUserZooming;
+    private @Nullable Float lastZoomLevelChangedByUser;
 
     @Override
     public void init(@Nullable ReadyListener readyListener, @Nullable ErrorListener errorListener) {
@@ -172,7 +173,18 @@ public class GoogleMapFragment extends Fragment implements
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     toLatLng(INITIAL_CENTER), INITIAL_ZOOM));
             googleMap.setOnCameraMoveListener(() -> scaleView.update(googleMap.getCameraPosition().zoom, googleMap.getCameraPosition().target.latitude));
-            googleMap.setOnCameraIdleListener(() -> scaleView.update(googleMap.getCameraPosition().zoom, googleMap.getCameraPosition().target.latitude));
+            googleMap.setOnCameraMoveStartedListener(reason -> {
+                if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
+                    isUserZooming = true;
+                }
+            });
+            googleMap.setOnCameraIdleListener(() -> {
+                scaleView.update(googleMap.getCameraPosition().zoom, googleMap.getCameraPosition().target.latitude);
+                if (isUserZooming) {
+                    lastZoomLevelChangedByUser = googleMap.getCameraPosition().zoom;
+                    isUserZooming = false;
+                }
+            });
             loadReferenceOverlay();
 
             // If the screen is rotated before the map is ready, this fragment
@@ -224,6 +236,17 @@ public class GoogleMapFragment extends Fragment implements
         super.onDestroy();
     }
 
+    @Nullable
+    @Override
+    public Float getZoomLevelSetByUser() {
+        return lastZoomLevelChangedByUser;
+    }
+
+    @Override
+    public void setZoomLevelSetByUser(@Nullable Float zoomLevel) {
+        lastZoomLevelChangedByUser = zoomLevel;
+    }
+
     @Override public @NonNull MapPoint getCenter() {
         if (map == null) {  // during Robolectric tests, map will be null
             return INITIAL_CENTER;
@@ -250,6 +273,11 @@ public class GoogleMapFragment extends Fragment implements
         return map.getCameraPosition().zoom;
     }
 
+    @Override
+    public void zoomToCurrentLocation(@Nullable MapPoint center) {
+        zoomToPoint(center, POINT_ZOOM, true);
+    }
+
     @Override public void zoomToPoint(@Nullable MapPoint center, boolean animate) {
         zoomToPoint(center, POINT_ZOOM, animate);
     }
@@ -260,7 +288,7 @@ public class GoogleMapFragment extends Fragment implements
         }
         if (center != null) {
             moveOrAnimateCamera(
-                CameraUpdateFactory.newLatLngZoom(toLatLng(center), (float) zoom), animate);
+                    CameraUpdateFactory.newLatLngZoom(toLatLng(center), (float) zoom), animate);
         }
         hasCenter = true;
     }
@@ -530,7 +558,7 @@ public class GoogleMapFragment extends Fragment implements
             return null;
         }
         return new MapPoint(location.getLatitude(), location.getLongitude(),
-            location.getAltitude(), location.getAccuracy());
+                location.getAltitude(), location.getAccuracy());
     }
 
     private static @NonNull MapPoint fromMarker(@NonNull Marker marker) {
@@ -564,7 +592,7 @@ public class GoogleMapFragment extends Fragment implements
         }
         if (referenceLayerFile != null) {
             referenceOverlay = this.map.addTileOverlay(new TileOverlayOptions().tileProvider(
-                new GoogleMapsMapBoxOfflineTileProvider(referenceLayerFile)
+                    new GoogleMapsMapBoxOfflineTileProvider(referenceLayerFile)
             ));
             setLabelsVisibility("off");
         } else {
@@ -622,20 +650,20 @@ public class GoogleMapFragment extends Fragment implements
         }
         if (locationCrosshairs == null) {
             locationCrosshairs = map.addMarker(new MarkerOptions()
-                .position(loc)
-                .icon(getBitmapDescriptor(getContext(), new MarkerIconDescription(org.odk.collect.maps.R.drawable.ic_crosshairs)))
-                .anchor(0.5f, 0.5f)  // center the crosshairs on the position
+                    .position(loc)
+                    .icon(getBitmapDescriptor(getContext(), new MarkerIconDescription(org.odk.collect.maps.R.drawable.ic_crosshairs)))
+                    .anchor(0.5f, 0.5f)  // center the crosshairs on the position
             );
         }
         if (accuracyCircle == null) {
             int stroke = ContextUtils.getThemeAttributeValue(requireContext(), com.google.android.material.R.attr.colorPrimaryDark);
             int fill = getResources().getColor(org.odk.collect.androidshared.R.color.color_primary_low_emphasis);
             accuracyCircle = map.addCircle(new CircleOptions()
-                .center(loc)
-                .radius(radius)
-                .strokeWidth(1)
-                .strokeColor(stroke)
-                .fillColor(fill)
+                    .center(loc)
+                    .radius(radius)
+                    .strokeWidth(1)
+                    .strokeColor(stroke)
+                    .fillColor(fill)
             );
         }
 
@@ -688,11 +716,11 @@ public class GoogleMapFragment extends Fragment implements
         // fields.  We need to store the point's altitude and standard
         // deviation values somewhere, so they go in the marker's snippet.
         return map.addMarker(new MarkerOptions()
-            .position(toLatLng(markerDescription.getPoint()))
-            .snippet(markerDescription.getPoint().altitude + ";" + markerDescription.getPoint().accuracy)
-            .draggable(markerDescription.isDraggable())
-            .icon(getBitmapDescriptor(context, markerDescription.getIconDescription()))
-            .anchor(getIconAnchorValueX(markerDescription.getIconAnchor()), getIconAnchorValueY(markerDescription.getIconAnchor()))  // center the icon on the position
+                .position(toLatLng(markerDescription.getPoint()))
+                .snippet(markerDescription.getPoint().altitude + ";" + markerDescription.getPoint().accuracy)
+                .draggable(markerDescription.isDraggable())
+                .icon(getBitmapDescriptor(context, markerDescription.getIconDescription()))
+                .anchor(getIconAnchorValueX(markerDescription.getIconAnchor()), getIconAnchorValueY(markerDescription.getIconAnchor()))  // center the icon on the position
         );
     }
 
@@ -922,11 +950,11 @@ public class GoogleMapFragment extends Fragment implements
                 clearPolyline();
             } else if (polyline == null) {
                 polyline = map.addPolyline(new PolylineOptions()
-                    .color(lineDescription.getStrokeColor())
-                    .zIndex(1)
-                    .width(lineDescription.getStrokeWidth())
-                    .addAll(latLngs)
-                    .clickable(true)
+                        .color(lineDescription.getStrokeColor())
+                        .zIndex(1)
+                        .width(lineDescription.getStrokeWidth())
+                        .addAll(latLngs)
+                        .clickable(true)
                 );
             } else {
                 polyline.setPoints(latLngs);

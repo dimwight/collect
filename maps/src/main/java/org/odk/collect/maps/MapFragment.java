@@ -61,6 +61,18 @@ public interface MapFragment {
 
     void init(@Nullable ReadyListener readyListener, @Nullable ErrorListener errorListener);
 
+    /**
+     * Gets the current zoom level if it has been changed by the user through gestures.
+     * Programmatic zoom changes will not be considered.
+     */
+    @Nullable
+    Float getZoomLevelSetByUser();
+
+    /**
+     * Sets the remembered zoom level changed by the user through gestures.
+     */
+    void setZoomLevelSetByUser(@Nullable Float zoomLevel);
+
     /** Gets the point currently shown at the center of the map view. */
     @NonNull MapPoint getCenter();
 
@@ -75,6 +87,13 @@ public interface MapFragment {
      * possibly with animation.
      */
     void setCenter(@Nullable MapPoint center, boolean animate);
+
+    /**
+     * Centers the map view on the current location, zooming in to the last zoom level set by the
+     * user if available, or to a close-up level deemed appropriate by
+     * the implementation, possibly with animation.
+     */
+    void zoomToCurrentLocation(@Nullable MapPoint center);
 
     /**
      * Centers the map view on the given point, zooming in to a close-up level
