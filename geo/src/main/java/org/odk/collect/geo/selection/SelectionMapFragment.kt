@@ -42,7 +42,7 @@ import org.odk.collect.settings.SettingsProvider
 import org.odk.collect.webpage.ExternalWebPageHelper
 import java.util.Timer
 import javax.inject.Inject
-import kotlin.concurrent.timer
+import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
 
 /**
@@ -199,8 +199,6 @@ class SelectionMapFragment(
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
-        focusMonitor.cancel()
-
         super.onDestroy()
     }
 
@@ -255,29 +253,31 @@ class SelectionMapFragment(
                 updateCounts(binding)
             }
         }
-
         // #6136
-        focusMonitor = timer(period = 1500) {
-            if (!map.hasCenter()) return@timer
-            val latest = FocusRecord(map.center, map.zoom)
-            println("6136: $latest $zoomedToPoints")
-            if (!zoomedToPoints!!) return@timer
-            focus = if (focus == null) {
-                if (doubles == null) {
-                    latest
+        map.addZoomListener {
+            println("6136: Hi")
+            Timer().schedule(1500) {
+                println("6136: Ho")
+                if (!map.hasCenter()) return@schedule
+                val latest = FocusRecord(map.center, map.zoom)
+                println("6136: $latest $zoomedToPoints")
+                if (!zoomedToPoints!!) return@schedule
+                focus = if (focus == null) {
+                    if (doubles == null) {
+                        latest
+                    } else {
+                        FocusRecord.fromDoubles(doubles)
+                    }
                 } else {
-                    FocusRecord.fromDoubles(doubles)
+                    latest
                 }
-            } else {
-                latest
-            }
-            (requireContext() as Activity).runOnUiThread {
-                map.zoomToPoint(focus?.center, focus!!.zoom, true)
+                println("6136: $focus")
+                (requireContext() as Activity).runOnUiThread {
+                    map.zoomToPoint(focus?.center, focus!!.zoom, true)
+                }
             }
         }
     }
-
-    private lateinit var focusMonitor: Timer
 
     private class FocusRecord(
         val center: MapPoint,

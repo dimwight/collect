@@ -206,7 +206,6 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         addAttributionAndMapEventsOverlays();
         loadReferenceOverlay();
         addMapLayoutChangeListener(map);
-
         osmLocationClientWrapper = new OsmLocationClientWrapper(locationClient);
         myLocationOverlay = new MyLocationNewOverlay(osmLocationClientWrapper, map);
         myLocationOverlay.setDrawAccuracyEnabled(true);
@@ -227,6 +226,28 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         return view;
     }
 
+    @Override
+    public void addZoomListener(final ZoomListener l) {
+        new ZoomListener() {
+            @Override
+            public void onZoom(double zoom) {
+                System.out.println("6136: zoom = " + zoom);
+            }
+        };
+        MapListener mapListener = new MapListener() {
+            @Override
+            public boolean onScroll(ScrollEvent event) {
+                return false;
+            }
+
+            @Override
+            public boolean onZoom(ZoomEvent event) {
+                l.onZoom(event.getZoomLevel());
+                return false;
+            }
+        };
+        map.addMapListener(mapListener);
+    }
     @Override
     public @NonNull
     MapPoint getCenter() {

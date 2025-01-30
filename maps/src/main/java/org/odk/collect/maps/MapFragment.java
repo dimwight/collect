@@ -61,6 +61,8 @@ public interface MapFragment {
 
     void init(@Nullable ReadyListener readyListener, @Nullable ErrorListener errorListener);
 
+    void addZoomListener(ZoomListener l);
+
     /** Gets the point currently shown at the center of the map view. */
     @NonNull MapPoint getCenter();
 
@@ -199,6 +201,10 @@ public interface MapFragment {
 
     interface ReadyListener {
         void onReady(@NonNull MapFragment mapFragment);
+    }
+
+    interface ZoomListener {
+        void onZoom(double zoom);
     }
 
     interface PointListener {
