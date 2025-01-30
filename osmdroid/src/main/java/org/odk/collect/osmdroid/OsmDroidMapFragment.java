@@ -132,6 +132,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     private TilesOverlay referenceOverlay;
     private boolean hasCenter;
     private boolean isSystemZooming;
+    private @Nullable Float lastZoomLevelChangedByUser;
 
     @Override
     public void init(@Nullable ReadyListener readyListener, @Nullable ErrorListener errorListener) {
@@ -200,7 +201,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
         map.setMinZoomLevel(2.0);
         map.setMaxZoomLevel(22.0);
-        map.getController().setCenter(toGeoPoint(MapFragment.Companion.getINITIAL_CENTER()));
+        map.getController().setCenter(toGeoPoint(INITIAL_CENTER));
         map.getController().setZoom((int) INITIAL_ZOOM);
         map.setTilesScaledToDpi(true);
         map.setFlingEnabled(false);
@@ -209,7 +210,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
             @Override
             public boolean onZoom(ZoomEvent event) {
                 if (!isSystemZooming) {
-                    onZoomLevelChangedByUserListener((float) event.getZoomLevel());
+                    lastZoomLevelChangedByUser = (float) event.getZoomLevel();
                 }
                 return false;
             }
@@ -243,12 +244,18 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         return view;
     }
 
+    @Nullable
     @Override
-    public void onZoomLevelChangedByUserListener(@Nullable Float zoomLevel) {
+    public Float getZoomLevelSetByUser() {
+        return lastZoomLevelChangedByUser;
+    }
+
+    @Override
+    public void setZoomLevelSetByUser(@Nullable Float zoomLevel) {
         if (zoomLevel != null && zoomLevel < 2) {
-            mapFragmentDelegate.onZoomLevelChangedByUserListener(2f);
+            lastZoomLevelChangedByUser = 2f;
         } else {
-            mapFragmentDelegate.onZoomLevelChangedByUserListener(zoomLevel);
+            lastZoomLevelChangedByUser = zoomLevel;
         }
     }
 
@@ -278,12 +285,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override
     public void zoomToCurrentLocation(@Nullable MapPoint center) {
-        Float zoomLevel = mapFragmentDelegate.getZoomLevel();
-        zoomToPoint(
-                center,
-                zoomLevel != null ? zoomLevel : POINT_ZOOM,
-                true
-        );
+        zoomToPoint(center, POINT_ZOOM, true);
     }
 
     @Override
@@ -307,7 +309,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     @Override
-    public void zoomToBoundingBox(@Nullable Iterable<MapPoint> points, double scaleFactor, boolean animate) {
+    public void zoomToBoundingBox(Iterable<MapPoint> points, double scaleFactor, boolean animate) {
         if (points != null) {
             int count = 0;
             List<GeoPoint> geoPoints = new ArrayList<>();
@@ -678,7 +680,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         return marker;
     }
 
-    private float getIconAnchorValueX(@MapFragment.Companion.IconAnchor String iconAnchor) {
+    private float getIconAnchorValueX(@IconAnchor String iconAnchor) {
         switch (iconAnchor) {
             case BOTTOM:
             default:
@@ -686,7 +688,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         }
     }
 
-    private float getIconAnchorValueY(@MapFragment.Companion.IconAnchor String iconAnchor) {
+    private float getIconAnchorValueY(@IconAnchor String iconAnchor) {
         switch (iconAnchor) {
             case BOTTOM:
                 return Marker.ANCHOR_BOTTOM;

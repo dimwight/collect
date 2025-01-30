@@ -19,8 +19,6 @@ class MapFragmentDelegate(
     private val metaSettings by lazy { metaSettingsProvider() }
 
     private var savedInstanceState: Bundle? = null
-    var zoomLevel: Float? = null
-        private set
 
     fun onCreate(savedInstanceState: Bundle?) {
         this.savedInstanceState = savedInstanceState
@@ -38,27 +36,19 @@ class MapFragmentDelegate(
     }
 
     fun onStart() {
-        if (metaSettings.contains(LAST_KNOWN_ZOOM_LEVEL)) {
-            zoomLevel = metaSettings.getFloat(LAST_KNOWN_ZOOM_LEVEL)
-        }
+        mapFragment.setZoomLevelSetByUser(metaSettings.getFloat(LAST_KNOWN_ZOOM_LEVEL))
         onConfigChanged.accept(configurator.buildConfig(unprotectedSettings))
         unprotectedSettings.registerOnSettingChangeListener(this)
     }
 
     fun onStop() {
-        if (zoomLevel != null) {
-            metaSettings.save(LAST_KNOWN_ZOOM_LEVEL, zoomLevel)
-        }
+        metaSettings.save(LAST_KNOWN_ZOOM_LEVEL, mapFragment.zoomLevelSetByUser)
         unprotectedSettings.unregisterOnSettingChangeListener(this)
     }
 
     fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelable(MAP_CENTER_KEY, mapFragment.getCenter())
-        outState.putDouble(MAP_ZOOM_KEY, mapFragment.getZoom())
-    }
-
-    fun onZoomLevelChangedByUserListener(zoomLevel: Float?) {
-        this.zoomLevel = zoomLevel
+        outState.putParcelable(MAP_CENTER_KEY, mapFragment.center)
+        outState.putDouble(MAP_ZOOM_KEY, mapFragment.zoom)
     }
 
     override fun onSettingChanged(key: String) {
