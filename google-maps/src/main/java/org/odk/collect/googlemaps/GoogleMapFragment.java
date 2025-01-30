@@ -135,6 +135,11 @@ public class GoogleMapFragment extends Fragment implements
     }
 
     @Override
+    public void addZoomListener(ZoomListener l) {
+
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mapFragmentDelegate.onCreate(savedInstanceState);
