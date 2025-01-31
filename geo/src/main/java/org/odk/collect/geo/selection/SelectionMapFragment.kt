@@ -192,6 +192,14 @@ class SelectionMapFragment(
             map.zoomToCurrentLocation(map.getGpsLocation())
         }
 
+        // #6136
+        binding.zoomIn.setMultiClickSafeOnClickListener {
+            map.zoomToPoint(map.getCenter(), map.getZoom() + 1, true)
+        }
+        binding.zoomOut.setMultiClickSafeOnClickListener {
+            map.zoomToPoint(map.getCenter(), map.getZoom() - 1, true)
+        }
+
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
             map.zoomToBoundingBox(points, 0.8, false)
         }
