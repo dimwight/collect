@@ -40,7 +40,9 @@ import org.odk.collect.material.MaterialProgressDialogFragment
 import org.odk.collect.permissions.PermissionsChecker
 import org.odk.collect.settings.SettingsProvider
 import org.odk.collect.webpage.ExternalWebPageHelper
+import java.util.Timer
 import javax.inject.Inject
+import kotlin.concurrent.schedule
 import kotlin.math.roundToInt
 
 /**
@@ -267,8 +269,10 @@ class SelectionMapFragment(
             latest
         }
         println("6136: $focus")
-        (requireContext() as Activity).runOnUiThread {
-            map.zoomToPoint(focus?.center, focus!!.zoom, true)
+        Timer().schedule(1000) {
+            (requireContext() as Activity).runOnUiThread {
+                map.zoomToPoint(focus?.center, focus!!.zoom, true)
+            }
         }
     }
 
