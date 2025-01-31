@@ -55,9 +55,11 @@ class SelectOneFromMapDialogFragment(private val viewModelFactory: ViewModelProv
             return field?.get(obj)
         }
 
-        val mTreeElement = accessField(prompt, "mTreeElement")
-        val parent = accessField(mTreeElement, "parent")
-        return (parent as TreeElement).getChildAt(1)
+        val point = accessField(prompt, "mTreeElement")
+        val repeat = accessField(point, "parent")
+        val data_ = accessField(repeat, "parent")
+        val focus = (data_ as TreeElement).getChildAt(0)
+        return focus
     }
     override fun onAttach(context: Context) {
         super.onAttach(context)
