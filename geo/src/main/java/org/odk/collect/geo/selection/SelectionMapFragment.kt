@@ -269,10 +269,10 @@ class SelectionMapFragment(
             latest
         }
         println("6136: $focus")
-        Timer().schedule(1000) {
+        //   Timer().schedule(1000) {
             (requireContext() as Activity).runOnUiThread {
                 map.zoomToPoint(focus?.center, focus!!.zoom, true)
-            }
+                //         }
         }
     }
 
@@ -448,7 +448,9 @@ class SelectionMapFragment(
     // #6136
     private fun MapFragment.zoomToPointsAndUpdateFocus() {
         zoomToBoundingBox(points, 0.8, false)
-        updateFocus()
+        Timer().schedule(1000) {
+            updateFocus()
+        }
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
