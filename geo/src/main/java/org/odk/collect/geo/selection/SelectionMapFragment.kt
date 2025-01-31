@@ -199,7 +199,7 @@ class SelectionMapFragment(
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
-        focusMonitor.cancel()
+        focusMonitor?.cancel()
 
         super.onDestroy()
     }
@@ -257,7 +257,7 @@ class SelectionMapFragment(
         }
 
         // #6136
-        focusMonitor = timer(period = 1500) {
+        focusMonitor = if (true) null else timer(period = 1500) {
             if (!map.hasCenter()) return@timer
             val latest = FocusRecord(map.center, map.zoom)
             println("6136: $latest $zoomedToPoints")
@@ -277,7 +277,24 @@ class SelectionMapFragment(
         }
     }
 
-    private lateinit var focusMonitor: Timer
+    private fun updateFocus() {
+        if (focusMonitor != null) return
+        val latest = FocusRecord(map.center, map.zoom)
+        focus = if (focus == null) {
+            if (doubles == null) {
+                latest
+            } else {
+                FocusRecord.fromDoubles(doubles)
+            }
+        } else {
+            latest
+        }
+        println("6136: $focus")
+        (requireContext() as Activity).runOnUiThread {
+            map.zoomToPoint(focus?.center, focus!!.zoom, true)
+        }
+    }
+    private var focusMonitor: Timer? = null
 
     private class FocusRecord(
         val center: MapPoint,
@@ -344,6 +361,9 @@ class SelectionMapFragment(
             override fun selectionAction(id: Long) {
                 summarySheetBehavior.state = STATE_HIDDEN
 
+                // #6136
+                updateFocus()
+
                 parentFragmentManager.setFragmentResult(
                     REQUEST_SELECT_ITEM,
                     Bundle().also {
@@ -385,6 +405,7 @@ class SelectionMapFragment(
                             map.zoomToPoint(MapPoint(point.latitude, point.longitude), true)
                         }
                         zoomedToPoints = true
+                        updateFocus()
 
                         map.setMarkerIcon(
                             featureId,
@@ -448,6 +469,7 @@ class SelectionMapFragment(
     // #6136
     private fun MapFragment.zoomToPoints() {
         zoomToBoundingBox(points, 0.8, false)
+        updateFocus()
         zoomedToPoints = true
     }
 
