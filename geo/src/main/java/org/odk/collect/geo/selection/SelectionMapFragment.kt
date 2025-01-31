@@ -40,9 +40,7 @@ import org.odk.collect.material.MaterialProgressDialogFragment
 import org.odk.collect.permissions.PermissionsChecker
 import org.odk.collect.settings.SettingsProvider
 import org.odk.collect.webpage.ExternalWebPageHelper
-import java.util.Timer
 import javax.inject.Inject
-import kotlin.concurrent.timer
 import kotlin.math.roundToInt
 
 /**
@@ -98,7 +96,6 @@ class SelectionMapFragment(
     private var previousState: Bundle? = null
 
     // #6136
-    private var zoomedToPoints: Boolean? = false
     private var focus: FocusRecord? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -199,7 +196,6 @@ class SelectionMapFragment(
         if (this::summarySheetBehavior.isInitialized) {
             summarySheetBehavior.removeBottomSheetCallback(bottomSheetCallback)
         }
-        focusMonitor?.cancel()
 
         super.onDestroy()
     }
@@ -221,7 +217,7 @@ class SelectionMapFragment(
         }
 
         binding.zoomToBounds.setMultiClickSafeOnClickListener {
-            map.zoomToPoints()
+            map.zoomToPointsAndUpdateFocus()
         }
 
         binding.layerMenu.setMultiClickSafeOnClickListener {
@@ -256,29 +252,10 @@ class SelectionMapFragment(
             }
         }
 
-        // #6136
-        focusMonitor = if (true) null else timer(period = 1500) {
-            if (!map.hasCenter()) return@timer
-            val latest = FocusRecord(map.center, map.zoom)
-            println("6136: $latest $zoomedToPoints")
-            if (!zoomedToPoints!!) return@timer
-            focus = if (focus == null) {
-                if (doubles == null) {
-                    latest
-                } else {
-                    FocusRecord.fromDoubles(doubles)
-                }
-            } else {
-                latest
-            }
-            (requireContext() as Activity).runOnUiThread {
-                map.zoomToPoint(focus?.center, focus!!.zoom, true)
-            }
-        }
     }
 
+    // #6136
     private fun updateFocus() {
-        if (focusMonitor != null) return
         val latest = FocusRecord(map.center, map.zoom)
         focus = if (focus == null) {
             if (doubles == null) {
@@ -294,7 +271,6 @@ class SelectionMapFragment(
             map.zoomToPoint(focus?.center, focus!!.zoom, true)
         }
     }
-    private var focusMonitor: Timer? = null
 
     private class FocusRecord(
         val center: MapPoint,
@@ -404,7 +380,7 @@ class SelectionMapFragment(
                         } else {
                             map.zoomToPoint(MapPoint(point.latitude, point.longitude), true)
                         }
-                        zoomedToPoints = true
+
                         updateFocus()
 
                         map.setMarkerIcon(
@@ -455,22 +431,20 @@ class SelectionMapFragment(
             onFeatureSelected(previouslySelectedItem, maintainZoom = false, selectedByUser = false)
         } else if (!map.hasCenter()) {
             if (zoomToFitItems && points.isNotEmpty()) {
-                map.zoomToPoints()
+                map.zoomToPointsAndUpdateFocus()
             } else {
                 map.setGpsLocationListener { point ->
                     map.zoomToPoint(point, true)
                     map.setGpsLocationListener(null)
-                    zoomedToPoints = false
                 }
             }
         }
     }
 
     // #6136
-    private fun MapFragment.zoomToPoints() {
+    private fun MapFragment.zoomToPointsAndUpdateFocus() {
         zoomToBoundingBox(points, 0.8, false)
         updateFocus()
-        zoomedToPoints = true
     }
 
     private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
