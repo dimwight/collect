@@ -94,20 +94,22 @@ public class RankingWidgetDialog extends DialogFragment {
     }
 
     private NestedScrollView setUpRankingLayout() {
-        LinearLayout rankingLayout = new LinearLayout(getContext());
-        rankingLayout.setOrientation(LinearLayout.HORIZONTAL);
-        rankingLayout.addView(setUpPositionsLayout());
-        rankingLayout.addView(setUpRecyclerView());
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.HORIZONTAL);
+        layout.addView(setUpPositionsLayout());
+        layout.addView(setUpRecyclerView());
+        layout.setBackgroundColor(0xff);
 
         float standardMargin = requireContext()
                 .getResources()
                 .getDimension(org.odk.collect.androidshared.R.dimen.margin_standard);
-        int standardMarginPx = pxFromDp(requireContext(), standardMargin);
-        rankingLayout.setPadding(standardMarginPx, standardMarginPx, standardMarginPx, standardMarginPx);
+        int standardMarginPx = pxFromDp(requireContext(), standardMargin) * 2;
+        layout.setPadding(standardMarginPx, standardMarginPx, standardMarginPx, standardMarginPx);
 
-        NestedScrollView scrollView = new NestedScrollView(getContext());
-        scrollView.addView(rankingLayout);
-        return scrollView;
+        NestedScrollView scroll = new NestedScrollView(getContext());
+        scroll.addView(layout);
+        scroll.setBackgroundColor(0xff);
+        return scroll;
     }
 
     private LinearLayout setUpPositionsLayout() {
