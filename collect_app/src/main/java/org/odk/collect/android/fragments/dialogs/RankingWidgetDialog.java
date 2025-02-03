@@ -50,6 +50,7 @@ import org.odk.collect.android.widgets.utilities.QuestionFontSizeUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+// #6330
 public class RankingWidgetDialog extends DialogFragment {
     private RankingListener listener;
     private RankingListAdapter rankingListAdapter;
@@ -103,7 +104,8 @@ public class RankingWidgetDialog extends DialogFragment {
         float standardMargin = requireContext()
                 .getResources()
                 .getDimension(org.odk.collect.androidshared.R.dimen.margin_standard);
-        int standardMarginPx = pxFromDp(requireContext(), standardMargin) * 2;
+        int standardMarginPx = true ? 0 :
+                pxFromDp(requireContext(), standardMargin) * 2;
         layout.setPadding(standardMarginPx, standardMarginPx, standardMarginPx, standardMarginPx);
 
         NestedScrollView scroll = new NestedScrollView(getContext());
