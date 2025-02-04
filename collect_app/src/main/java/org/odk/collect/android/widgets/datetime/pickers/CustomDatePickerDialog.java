@@ -182,7 +182,9 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
     }
 
     public LocalDateTime getDate() {
-        return getDay() == 0 ? viewModel.getLocalDateTime() : getOriginalDate();
+        return getDay() == 0 ?
+                viewModel.getLocalDateTime()
+                : getOriginalDate();
     }
 
     protected abstract void updateDays();

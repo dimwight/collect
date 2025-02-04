@@ -24,7 +24,7 @@ import org.odk.collect.android.widgets.datetime.pickers.CopticDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.CustomTimePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.EthiopianDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.FixedDatePickerDialog;
-import org.odk.collect.android.widgets.datetime.pickers.GregorianDatePickerDialog;
+import org.odk.collect.android.widgets.datetime.pickers.ISODatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.IslamicDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.MyanmarDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.PersianDatePickerDialog;
@@ -228,7 +228,8 @@ public class DateTimeWidgetUtils {
                 return BuddhistDatePickerDialog.class;
             default:
                 return false ? FixedDatePickerDialog.class :
-                        GregorianDatePickerDialog.class;
+                        true ? IslamicDatePickerDialog.class :
+                                ISODatePickerDialog.class;
         }
     }
 
