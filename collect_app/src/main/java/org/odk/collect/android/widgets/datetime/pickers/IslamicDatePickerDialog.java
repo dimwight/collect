@@ -32,6 +32,7 @@ public class IslamicDatePickerDialog extends CustomDatePickerDialog {
 
     @Override
     public void onResume() {
+        System.out.println("6330I: onResume");
         super.onResume();
         monthsArray = getResources().getStringArray(R.array.islamic_months);
         setUpValues();
@@ -39,16 +40,19 @@ public class IslamicDatePickerDialog extends CustomDatePickerDialog {
 
     @Override
     protected void updateDays() {
+        System.out.println("6330I: updateDays");
         LocalDateTime localDateTime = getCurrentIslamicDate();
         setUpDayPicker(localDateTime.getDayOfMonth(), localDateTime.dayOfMonth().getMaximumValue());
     }
 
     @Override
     protected LocalDateTime getOriginalDate() {
+        System.out.println("6330I: getOriginalDate");
         return getCurrentIslamicDate();
     }
 
     private void setUpDatePicker() {
+        System.out.println("6330I: setUpDatePicker");
         LocalDateTime islamicDate = DateTimeUtils
                 .skipDaylightSavingGapIfExists(getDate())
                 .toDateTime()
@@ -60,11 +64,13 @@ public class IslamicDatePickerDialog extends CustomDatePickerDialog {
     }
 
     private void setUpValues() {
+        System.out.println("6330I: setUpPickValues");
         setUpDatePicker();
         updateGregorianDateLabel();
     }
 
     private LocalDateTime getCurrentIslamicDate() {
+        System.out.println("6330I: getPickedIslamicDate");
         int islamicDay = getDay();
         int islamicMonth = Arrays.asList(monthsArray).indexOf(getMonth());
         int islamicYear = getYear();

@@ -2159,6 +2159,7 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
 
     @Override
     public void onDateChanged(LocalDateTime selectedDate) {
+        System.out.println("6330F: onDateChanged");
         onDataChanged(selectedDate);
     }
 
