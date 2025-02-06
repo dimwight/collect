@@ -228,7 +228,7 @@ public class DateTimeWidgetUtils {
                 return BuddhistDatePickerDialog.class;
             default:
                 return false ? FixedDatePickerDialog.class :
-                        true ? IslamicDatePickerDialog.class :
+                        false ? IslamicDatePickerDialog.class :
                                 ISODatePickerDialog.class;
         }
     }
