@@ -55,6 +55,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        System.out.println("6330C: onAttach");
 
         if (context instanceof DateChangeListener) {
             dateChangeListener = (DateChangeListener) context;
@@ -75,6 +76,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        System.out.println("6330C: onCreateDialog");
         return new MaterialAlertDialogBuilder(getActivity())
                 .setTitle(org.odk.collect.strings.R.string.select_date)
                 .setView(R.layout.custom_date_picker_dialog)
@@ -89,18 +91,21 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
 
     @Override
     public void onDestroyView() {
+        System.out.println("6330C: onDestroyView");
         viewModel.setLocalDateTime(DateTimeUtils.getDateAsGregorian(getOriginalDate()));
         super.onDestroyView();
     }
 
     @Override
     public void onResume() {
+        System.out.println("6330C: onResume");
         super.onResume();
         gregorianDateText = getDialog().findViewById(R.id.date_gregorian);
         setUpPickers();
     }
 
     private void setUpPickers() {
+        System.out.println("6330C: setUpPickers");
         dayPicker = getDialog().findViewById(R.id.day_picker);
         dayPicker.setOnValueChangedListener((picker, oldVal, newVal) -> updateGregorianDateLabel());
         monthPicker = getDialog().findViewById(R.id.month_picker);
@@ -112,6 +117,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
     }
 
     private void hidePickersIfNeeded() {
+        System.out.println("6330C: hidePickersIfNeeded");
         if (viewModel.getDatePickerDetails().isMonthYearMode()) {
             dayPicker.setVisibility(View.GONE);
         } else if (viewModel.getDatePickerDetails().isYearMode()) {
@@ -121,16 +127,19 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
     }
 
     protected void updateGregorianDateLabel() {
+        System.out.println("6330C: updateGregorianDateLabel");
         String label = DateTimeWidgetUtils.getDateTimeLabel(DateTimeUtils.getDateAsGregorian(getOriginalDate()).toDate(),
                 viewModel.getDatePickerDetails(), false, getContext());
         gregorianDateText.setText(label);
     }
 
     protected void setUpDayPicker(int dayOfMonth, int daysInMonth) {
+        System.out.println("6330C: setUpDayPicker");
         setUpDayPicker(1, dayOfMonth, daysInMonth);
     }
 
     protected void setUpDayPicker(int minDay, int dayOfMonth, int daysInMonth) {
+        System.out.println("6330C: setUpDayPicker");
         dayPicker.setMinValue(minDay);
         dayPicker.setMaxValue(daysInMonth);
         if (viewModel.getDatePickerDetails().isSpinnerMode()) {
@@ -147,42 +156,55 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
         if (!viewModel.getDatePickerDetails().isYearMode()) {
             monthPicker.setValue(monthOfYear - 1);
         }
+        System.out.println("6330C: setUpMonthPicker " + monthOfYear);
     }
 
     protected void setUpYearPicker(int year, int minSupportedYear, int maxSupportedYear) {
+        System.out.println("6330C: setUpYearPicker");
         yearPicker.setMinValue(minSupportedYear);
         yearPicker.setMaxValue(maxSupportedYear);
         yearPicker.setValue(year);
     }
 
     protected void monthUpdated() {
+        System.out.println("6330C: monthUpdated");
         updateDays();
         updateGregorianDateLabel();
     }
 
     protected void yearUpdated() {
+        System.out.println("6330C: yearUpdated");
         updateDays();
         updateGregorianDateLabel();
     }
 
     public int getDay() {
+        System.out.println("6330C: getPickerDay");
         return dayPicker.getValue();
     }
 
     public String getMonth() {
-        return monthPicker.getDisplayedValues()[monthPicker.getValue()];
+        int value = monthPicker.getValue();
+        System.out.println("6330C: getPickerMonth " + value);
+        return monthPicker.getDisplayedValues()[value];
     }
 
     public int getMonthId() {
+        System.out.println("6330C: getMonthId");
         return monthPicker.getValue();
     }
 
     public int getYear() {
+        System.out.println("6330C: getPickerYear");
         return yearPicker.getValue();
     }
 
     public LocalDateTime getDate() {
-        return getDay() == 0 ? viewModel.getLocalDateTime() : getOriginalDate();
+        System.out.println("6330C: getDate");
+        LocalDateTime ldt = new LocalDateTime().withDate(2020, 5, 12);
+        return getDay() == 0 ? false ? ldt :
+                viewModel.getLocalDateTime()
+                : getOriginalDate();
     }
 
     protected abstract void updateDays();

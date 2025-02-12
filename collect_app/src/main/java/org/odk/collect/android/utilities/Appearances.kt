@@ -26,6 +26,7 @@ object Appearances {
     const val ETHIOPIAN = "ethiopian"
     const val COPTIC = "coptic"
     const val ISLAMIC = "islamic"
+    const val ISO = "iso"
     const val BIKRAM_SAMBAT = "bikram-sambat"
     const val MYANMAR = "myanmar"
     const val PERSIAN = "persian"

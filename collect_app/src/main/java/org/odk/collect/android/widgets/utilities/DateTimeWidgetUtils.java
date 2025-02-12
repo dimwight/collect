@@ -14,19 +14,20 @@ import org.joda.time.chrono.EthiopicChronology;
 import org.joda.time.chrono.IslamicChronology;
 import org.joda.time.chrono.PersianChronologyKhayyamBorkowski;
 import org.odk.collect.android.R;
+import org.odk.collect.android.utilities.Appearances;
+import org.odk.collect.android.utilities.MyanmarDateUtils;
+import org.odk.collect.android.utilities.ThemeUtils;
+import org.odk.collect.android.widgets.datetime.DatePickerDetails;
 import org.odk.collect.android.widgets.datetime.pickers.BikramSambatDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.BuddhistDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.CopticDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.CustomTimePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.EthiopianDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.FixedDatePickerDialog;
+import org.odk.collect.android.widgets.datetime.pickers.ISODatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.IslamicDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.MyanmarDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.PersianDatePickerDialog;
-import org.odk.collect.android.widgets.datetime.DatePickerDetails;
-import org.odk.collect.android.utilities.Appearances;
-import org.odk.collect.android.utilities.MyanmarDateUtils;
-import org.odk.collect.android.utilities.ThemeUtils;
 import org.odk.collect.androidshared.ui.DialogFragmentUtils;
 
 import java.text.DateFormat;
@@ -63,6 +64,9 @@ public class DateTimeWidgetUtils {
             } else if (appearance.contains(Appearances.ISLAMIC)) {
                 datePickerType = DatePickerDetails.DatePickerType.ISLAMIC;
                 datePickerMode = DatePickerDetails.DatePickerMode.SPINNERS;
+            } else if (appearance.contains(Appearances.ISO)) {
+                datePickerType = DatePickerDetails.DatePickerType.ISO;
+                datePickerMode = DatePickerDetails.DatePickerMode.SPINNERS;
             } else if (appearance.contains(Appearances.BIKRAM_SAMBAT)) {
                 datePickerType = DatePickerDetails.DatePickerType.BIKRAM_SAMBAT;
                 datePickerMode = DatePickerDetails.DatePickerMode.SPINNERS;
@@ -97,6 +101,7 @@ public class DateTimeWidgetUtils {
 
         switch (datePickerDetails.getDatePickerType()) {
             case GREGORIAN:
+            case ISO:
                 return gregorianDateText;
             case ETHIOPIAN:
                 customDate = new DateTime(date).withChronology(EthiopicChronology.getInstance());
@@ -217,6 +222,8 @@ public class DateTimeWidgetUtils {
                 return CopticDatePickerDialog.class;
             case ISLAMIC:
                 return IslamicDatePickerDialog.class;
+            case ISO:
+                return ISODatePickerDialog.class;
             case BIKRAM_SAMBAT:
                 return BikramSambatDatePickerDialog.class;
             case MYANMAR:
