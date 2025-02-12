@@ -14,19 +14,20 @@ import org.joda.time.chrono.EthiopicChronology;
 import org.joda.time.chrono.IslamicChronology;
 import org.joda.time.chrono.PersianChronologyKhayyamBorkowski;
 import org.odk.collect.android.R;
+import org.odk.collect.android.utilities.Appearances;
+import org.odk.collect.android.utilities.MyanmarDateUtils;
+import org.odk.collect.android.utilities.ThemeUtils;
+import org.odk.collect.android.widgets.datetime.DatePickerDetails;
 import org.odk.collect.android.widgets.datetime.pickers.BikramSambatDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.BuddhistDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.CopticDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.CustomTimePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.EthiopianDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.FixedDatePickerDialog;
+import org.odk.collect.android.widgets.datetime.pickers.ISODatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.IslamicDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.MyanmarDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.PersianDatePickerDialog;
-import org.odk.collect.android.widgets.datetime.DatePickerDetails;
-import org.odk.collect.android.utilities.Appearances;
-import org.odk.collect.android.utilities.MyanmarDateUtils;
-import org.odk.collect.android.utilities.ThemeUtils;
 import org.odk.collect.androidshared.ui.DialogFragmentUtils;
 
 import java.text.DateFormat;
@@ -226,7 +227,8 @@ public class DateTimeWidgetUtils {
             case BUDDHIST:
                 return BuddhistDatePickerDialog.class;
             default:
-                return FixedDatePickerDialog.class;
+                return true ? FixedDatePickerDialog.class :
+                        ISODatePickerDialog.class;
         }
     }
 

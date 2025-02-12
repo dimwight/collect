@@ -19,8 +19,8 @@ import androidx.fragment.app.testing.FragmentScenario;
 
 import org.joda.time.LocalDateTime;
 import org.odk.collect.android.R;
-import org.odk.collect.android.widgets.datetime.pickers.CustomDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.DatePickerDetails;
+import org.odk.collect.android.widgets.datetime.pickers.CustomDatePickerDialog;
 import org.odk.collect.android.widgets.utilities.DateTimeWidgetUtils;
 import org.odk.collect.testshared.RobolectricHelpers;
 import org.robolectric.Robolectric;
@@ -44,7 +44,8 @@ public class DialogFragmentHelpers {
 
     public static Bundle getDialogFragmentArguments(DatePickerDetails datePickerDetails) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(DateTimeWidgetUtils.DATE, new LocalDateTime().withDate(2020, 5, 12));
+        LocalDateTime ldt = new LocalDateTime().withDate(2020, 5, 12);
+        bundle.putSerializable(DateTimeWidgetUtils.DATE, ldt);
         bundle.putSerializable(DateTimeWidgetUtils.DATE_PICKER_DETAILS, datePickerDetails);
         return bundle;
     }
@@ -55,9 +56,9 @@ public class DialogFragmentHelpers {
 
     public static void assertDialogShowsCorrectDate(int year, int month, int day, String date) {
         AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
-
         assertDatePickerValue(dialog, year, month, day);
-        assertThat(((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString(), equalTo(date));
+        String actual = ((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString();
+        assertThat(actual, equalTo(date));
     }
 
     public static void assertDialogShowsCorrectDateForYearMode(int year, String date) {
@@ -78,7 +79,8 @@ public class DialogFragmentHelpers {
         AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
         setDatePickerValue(dialog, year, month, day);
 
-        assertThat(((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString(), equalTo(date));
+        String actual = ((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString();
+        assertThat(actual, equalTo(date));
     }
 
     public static void assertDateUpdateInActivity(DatePickerTestActivity activity, int year, int month, int day) {
@@ -130,7 +132,10 @@ public class DialogFragmentHelpers {
 
     private static void assertDatePickerValue(AlertDialog dialog, int year, int month, int day) {
         assertThat(((NumberPicker) dialog.findViewById(R.id.year_picker)).getValue(), equalTo(year));
-        assertThat(((NumberPicker) dialog.findViewById(R.id.month_picker)).getValue(), equalTo(month));
+        int actual = ((NumberPicker) dialog
+                .findViewById(R.id.month_picker))
+                .getValue();
+        assertThat(actual, equalTo(month));
         assertThat(((NumberPicker) dialog.findViewById(R.id.day_picker)).getValue(), equalTo(day));
     }
 
