@@ -12,14 +12,10 @@ import android.os.Bundle;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.testing.FragmentScenario;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 
 import org.joda.time.LocalDateTime;
 import org.odk.collect.android.R;
@@ -48,8 +44,7 @@ public class DialogFragmentHelpers {
 
     public static Bundle getDialogFragmentArguments(DatePickerDetails datePickerDetails) {
         Bundle bundle = new Bundle();
-        LocalDateTime ldt = new LocalDateTime().withDate(2020, 5, 12);
-        bundle.putSerializable(DateTimeWidgetUtils.DATE, ldt);
+        bundle.putSerializable(DateTimeWidgetUtils.DATE, new LocalDateTime().withDate(2020, 5, 12));
         bundle.putSerializable(DateTimeWidgetUtils.DATE_PICKER_DETAILS, datePickerDetails);
         return bundle;
     }
@@ -60,17 +55,16 @@ public class DialogFragmentHelpers {
 
     public static void assertDialogShowsCorrectDate(int year, int month, int day, String date) {
         AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
+
         assertDatePickerValue(dialog, year, month, day);
-        String actual = ((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString();
-        assertThat(actual, equalTo(date));
+        assertThat(((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString(), equalTo(date));
     }
 
     public static void assertDialogShowsCorrectDateForYearMode(int year, String date) {
         AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
 
         assertDatePickerValue(dialog, year, 0, 1);
-        String date_ = ((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString();
-        assertThat(date_, equalTo(date));
+        assertThat(((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString(), equalTo(date));
     }
 
     public static void assertDialogShowsCorrectDateForMonthMode(int year, int month, String date) {
@@ -84,8 +78,7 @@ public class DialogFragmentHelpers {
         AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
         setDatePickerValue(dialog, year, month, day);
 
-        String actual = ((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString();
-        assertThat(actual, equalTo(date));
+        assertThat(((TextView) dialog.findViewById(R.id.date_gregorian)).getText().toString(), equalTo(date));
     }
 
     public static void assertDateUpdateInActivity(DatePickerTestActivity activity, int year, int month, int day) {
@@ -136,16 +129,9 @@ public class DialogFragmentHelpers {
     }
 
     private static void assertDatePickerValue(AlertDialog dialog, int year, int month, int day) {
-        int year_ = ((NumberPicker) dialog
-                .findViewById(R.id.year_picker))
-                .getValue();
-        assertThat(year_, equalTo(year));
-        int month_ = ((NumberPicker) dialog
-                .findViewById(R.id.month_picker))
-                .getValue();
-        assertThat(month_, equalTo(month));
-        int day_ = ((NumberPicker) dialog.findViewById(R.id.day_picker)).getValue();
-        assertThat(day_, equalTo(day));
+        assertThat(((NumberPicker) dialog.findViewById(R.id.year_picker)).getValue(), equalTo(year));
+        assertThat(((NumberPicker) dialog.findViewById(R.id.month_picker)).getValue(), equalTo(month));
+        assertThat(((NumberPicker) dialog.findViewById(R.id.day_picker)).getValue(), equalTo(day));
     }
 
     public static class DatePickerTestActivity extends FragmentActivity implements CustomDatePickerDialog.DateChangeListener {
@@ -154,13 +140,6 @@ public class DialogFragmentHelpers {
         @Override
         public void onDateChanged(LocalDateTime selectedDate) {
             this.selectedDate = selectedDate;
-        }
-
-        @Override
-        public void addMenuProvider(@NonNull MenuProvider provider,
-                                    @NonNull LifecycleOwner owner,
-                                    @NonNull Lifecycle.State state) {
-
         }
     }
 }

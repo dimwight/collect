@@ -202,7 +202,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
     public LocalDateTime getDate() {
         System.out.println("6330C: getDate");
         LocalDateTime ldt = new LocalDateTime().withDate(2020, 5, 12);
-        return getDay() == 0 ? false ? ldt :
+        return getDay() == 0 ? true ? ldt :
                 viewModel.getLocalDateTime()
                 : getOriginalDate();
     }
