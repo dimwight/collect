@@ -233,7 +233,8 @@ public class DateTimeWidgetUtils {
             case BUDDHIST:
                 return BuddhistDatePickerDialog.class;
             default:
-                return FixedDatePickerDialog.class;
+                return true ? FixedDatePickerDialog.class :
+                        ISODatePickerDialog.class;
         }
     }
 
