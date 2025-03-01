@@ -29,16 +29,25 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.joda.time.LocalDateTime;
+import org.joda.time.chrono.ISOChronology;
 import org.odk.collect.android.R;
 import org.odk.collect.android.widgets.datetime.DatePickerDetails;
 import org.odk.collect.android.widgets.datetime.DateTimeUtils;
 import org.odk.collect.android.widgets.utilities.DateTimeWidgetUtils;
 import org.odk.collect.android.widgets.viewmodels.DateTimeViewModel;
 
+import java.util.Arrays;
+
 /**
  * @author Grzegorz Orczykowski (gorczykowski@soldevelo.com)
  */
 public abstract class CustomDatePickerDialog extends DialogFragment {
+    protected final static String[] monthsArray = new String[]{
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            // getResources().getStringArray(R.array.islamic_months);
+    };
+    private static final int MIN_SUPPORTED_YEAR = 1900; //1900 in Gregorian calendar
+    private static final int MAX_SUPPORTED_YEAR = 2100; //2100 in Gregorian calendar
     private NumberPicker dayPicker;
     private NumberPicker monthPicker;
     private NumberPicker yearPicker;
@@ -55,7 +64,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        System.out.println("6330C: onAttach");
+        //   System.out.println("6330C: onAttach");
 
         if (context instanceof DateChangeListener) {
             dateChangeListener = (DateChangeListener) context;
@@ -76,7 +85,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        System.out.println("6330C: onCreateDialog");
+        //   System.out.println("6330C: onCreateDialog");
         return new MaterialAlertDialogBuilder(getActivity())
                 .setTitle(org.odk.collect.strings.R.string.select_date)
                 .setView(R.layout.custom_date_picker_dialog)
@@ -91,7 +100,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        System.out.println("6330C: onDestroyView");
+        //   System.out.println("6330C: onDestroyView");
         viewModel.setLocalDateTime(DateTimeUtils.getDateAsGregorian(getOriginalDate()));
         super.onDestroyView();
     }
@@ -101,10 +110,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
         System.out.println("6330C: onResume");
         super.onResume();
         gregorianDateText = getDialog().findViewById(R.id.date_gregorian);
-        setUpPickers();
-    }
-
-    private void setUpPickers() {
+        //setUpPickers();
         System.out.println("6330C: setUpPickers");
         dayPicker = getDialog().findViewById(R.id.day_picker);
         dayPicker.setOnValueChangedListener((picker, oldVal, newVal) -> updateGregorianDateLabel());
@@ -113,10 +119,7 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
         yearPicker = getDialog().findViewById(R.id.year_picker);
         yearPicker.setOnValueChangedListener((picker, oldVal, newVal) -> yearUpdated());
 
-        hidePickersIfNeeded();
-    }
-
-    private void hidePickersIfNeeded() {
+        // hidePickersIfNeeded();
         System.out.println("6330C: hidePickersIfNeeded");
         if (viewModel.getDatePickerDetails().isMonthYearMode()) {
             dayPicker.setVisibility(View.GONE);
@@ -124,6 +127,22 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
             dayPicker.setVisibility(View.GONE);
             monthPicker.setVisibility(View.GONE);
         }
+        boolean inSubClass = getClass() != ISODatePickerDialog.class;
+        if (inSubClass) return;
+        //    System.out.println("6330I: onResume");
+        // setUpValues();
+        System.out.println("6330I: setUpPickValues");
+        //setUpDatePicker();
+        System.out.println("6330I: setUpDatePicker");
+        LocalDateTime ldt = DateTimeUtils
+                .skipDaylightSavingGapIfExists(getDate())
+                .toDateTime()
+                .withChronology(ISOChronology.getInstance())
+                .toLocalDateTime();
+        setUpDayPicker(ldt.getDayOfMonth(), ldt.dayOfMonth().getMaximumValue());
+        setUpMonthPicker(ldt.getMonthOfYear(), monthsArray);
+        setUpYearPicker(ldt.getYear(), MIN_SUPPORTED_YEAR, MAX_SUPPORTED_YEAR);
+        updateGregorianDateLabel();
     }
 
     protected void updateGregorianDateLabel() {
@@ -184,13 +203,13 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
     }
 
     public String getMonth() {
-        int value = monthPicker.getValue();
-        System.out.println("6330C: getPickerMonth " + value);
-        return monthPicker.getDisplayedValues()[value];
+        int at = false ? monthPicker.getValue() : getMonthId();
+        System.out.println("6330C: getPickerMonth " + at);
+        return monthPicker.getDisplayedValues()[at];
     }
 
     public int getMonthId() {
-        System.out.println("6330C: getMonthId");
+        System.out.println("6330C: getPickerMonthAt");
         return monthPicker.getValue();
     }
 
@@ -207,7 +226,28 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
                 : getOriginalDate();
     }
 
-    protected abstract void updateDays();
+    protected void updateDays() {
+        System.out.println("6330I: updateDays");
+        LocalDateTime ldt = getOriginalDate();
+        setUpDayPicker(ldt.getDayOfMonth(), ldt.dayOfMonth().getMaximumValue());
+    }
 
-    protected abstract LocalDateTime getOriginalDate();
+    protected LocalDateTime getOriginalDate() {
+        System.out.println("6330I: getOriginalDate");
+        System.out.println("6330I: getPickedDate_");
+        int d = getDay();
+        int m = false ? Arrays.asList(monthsArray).indexOf(getMonth())
+                : getMonthId();
+        int y = getYear();
+
+        LocalDateTime ldt = new LocalDateTime(y, m + 1, 1, 0, 0, 0, 0, ISOChronology.getInstance());
+        if (d > ldt.dayOfMonth().getMaximumValue()) {
+            d = ldt.dayOfMonth().getMaximumValue();
+        }
+        if (d < ldt.dayOfMonth().getMinimumValue()) {
+            d = ldt.dayOfMonth().getMinimumValue();
+        }
+
+        return new LocalDateTime(y, m + 1, d, 0, 0, 0, 0, ISOChronology.getInstance());
+    }
 }
