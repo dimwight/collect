@@ -42,10 +42,7 @@ import java.util.Arrays;
  * @author Grzegorz Orczykowski (gorczykowski@soldevelo.com)
  */
 public abstract class CustomDatePickerDialog extends DialogFragment {
-    protected final static String[] monthsArray = new String[]{
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            // getResources().getStringArray(R.array.islamic_months);
-    };
+    private String[] monthsArray;
     private static final int MIN_SUPPORTED_YEAR = 1900; //1900 in Gregorian calendar
     private static final int MAX_SUPPORTED_YEAR = 2100; //2100 in Gregorian calendar
     private NumberPicker dayPicker;
@@ -81,6 +78,10 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
                 dateChangeListener.onDateChanged(localDateTime);
             }
         });
+        monthsArray = new String[]{
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                // getResources().getStringArray(R.array.islamic_months);
+        };
     }
 
     @Override

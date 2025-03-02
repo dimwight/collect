@@ -28,14 +28,21 @@ limitations under the License.
             android:orientation="horizontal">
 
             <NumberPicker
-                android:id="@+id/day_picker"
+                android:id="@+id/hour_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:scrollbars="none"
                 android:descendantFocusability="blocksDescendants" />
 
             <NumberPicker
-                android:id="@+id/month_picker"
+                android:id="@+id/minute_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:scrollbars="none"
+                android:descendantFocusability="blocksDescendants" />
+
+            <NumberPicker
+                android:id="@+id/am_pm_picker"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="10dp"
@@ -45,16 +52,10 @@ limitations under the License.
                 android:scrollbars="none"
                 android:descendantFocusability="blocksDescendants" />
 
-            <NumberPicker
-                android:id="@+id/year_picker"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:scrollbars="none"
-                android:descendantFocusability="blocksDescendants" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/date_gregorian"
+            android:id="@+id/date_time_gregorian"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
