@@ -21,13 +21,13 @@ import org.odk.collect.android.widgets.datetime.DatePickerDetails;
 import org.odk.collect.android.widgets.datetime.pickers.BikramSambatDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.BuddhistDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.CopticDatePickerDialog;
-import org.odk.collect.android.widgets.datetime.pickers.CustomTimePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.EthiopianDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.FixedDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.ISODatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.IslamicDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.MyanmarDatePickerDialog;
 import org.odk.collect.android.widgets.datetime.pickers.PersianDatePickerDialog;
+import org.odk.collect.android.widgets.datetime.pickers.TimePickerDialog12Hr;
 import org.odk.collect.androidshared.ui.DialogFragmentUtils;
 
 import java.text.DateFormat;
@@ -200,7 +200,8 @@ public class DateTimeWidgetUtils {
         bundle.putInt(DIALOG_THEME, themeUtils.getSpinnerTimePickerDialogTheme());
         bundle.putSerializable(TIME, dateTime);
 
-        DialogFragmentUtils.showIfNotShowing(CustomTimePickerDialog.class, bundle, ((FragmentActivity) context).getSupportFragmentManager());
+        DialogFragmentUtils.showIfNotShowing(//CustomTimePickerDialog
+                TimePickerDialog12Hr.class, bundle, ((FragmentActivity) context).getSupportFragmentManager());
     }
 
     public void showDatePickerDialog(Context context, DatePickerDetails datePickerDetails, LocalDateTime date) {
