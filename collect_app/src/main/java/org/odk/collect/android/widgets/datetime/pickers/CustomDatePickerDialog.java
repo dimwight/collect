@@ -69,7 +69,8 @@ public abstract class CustomDatePickerDialog extends DialogFragment {
 
         viewModel = new ViewModelProvider(this).get(DateTimeViewModel.class);
         if (viewModel.getLocalDateTime() == null) {
-            viewModel.setLocalDateTime((LocalDateTime) getArguments().getSerializable(DateTimeWidgetUtils.DATE));
+            LocalDateTime ldt = (LocalDateTime) getArguments().getSerializable(DateTimeWidgetUtils.DATE);
+            viewModel.setLocalDateTime(ldt);
         }
         viewModel.setDatePickerDetails((DatePickerDetails) getArguments().getSerializable(DateTimeWidgetUtils.DATE_PICKER_DETAILS));
 

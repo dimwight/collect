@@ -16,10 +16,10 @@
 
 package org.odk.collect.android.widgets.datetime.pickers;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -31,14 +31,20 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.joda.time.LocalDateTime;
 import org.joda.time.chrono.ISOChronology;
 import org.odk.collect.android.R;
-import org.odk.collect.android.widgets.datetime.DatePickerDetails;
 import org.odk.collect.android.widgets.datetime.DateTimeUtils;
 import org.odk.collect.android.widgets.utilities.DateTimeWidgetUtils;
 import org.odk.collect.android.widgets.viewmodels.DateTimeViewModel;
 
 public final class TimePickerDialog12Hr extends DialogFragment {
-    private static final int MIN_SUPPORTED_HOUR = 1;
+    private static final int MIN_SUPPORTED_HOUR = 0;
     private static final int MAX_SUPPORTED_HOUR = 12;
+    public static final NumberPicker.Formatter FORMATTER = new NumberPicker.Formatter() {
+        @SuppressLint("DefaultLocale")
+        @Override
+        public String format(int value) {
+            return String.format("%02d", value);
+        }
+    };
     private NumberPicker hourPicker;
     private NumberPicker minutePicker;
     private NumberPicker amPmPicker;
@@ -48,6 +54,9 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     private DateTimeViewModel viewModel;
     private CustomTimePickerDialog.TimeChangeListener timeChangeListener;
     private String[] amPmsArray;
+    private int amPmAt;
+    private int hourNow;
+    private int hourThen;
 
     @Override
     public void onAttach(Context context) {
@@ -60,13 +69,13 @@ public final class TimePickerDialog12Hr extends DialogFragment {
 
         viewModel = new ViewModelProvider(this).get(DateTimeViewModel.class);
         if (viewModel.getLocalDateTime() == null) {
-            viewModel.setLocalDateTime((LocalDateTime) getArguments().getSerializable(DateTimeWidgetUtils.DATE));
+            LocalDateTime ldt = (LocalDateTime) getArguments().getSerializable(DateTimeWidgetUtils.TIME);
+            viewModel.setLocalDateTime(ldt);
         }
-        viewModel.setDatePickerDetails((DatePickerDetails) getArguments().getSerializable(DateTimeWidgetUtils.DATE_PICKER_DETAILS));
 
-        viewModel.getSelectedDate().observe(this, localDateTime -> {
+        viewModel.getSelectedTime().observe(this, localDateTime -> {
             if (localDateTime != null && timeChangeListener != null) {
-                timeChangeListener.onTimeChanged(localDateTime);
+                timeChangeListener.onTimeChanged(localDateTime.toDateTime());
             }
         });
         amPmsArray = new String[]{"AM", "PM"};
@@ -79,8 +88,8 @@ public final class TimePickerDialog12Hr extends DialogFragment {
                 .setTitle(org.odk.collect.strings.R.string.select_time)
                 .setView(R.layout.time_picker_dialog12_hr)
                 .setPositiveButton(org.odk.collect.strings.R.string.ok, (dialog, id) -> {
-                    LocalDateTime date = DateTimeUtils.getDateAsGregorian(getOriginalTime());
-                    viewModel.setSelectedDate(date.getYear(), date.getMonthOfYear() - 1, date.getDayOfMonth());
+                    LocalDateTime date = DateTimeUtils.getDateAsGregorian(getPickerTime());
+                    viewModel.setSelectedTime(date.getHourOfDay(), date.getMinuteOfHour());
                     dismiss();
                 })
                 .setNegativeButton(org.odk.collect.strings.R.string.cancel, (dialog, id) -> dismiss())
@@ -90,7 +99,8 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     @Override
     public void onDestroyView() {
         System.out.println("6330C: onDestroyView");
-        viewModel.setLocalDateTime(DateTimeUtils.getDateAsGregorian(getOriginalTime()));
+        LocalDateTime ldt = DateTimeUtils.getDateAsGregorian(getPickerTime());
+        viewModel.setLocalDateTime(ldt);
         super.onDestroyView();
     }
 
@@ -98,7 +108,7 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     public void onResume() {
         System.out.println("6330C: onResume");
         super.onResume();
-        gregorianTimeText = getDialog().findViewById(R.id.date_gregorian);
+        gregorianTimeText = getDialog().findViewById(R.id.date_time_gregorian);
         //setUpPickers();
         System.out.println("6330C: setUpPickers");
         hourPicker = getDialog().findViewById(R.id.hour_picker);
@@ -109,19 +119,10 @@ public final class TimePickerDialog12Hr extends DialogFragment {
         amPmPicker.setOnValueChangedListener((picker, oldVal, newVal) -> amPmUpdated());
 
         //hidePickersIfNeeded();
-        System.out.println("6330C: hidePickersIfNeeded");
-        if (viewModel.getDatePickerDetails().isMonthYearMode()) {
-            minutePicker.setVisibility(View.GONE);
-        } else if (viewModel.getDatePickerDetails().isYearMode()) {
-            minutePicker.setVisibility(View.GONE);
-            amPmPicker.setVisibility(View.GONE);
-        }
         // setUpValues();
-        System.out.println("6330I: setUpPickValues");
         //setUpDatePicker();
-        System.out.println("6330I: setUpDatePicker");
-        LocalDateTime ldt = DateTimeUtils.getCurrentDateTime()
-                //.skipDaylightSavingGapIfExists(getDate())
+        LocalDateTime ldt = DateTimeUtils
+                .skipDaylightSavingGapIfExists(getTime())
                 .toDateTime()
                 .withChronology(ISOChronology.getInstance())
                 .toLocalDateTime();
@@ -132,10 +133,23 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     }
 
     protected void updateGregorianDateTimeLabel() {
-        System.out.println("6330C: updateGregorianTimeLabel");
-        String label = DateTimeWidgetUtils.getDateTimeLabel(DateTimeUtils.getDateAsGregorian(getOriginalTime()).toDate(),
-                viewModel.getDatePickerDetails(), false, getContext());
-        gregorianTimeText.setText(label);
+        String label = getPickerTime().toString();
+        System.out.println("6330C: updateGregorianTimeLabel" +
+                "2025-03-05T19:11:00.000 "
+                + label);
+        gregorianTimeText.setText(label.replaceAll(
+                ".+(\\d\\d:\\d\\d):.+", "$1"));
+    }
+
+    protected void setUpHourPicker(int hour) {
+        //Year
+        System.out.println("6330C: setUpHourPicker");
+        hourPicker.setFormatter(FORMATTER);
+        hourPicker.setMinValue(MIN_SUPPORTED_HOUR);
+        hourPicker.setMaxValue(MAX_SUPPORTED_HOUR);
+        int h12 = hour % 12;
+        hourPicker.setValue(h12);
+        amPmAt = h12 == hour - 12 ? 1 : 0;
     }
 
     protected void setUpMinutePicker(int minuteOfHour) {
@@ -143,32 +157,16 @@ public final class TimePickerDialog12Hr extends DialogFragment {
         System.out.println("6330C: setUpMinutePicker");
         //Day
         System.out.println("6330C: setUpMinutePicker");
-        minutePicker.setMinValue(1);
-        minutePicker.setMaxValue(60);
-        if (viewModel.getDatePickerDetails().isSpinnerMode()) {
-            minutePicker.setValue(minuteOfHour);
-        }
+        minutePicker.setFormatter(FORMATTER);
+        minutePicker.setMinValue(0);
+        minutePicker.setMaxValue(59);
+        minutePicker.setValue(minuteOfHour);
     }
 
     protected void setUpAmPmPicker() {
-        //Month
-        // In Myanmar calendar we don't have specified amount of months, it's dynamic so clear
-        // values first to avoid ArrayIndexOutOfBoundsException
-        amPmPicker.setDisplayedValues(null);
         amPmPicker.setMaxValue(amPmsArray.length - 1);
         amPmPicker.setDisplayedValues(amPmsArray);
-        if (!viewModel.getDatePickerDetails().isYearMode()) {
-            amPmPicker.setValue(0);
-        }
-        System.out.println("6330C: setUpAmPmPicker ");
-    }
-
-    protected void setUpHourPicker(int hour) {
-        //Year
-        System.out.println("6330C: setUpHourPicker");
-        hourPicker.setMinValue(MIN_SUPPORTED_HOUR);
-        hourPicker.setMaxValue(MAX_SUPPORTED_HOUR);
-        hourPicker.setValue(hour);
+        amPmPicker.setValue(amPmAt);
     }
 
     protected void amPmUpdated() {//Month
@@ -179,9 +177,37 @@ public final class TimePickerDialog12Hr extends DialogFragment {
 
     protected void hourUpdated() {//year
         System.out.println("6330C: hourUpdated");
-//        updateMinutes();
         updateGregorianDateTimeLabel();
+        hourThen = hourNow;
+        hourNow = true ? getHour() :
+                getTime().getHourOfDay();
+        boolean hourUp = hourThen < hourNow;
+        boolean checkHours = hourUp ? hourNow == 11 : hourNow == 1;
+        if (checkHours) amPmAt = amPmAt == 1 ? 0 : 1;
+        hours[amPmAt].applyToPicker();
+        int h12 = hourNow % 12;
+        hourPicker.setValue(h12);
     }
+
+    private class PickerHours {
+        private final int min;
+        private final int max;
+
+        PickerHours(int min, int max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        void applyToPicker() {
+            hourPicker.setMinValue(min);
+            hourPicker.setMaxValue(max);
+        }
+    }
+
+    PickerHours[] hours = new PickerHours[]{
+            new PickerHours(0, 11),
+            new PickerHours(1, 12),
+    };
 
     public int getMinute() {//Day
         System.out.println("6330C: getPickerMinute");
@@ -189,12 +215,12 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     }
 
     public String getAmPm() {//Month
-        int value = getAmPmId();
+        int value = getAmPmAt();
         System.out.println("6330C: getPickerAmPm " + value);
         return amPmPicker.getDisplayedValues()[value];
     }
 
-    public int getAmPmId() {//Month
+    public int getAmPmAt() {//Month
         System.out.println("6330C: getAmPmId");
         return amPmPicker.getValue();
     }
@@ -207,15 +233,15 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     public LocalDateTime getTime() {//Date
         System.out.println("6330C: getTime");
         return getMinute() == 0 ? viewModel.getLocalDateTime()
-                : getOriginalTime();
+                : getPickerTime();
     }
 
     protected void updateMinutes() {
     }//Days
-
-    protected LocalDateTime getOriginalTime() {//Date
-        System.out.println("6330I: getOriginalTime");
-        LocalDateTime ldt = new LocalDateTime();
-        return ldt;
+    protected LocalDateTime getPickerTime() {//Date
+        System.out.println("6330I: getPickerTime");
+        return new LocalDateTime().withTime(
+                getHour() + 12 * getAmPmAt(),
+                getMinute(), 0, 0);
     }
 }
