@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -45,6 +46,8 @@ public final class TimePickerDialog12Hr extends DialogFragment {
             return String.format("%02d", value);
         }
     };
+    public static final int AM = 0;
+    public static final int PM = 1;
     private NumberPicker hourPicker;
     private NumberPicker minutePicker;
     private NumberPicker amPmPicker;
@@ -70,7 +73,9 @@ public final class TimePickerDialog12Hr extends DialogFragment {
         viewModel = new ViewModelProvider(this).get(DateTimeViewModel.class);
         if (viewModel.getLocalDateTime() == null) {
             LocalDateTime ldt = (LocalDateTime) getArguments().getSerializable(DateTimeWidgetUtils.TIME);
-            viewModel.setLocalDateTime(ldt);
+            viewModel.setLocalDateTime(false ? ldt
+                    : new LocalDateTime().withTime(getDebugHour(),
+                    30, 0, 0));
         }
 
         viewModel.getSelectedTime().observe(this, localDateTime -> {
@@ -134,28 +139,12 @@ public final class TimePickerDialog12Hr extends DialogFragment {
 
     protected void updateGregorianDateTimeLabel() {
         String label = getPickerTime().toString();
-        System.out.println("6330C: updateGregorianTimeLabel" +
-                "2025-03-05T19:11:00.000 "
-                + label);
+        System.out.println("6330C: updateGregorianTimeLabel");
         gregorianTimeText.setText(label.replaceAll(
                 ".+(\\d\\d:\\d\\d):.+", "$1"));
     }
 
-    protected void setUpHourPicker(int hour) {
-        //Year
-        System.out.println("6330C: setUpHourPicker");
-        hourPicker.setFormatter(FORMATTER);
-        hourPicker.setMinValue(MIN_SUPPORTED_HOUR);
-        hourPicker.setMaxValue(MAX_SUPPORTED_HOUR);
-        int h12 = hour % 12;
-        hourPicker.setValue(h12);
-        amPmAt = h12 == hour - 12 ? 1 : 0;
-    }
-
     protected void setUpMinutePicker(int minuteOfHour) {
-        //Day
-        System.out.println("6330C: setUpMinutePicker");
-        //Day
         System.out.println("6330C: setUpMinutePicker");
         minutePicker.setFormatter(FORMATTER);
         minutePicker.setMinValue(0);
@@ -164,43 +153,82 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     }
 
     protected void setUpAmPmPicker() {
+        System.out.println("6330C: setUpAmPmPicker");
         amPmPicker.setMaxValue(amPmsArray.length - 1);
         amPmPicker.setDisplayedValues(amPmsArray);
         amPmPicker.setValue(amPmAt);
     }
 
-    protected void amPmUpdated() {//Month
-        System.out.println("6330C: amPmUpdated");
-//        updateMinutes();
-        updateGregorianDateTimeLabel();
+    protected void setUpHourPicker(int hour) {
+        System.out.println("6330C: setUpHourPicker");
+        hourPicker.setFormatter(FORMATTER);
+        hourPicker.setMinValue(MIN_SUPPORTED_HOUR);
+        hourPicker.setMaxValue(MAX_SUPPORTED_HOUR);
+        int h12 = hour % 12;
+        amPmAt = h12 == hour - 12 ? 1 : 0;
+        ranges[amPmAt].applyToPicker();
+        hourPicker.setValue(h12);
     }
 
+    protected void amPmUpdated() {
+        updateGregorianDateTimeLabel();
+        amPmAt = getAmPmAt();
+        int hour = getHour();
+        System.out.println("6330C: amPmUpdated " + amPmAt + " " + hour);
+        ranges[amPmAt].applyToPicker();
+        hour = hour == 0 ? 12 : hour == 12 ? 0 : hour;
+        hourPicker.setValue(hour);
+        hourUpdated();
+    }
+
+    private static int getDebugHour() {
+        return 23;
+    }
     protected void hourUpdated() {
-        System.out.println("6330C: hourUpdated");
         updateGregorianDateTimeLabel();
         hourThen = hourNow;
-        hourNow = true ? getHour() :
-                getTime().getHourOfDay();
-        boolean hourUp = hourThen < hourNow;
-        if (true && (hourUp ? hourNow == 11 : hourNow == 1)) {
-            amPmAt = amPmAt == 1 ? 0 : 1;
-            hours[amPmAt].applyToPicker();
-            int h12 = hourNow % 12;
-            hourPicker.setValue(h12);
-        } else if (hourNow == 0 && hourThen == 11) {
-
-        } else if (hourNow == 12 && hourThen == 11) {
-
+        hourNow = getHour();
+        boolean inPm = amPmAt == 1;
+        System.out.println("6330C: hourUpdated " + hourNow);
+        switch (hourNow) {
+            case 0:
+                if (hourThen == 11) {
+                    amPmPicker.setValue(AM);
+                }
+            case 1:
+                if (!inPm) {
+                    ranges[PM].applyToPicker();
+                }
+            case 11:
+                if (hourThen == 10) {
+                    if (inPm) {
+                        ranges[AM].applyToPicker();
+                    } else {
+                        ranges[PM].applyToPicker();
+                    }
+                } else {
+                    if (hourThen == 0) {
+                        amPmPicker.setValue(PM);
+                    }
+                }
         }
     }
 
-    private class PickerHours {
+    private class HoursRange {
         private final int min;
         private final int max;
+        private final String pmAm;
 
-        PickerHours(int min, int max) {
+        HoursRange(int min, int max, String pmAm) {
             this.min = min;
             this.max = max;
+            this.pmAm = pmAm;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return pmAm;
         }
 
         void applyToPicker() {
@@ -209,44 +237,43 @@ public final class TimePickerDialog12Hr extends DialogFragment {
         }
     }
 
-    PickerHours[] hours = new PickerHours[]{
-            new PickerHours(0, 11),
-            new PickerHours(1, 12),
+    HoursRange[] ranges = new HoursRange[]{
+            new HoursRange(0, 11, "Am"),
+            new HoursRange(1, 12, "Pm"),
     };
 
-    public int getMinute() {//Day
-        System.out.println("6330C: getPickerMinute");
+    public int getMinute() {
+        //System.out.println("6330C: getPickerMinute");
         return minutePicker.getValue();
     }
 
-    public String getAmPm() {//Month
+    public String getAmPm() {
         int value = getAmPmAt();
         System.out.println("6330C: getPickerAmPm " + value);
         return amPmPicker.getDisplayedValues()[value];
     }
 
-    public int getAmPmAt() {//Month
-        System.out.println("6330C: getAmPmId");
+    public int getAmPmAt() {
+        System.out.println("6330C: getAmPmAt");
         return amPmPicker.getValue();
     }
 
-    public int getHour() {//Year
+    public int getHour() {
         System.out.println("6330C: getPickerHour");
         return hourPicker.getValue();
     }
 
-    public LocalDateTime getTime() {//Date
+    public LocalDateTime getTime() {
         System.out.println("6330C: getTime");
         return getMinute() == 0 ? viewModel.getLocalDateTime()
                 : getPickerTime();
     }
 
-    protected void updateMinutes() {
-    }//Days
-    protected LocalDateTime getPickerTime() {//Date
+    protected LocalDateTime getPickerTime() {
         System.out.println("6330I: getPickerTime");
+        int hour = getHour();
         return new LocalDateTime().withTime(
-                getHour() + 12 * getAmPmAt(),
+                hour + (hour == 12 || hour == 0 ? 0 : 12) * getAmPmAt(),
                 getMinute(), 0, 0);
     }
 }
