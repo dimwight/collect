@@ -16,6 +16,69 @@
 
 package org.odk.collect.android.widgets.datetime.pickers;
 
+import org.joda.time.LocalDateTime;
+import org.joda.time.chrono.ISOChronology;
+import org.odk.collect.android.widgets.datetime.DateTimeUtils;
+
+import java.util.Arrays;
+
 public class ISODatePickerDialog extends CustomDatePickerDialog {
 
+    private static final int MIN_SUPPORTED_YEAR = 1900; //1900 in Gregorian calendar
+    private static final int MAX_SUPPORTED_YEAR = 2100; //2100 in Gregorian calendar
+
+    private String[] monthsArray;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        monthsArray = new String[]{
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        };
+        // getResources().getStringArray(R.array.islamic_months);
+        setUpValues();
+    }
+
+    @Override
+    protected void updateDays() {
+        LocalDateTime localDateTime = getCurrentIsoDate();
+        setUpDayPicker(localDateTime.getDayOfMonth(), localDateTime.dayOfMonth().getMaximumValue());
+    }
+
+    @Override
+    protected LocalDateTime getOriginalDate() {
+        return getCurrentIsoDate();
+    }
+
+    private void setUpDatePicker() {
+        LocalDateTime isoDate = DateTimeUtils
+                .skipDaylightSavingGapIfExists(getDate())
+                .toDateTime()
+                .withChronology(ISOChronology.getInstance())
+                .toLocalDateTime();
+        setUpDayPicker(isoDate.getDayOfMonth(), isoDate.dayOfMonth().getMaximumValue());
+        setUpMonthPicker(isoDate.getMonthOfYear(), monthsArray);
+        setUpYearPicker(isoDate.getYear(), MIN_SUPPORTED_YEAR, MAX_SUPPORTED_YEAR);
+    }
+
+    private void setUpValues() {
+        setUpDatePicker();
+        updateGregorianDateLabel();
+    }
+
+    private LocalDateTime getCurrentIsoDate() {
+        int isoDay = getDay();
+        int isoMonth = Arrays.asList(monthsArray).indexOf(getMonth());
+        int isoYear = getYear();
+
+        LocalDateTime isoDate = new LocalDateTime(isoYear, isoMonth + 1, 1, 0, 0, 0, 0, ISOChronology.getInstance());
+        if (isoDay > isoDate.dayOfMonth().getMaximumValue()) {
+            isoDay = isoDate.dayOfMonth().getMaximumValue();
+        }
+        if (isoDay < isoDate.dayOfMonth().getMinimumValue()) {
+            isoDay = isoDate.dayOfMonth().getMinimumValue();
+        }
+
+        return new LocalDateTime(isoYear, isoMonth + 1, isoDay, 0, 0, 0, 0, ISOChronology.getInstance());
+    }
 }
