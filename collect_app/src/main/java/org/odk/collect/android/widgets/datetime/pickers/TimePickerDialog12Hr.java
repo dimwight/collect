@@ -44,7 +44,7 @@ public final class TimePickerDialog12Hr extends DialogFragment {
         @SuppressLint("DefaultLocale")
         @Override
         public String format(int h24) {
-            int h12 = h24 - (h24 < 12 ? 0 : 12);
+            int h12 = h24 - (h24 < 1 ? -12 : h24 < 13 ? 0 : 12);
             return String.format("%02d", h12);
         }
     };
@@ -161,15 +161,15 @@ public final class TimePickerDialog12Hr extends DialogFragment {
     }
 
     private void amPmUpdated() {
-        updateTimeLabel();
         int amPm = amPmPicker.getValue();
         int hour = hourPicker.getValue();
         System.out.println("6330C: amPmUpdated " + amPm + " " + hour);
-        hourPicker.setValue(hour - 12 * amPm);
+        hourPicker.setValue((hour + 12) % 24);
+        updateTimeLabel();
     }
 
     private static int getDebugHour() {
-        return 23;
+        return 0;
     }
 
     private void hourUpdated() {
