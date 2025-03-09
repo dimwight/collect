@@ -12,12 +12,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.fragments.support.DialogFragmentHelpers;
 import org.odk.collect.android.support.CollectHelpers;
+import org.odk.collect.android.widgets.datetime.DatePickerDetails;
 import org.odk.collect.testshared.RobolectricHelpers;
 
 @RunWith(AndroidJUnit4.class)
 public class ISOTimePickerDialogTest {
     private FragmentManager fragmentManager;
     private ISOTimePickerDialog dialogFragment;
+    private DatePickerDetails datePickerDetails;
     private DialogFragmentHelpers.DatePickerTestActivity activity;
 
     @Before
@@ -26,6 +28,8 @@ public class ISOTimePickerDialogTest {
         fragmentManager = activity.getSupportFragmentManager();
 
         dialogFragment = new ISOTimePickerDialog();
+        datePickerDetails = DialogFragmentHelpers.setUpDatePickerDetails(DatePickerDetails.DatePickerType.ISO);
+        dialogFragment.setArguments(DialogFragmentHelpers.getDialogFragmentArguments(datePickerDetails));
     }
 
     @Test
