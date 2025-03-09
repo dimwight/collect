@@ -1,7 +1,5 @@
 package org.odk.collect.android.widgets.datetime.pickers;
 
-import static org.mockito.Mockito.when;
-
 import android.content.DialogInterface;
 
 import androidx.fragment.app.FragmentManager;
@@ -16,7 +14,7 @@ import org.odk.collect.android.widgets.datetime.DatePickerDetails;
 import org.odk.collect.testshared.RobolectricHelpers;
 
 @RunWith(AndroidJUnit4.class)
-public class ISOTimePickerDialogTest {
+public class ISOTimePickerDialogTest {//ISODatePickerDialogTest
     private FragmentManager fragmentManager;
     private ISOTimePickerDialog dialogFragment;
     private DatePickerDetails datePickerDetails;
@@ -46,26 +44,6 @@ public class ISOTimePickerDialogTest {
         RobolectricHelpers.runLooper();
 
         DialogFragmentHelpers.assertDialogShowsCorrectDate(2020, 4, 12, "May 12, 2020");
-    }
-
-    @Test
-    public void dialogShouldShowCorrectDate_forYearMode() {
-        when(datePickerDetails.isYearMode()).thenReturn(true);
-        when(datePickerDetails.isSpinnerMode()).thenReturn(false);
-        dialogFragment.show(fragmentManager, "TAG");
-        RobolectricHelpers.runLooper();
-
-        DialogFragmentHelpers.assertDialogShowsCorrectDateForYearMode(2020, "2020");
-    }
-
-    @Test
-    public void dialogShouldShowCorrectDate_forMonthMode() {
-        when(datePickerDetails.isMonthYearMode()).thenReturn(true);
-        when(datePickerDetails.isSpinnerMode()).thenReturn(false);
-        dialogFragment.show(fragmentManager, "TAG");
-        RobolectricHelpers.runLooper();
-
-        DialogFragmentHelpers.assertDialogShowsCorrectDateForMonthMode(2020, 4, "May 2020");
     }
 
     @Test
