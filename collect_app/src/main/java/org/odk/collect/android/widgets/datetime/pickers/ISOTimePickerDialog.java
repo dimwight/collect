@@ -37,7 +37,7 @@ import org.odk.collect.android.widgets.datetime.DateTimeUtils;
 import org.odk.collect.android.widgets.utilities.DateTimeWidgetUtils;
 import org.odk.collect.android.widgets.viewmodels.DateTimeViewModel;
 
-public final class TimePickerDialog12Hr extends DialogFragment {
+public final class ISOTimePickerDialog extends DialogFragment {
     private static final int MIN_SUPPORTED_HOUR = 0;
     private static final int MAX_SUPPORTED_HOUR = 23;
     private static final Formatter FORMATTER_HR = new Formatter() {
