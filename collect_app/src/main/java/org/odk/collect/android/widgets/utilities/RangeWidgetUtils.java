@@ -15,8 +15,8 @@ import org.odk.collect.android.databinding.RangePickerWidgetAnswerBinding;
 import org.odk.collect.android.databinding.RangeWidgetHorizontalBinding;
 import org.odk.collect.android.databinding.RangeWidgetVerticalBinding;
 import org.odk.collect.android.fragments.dialogs.NumberPickerDialog;
-import org.odk.collect.androidshared.ui.ToastUtils;
 import org.odk.collect.android.views.TrackingTouchSlider;
+import org.odk.collect.androidshared.ui.ToastUtils;
 
 import java.math.BigDecimal;
 
@@ -103,9 +103,13 @@ public class RangeWidgetUtils {
     @SuppressLint("ClickableViewAccessibility")
     public static BigDecimal setUpSlider(FormEntryPrompt prompt, TrackingTouchSlider slider, boolean isIntegerType) {
         RangeQuestion rangeQuestion = (RangeQuestion) prompt.getQuestion();
-        BigDecimal rangeStart = rangeQuestion.getRangeStart();
-        BigDecimal rangeEnd = rangeQuestion.getRangeEnd();
-        BigDecimal rangeStep = rangeQuestion.getRangeStep().abs() != null ? rangeQuestion.getRangeStep().abs() : BigDecimal.valueOf(0.5);
+        boolean b=true;
+        BigDecimal rangeStart = b ?BigDecimal.valueOf(10):
+                rangeQuestion.getRangeStart();
+        BigDecimal rangeEnd = b ?BigDecimal.valueOf(20):
+                rangeQuestion.getRangeEnd();
+        BigDecimal rangeStep = b ? BigDecimal.valueOf(0.1) :
+                rangeQuestion.getRangeStep().abs() != null ? rangeQuestion.getRangeStep().abs() : BigDecimal.valueOf(0.5);
 
         BigDecimal actualValue = null;
         if (prompt.getAnswerValue() != null) {

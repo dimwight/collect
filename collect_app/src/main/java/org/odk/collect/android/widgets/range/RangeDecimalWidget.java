@@ -51,8 +51,7 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
         slider = layoutElements.getSlider();
         currentValue = layoutElements.getCurrentValue();
 
-        setUpActualValueLabel(RangeWidgetUtils.setUpSlider(prompt, slider, false));
-
+        updateActualValueLabel(RangeWidgetUtils.setUpSlider(prompt, slider, false));
         if (slider.isEnabled()) {
             slider.setListener(this);
         }
@@ -76,7 +75,7 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
 
     @Override
     public void clearAnswer() {
-        setUpActualValueLabel(null);
+        updateActualValueLabel(null);
         widgetValueChanged();
     }
 
@@ -85,15 +84,31 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
         if (fromUser) {
             BigDecimal actualValue = RangeWidgetUtils.getActualValue(getFormEntryPrompt(), value);
-            setUpActualValueLabel(actualValue);
+            updateActualValueLabel(actualValue);
             widgetValueChanged();
         }
     }
 
-    private void setUpActualValueLabel(BigDecimal actualValue) {
-        if (actualValue != null) {
-            currentValue.setText(String.valueOf(actualValue.doubleValue()));
-        } else {
+    @SuppressLint("SetTextI18n")
+    private void updateActualValueLabel(BigDecimal actualValue) {
+       if (actualValue != null) {
+           float stepSize = slider.getStepSize();
+            if (stepSize < 1) {
+                String stepSizeTxt = String.valueOf(stepSize);
+                int pointAt = stepSizeTxt.indexOf('.');
+                int pointOffset = (stepSizeTxt.length() - 1) - pointAt;
+                double shiftPastPoint = actualValue.doubleValue() / stepSize;
+                String roundedDigits = String.valueOf(Math.round(shiftPastPoint));
+                String afterPoint = roundedDigits.substring(
+                        roundedDigits.length() - pointOffset);
+                String insertedPoint = roundedDigits.replace(
+                        afterPoint, "." + afterPoint);
+                currentValue.setText(insertedPoint);
+            } else {
+                currentValue.setText(actualValue.toString()
+                        .replaceAll("\\.0$",""));
+            }
+        }else {
             currentValue.setText("");
             slider.reset();
         }
