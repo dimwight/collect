@@ -24,8 +24,12 @@ import timber.log.Timber;
 
 public class RangeWidgetUtils {
     public static final boolean DUMMIES = true;
-    static double[][]DUMMIES_ALL=new double[][]{{10,20,0.1}};
-    static double[]DUMMIES_NOW=DUMMIES_ALL[0];
+    static double[][] DUMMIES_ALL = new double[][]{
+            {10, 20, 0.1},
+            {5, 10, 0.01},
+            {15, 20, 0.001},
+    };
+    static double[] DUMMIES_NOW = DUMMIES_ALL[3];
     private static final String VERTICAL_APPEARANCE = "vertical";
     private static final String NO_TICKS_APPEARANCE = "no-ticks";
 

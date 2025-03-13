@@ -94,20 +94,19 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
        if (actualValue != null) {
            float stepSize = slider.getStepSize();
             if (stepSize < 1) {
-                if(true){
-                    currentValue.setText(actualValue.toString());
-                }else {
-                    String stepSizeTxt = String.valueOf(stepSize);
-                    int pointAt = stepSizeTxt.indexOf('.');
-                    int pointOffset = (stepSizeTxt.length() - 1) - pointAt;
-                    double shiftPastPoint = actualValue.doubleValue() / stepSize;
-                    String roundedDigits = String.valueOf(Math.round(shiftPastPoint));
-                    String afterPoint = roundedDigits.substring(
-                            roundedDigits.length() - pointOffset);
-                    String insertedPoint = roundedDigits.replace(
-                            afterPoint, "." + afterPoint);
-                    currentValue.setText(insertedPoint);
+                int stepChars = String.valueOf(stepSize).length() - 2; // After '0.'
+                int shiftedAndCast = (int)
+                        (actualValue.doubleValue() * Math.pow(10, stepChars + 1)); // Extra for 9 check
+                String builder = String.valueOf(shiftedAndCast);
+                if (builder.endsWith("9")) {
+                    builder = String.valueOf(++shiftedAndCast);
                 }
+                builder = builder.replaceAll("0$", "");
+                int pointAt = builder.length() - stepChars;
+                String top = builder.substring(0, pointAt);
+                String tail = builder.substring(pointAt);
+                builder = top + "." + tail;
+                currentValue.setText(actualValue.toString() + ">" + builder);
             }
             else {
                 currentValue.setText(String.valueOf(actualValue.doubleValue()));
