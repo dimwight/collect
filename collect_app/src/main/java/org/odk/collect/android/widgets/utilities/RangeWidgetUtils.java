@@ -23,6 +23,9 @@ import java.math.BigDecimal;
 import timber.log.Timber;
 
 public class RangeWidgetUtils {
+    public static final boolean DUMMIES = true;
+    static double[][]DUMMIES_ALL=new double[][]{{10,20,0.1}};
+    static double[]DUMMIES_NOW=DUMMIES_ALL[0];
     private static final String VERTICAL_APPEARANCE = "vertical";
     private static final String NO_TICKS_APPEARANCE = "no-ticks";
 
@@ -93,8 +96,10 @@ public class RangeWidgetUtils {
     }
 
     static void setUpWidgetParameters(RangeQuestion rangeQuestion, TextView minValue, TextView maxValue) {
-        BigDecimal rangeStart = rangeQuestion.getRangeStart();
-        BigDecimal rangeEnd = rangeQuestion.getRangeEnd();
+        BigDecimal rangeStart = DUMMIES ?BigDecimal.valueOf(DUMMIES_NOW[0]):
+                rangeQuestion.getRangeStart();
+        BigDecimal rangeEnd = DUMMIES ?BigDecimal.valueOf(DUMMIES_NOW[1]):
+                rangeQuestion.getRangeEnd();
 
         minValue.setText(String.valueOf(rangeStart));
         maxValue.setText(String.valueOf(rangeEnd));
@@ -103,12 +108,11 @@ public class RangeWidgetUtils {
     @SuppressLint("ClickableViewAccessibility")
     public static BigDecimal setUpSlider(FormEntryPrompt prompt, TrackingTouchSlider slider, boolean isIntegerType) {
         RangeQuestion rangeQuestion = (RangeQuestion) prompt.getQuestion();
-        boolean b=true;
-        BigDecimal rangeStart = b ?BigDecimal.valueOf(10):
+      BigDecimal rangeStart = DUMMIES ?BigDecimal.valueOf(DUMMIES_NOW[0]):
                 rangeQuestion.getRangeStart();
-        BigDecimal rangeEnd = b ?BigDecimal.valueOf(20):
+        BigDecimal rangeEnd = DUMMIES ?BigDecimal.valueOf(DUMMIES_NOW[1]):
                 rangeQuestion.getRangeEnd();
-        BigDecimal rangeStep = b ? BigDecimal.valueOf(0.1) :
+        BigDecimal rangeStep = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[2]) :
                 rangeQuestion.getRangeStep().abs() != null ? rangeQuestion.getRangeStep().abs() : BigDecimal.valueOf(0.5);
 
         BigDecimal actualValue = null;

@@ -105,8 +105,7 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
                         afterPoint, "." + afterPoint);
                 currentValue.setText(insertedPoint);
             } else {
-                currentValue.setText(actualValue.toString()
-                        .replaceAll("\\.0$",""));
+                currentValue.setText(actualValue.toString());
             }
         }else {
             currentValue.setText("");
