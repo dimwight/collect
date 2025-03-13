@@ -94,18 +94,23 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
        if (actualValue != null) {
            float stepSize = slider.getStepSize();
             if (stepSize < 1) {
-                String stepSizeTxt = String.valueOf(stepSize);
-                int pointAt = stepSizeTxt.indexOf('.');
-                int pointOffset = (stepSizeTxt.length() - 1) - pointAt;
-                double shiftPastPoint = actualValue.doubleValue() / stepSize;
-                String roundedDigits = String.valueOf(Math.round(shiftPastPoint));
-                String afterPoint = roundedDigits.substring(
-                        roundedDigits.length() - pointOffset);
-                String insertedPoint = roundedDigits.replace(
-                        afterPoint, "." + afterPoint);
-                currentValue.setText(insertedPoint);
-            } else {
-                currentValue.setText(actualValue.toString());
+                if(true){
+                    currentValue.setText(actualValue.toString());
+                }else {
+                    String stepSizeTxt = String.valueOf(stepSize);
+                    int pointAt = stepSizeTxt.indexOf('.');
+                    int pointOffset = (stepSizeTxt.length() - 1) - pointAt;
+                    double shiftPastPoint = actualValue.doubleValue() / stepSize;
+                    String roundedDigits = String.valueOf(Math.round(shiftPastPoint));
+                    String afterPoint = roundedDigits.substring(
+                            roundedDigits.length() - pointOffset);
+                    String insertedPoint = roundedDigits.replace(
+                            afterPoint, "." + afterPoint);
+                    currentValue.setText(insertedPoint);
+                }
+            }
+            else {
+                currentValue.setText(String.valueOf(actualValue.doubleValue()));
             }
         }else {
             currentValue.setText("");
