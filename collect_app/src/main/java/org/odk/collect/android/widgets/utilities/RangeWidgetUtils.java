@@ -24,12 +24,20 @@ import timber.log.Timber;
 
 public class RangeWidgetUtils {
     public static final boolean DUMMIES = true;
+    public static final double STEP = newRandomStepSize();
+
+    private static double newRandomStepSize() {
+        double size = (true ? 558 : (int) (Math.random() * 900 + 100)) / 10000d;
+        System.out.println("6424: " + size);
+        return size;
+    }
+
     static double[][] DUMMIES_ALL = new double[][]{
-            {10, 20, 0.1},
-            {5, 10, 0.01},
-            {15, 20, 0.001},
+            {0, STEP * 20, STEP},
+            {0, .5, .00001},
+            {0, .32 * 10, 0.32},
     };
-    static double[] DUMMIES_NOW = DUMMIES_ALL[3];
+    static double[] DUMMIES_NOW = DUMMIES_ALL[0];
     private static final String VERTICAL_APPEARANCE = "vertical";
     private static final String NO_TICKS_APPEARANCE = "no-ticks";
 
@@ -112,7 +120,7 @@ public class RangeWidgetUtils {
     @SuppressLint("ClickableViewAccessibility")
     public static BigDecimal setUpSlider(FormEntryPrompt prompt, TrackingTouchSlider slider, boolean isIntegerType) {
         RangeQuestion rangeQuestion = (RangeQuestion) prompt.getQuestion();
-      BigDecimal rangeStart = DUMMIES ?BigDecimal.valueOf(DUMMIES_NOW[0]):
+        BigDecimal rangeStart = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[0]) :
                 rangeQuestion.getRangeStart();
         BigDecimal rangeEnd = DUMMIES ?BigDecimal.valueOf(DUMMIES_NOW[1]):
                 rangeQuestion.getRangeEnd();
@@ -181,8 +189,10 @@ public class RangeWidgetUtils {
 
     public static BigDecimal getActualValue(FormEntryPrompt prompt, float value) {
         RangeQuestion rangeQuestion = (RangeQuestion) prompt.getQuestion();
-        BigDecimal rangeStart = rangeQuestion.getRangeStart();
-        BigDecimal rangeEnd = rangeQuestion.getRangeEnd();
+        BigDecimal rangeStart = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[0]) :
+                rangeQuestion.getRangeStart();
+        BigDecimal rangeEnd = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[1]) :
+                rangeQuestion.getRangeEnd();
         BigDecimal actualValue = BigDecimal.valueOf(value);
 
         if (rangeEnd.compareTo(rangeStart) < 0) {
@@ -226,9 +236,12 @@ public class RangeWidgetUtils {
     }
 
     static boolean isWidgetValid(Context context, RangeQuestion rangeQuestion) {
-        BigDecimal rangeStart = rangeQuestion.getRangeStart();
-        BigDecimal rangeEnd = rangeQuestion.getRangeEnd();
-        BigDecimal rangeStep = rangeQuestion.getRangeStep().abs();
+        BigDecimal rangeStart = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[0]) :
+                rangeQuestion.getRangeStart();
+        BigDecimal rangeEnd = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[1]) :
+                rangeQuestion.getRangeEnd();
+        BigDecimal rangeStep = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[2]) :
+                rangeQuestion.getRangeStep().abs() != null ? rangeQuestion.getRangeStep().abs() : BigDecimal.valueOf(0.5);
 
         boolean result = true;
         if (rangeStep.compareTo(BigDecimal.ZERO) == 0

@@ -94,19 +94,10 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
        if (actualValue != null) {
            float stepSize = slider.getStepSize();
             if (stepSize < 1) {
-                int stepChars = String.valueOf(stepSize).length() - 2; // After '0.'
-                int shiftedAndCast = (int)
-                        (actualValue.doubleValue() * Math.pow(10, stepChars + 1)); // Extra for 9 check
-                String builder = String.valueOf(shiftedAndCast);
-                if (builder.endsWith("9")) {
-                    builder = String.valueOf(++shiftedAndCast);
-                }
-                builder = builder.replaceAll("0$", "");
-                int pointAt = builder.length() - stepChars;
-                String top = builder.substring(0, pointAt);
-                String tail = builder.substring(pointAt);
-                builder = top + "." + tail;
-                currentValue.setText(actualValue.toString() + ">" + builder);
+                String asString = truncateToStepSize(actualValue, stepSize);
+                System.out.println("6424: " + actualValue + " " + stepSize);
+                asString = truncateToStepSize(actualValue, stepSize);
+                currentValue.setText(asString);
             }
             else {
                 currentValue.setText(String.valueOf(actualValue.doubleValue()));
@@ -115,5 +106,32 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
             currentValue.setText("");
             slider.reset();
         }
+    }
+
+    @NonNull
+    private static String truncateToStepSize(BigDecimal actualValue, float stepSize) {
+        String stepTxt = String.valueOf(stepSize);//1.0E-4
+        int stepChars = (stepTxt.contains("E")
+                ? Integer.valueOf(String.valueOf(stepTxt.charAt(stepTxt.length() - 1)))
+                : stepTxt.length() - 2); // Following '0.'
+        // Mantissa truncated to include decimals to match step
+        int shiftUpAndCast = (int)
+                (actualValue.doubleValue() * Math.pow(10, stepChars + 1)); // Extra for 9 check
+        String asString = String.valueOf(shiftUpAndCast);
+        // Round up?
+        if (asString.endsWith("9")) {
+            asString = String.valueOf(++shiftUpAndCast);
+        }
+        // Trim last char
+        asString = asString.substring(0, asString.length() - 1);
+        int pointAt = asString.length() - stepChars;
+        if (pointAt < 1) {
+            asString = "0." + "0".repeat(pointAt * -1)
+                    + asString;
+        } else {
+            asString = asString.substring(0, pointAt)
+                    + "." + asString.substring(pointAt);
+        }
+        return asString;
     }
 }
