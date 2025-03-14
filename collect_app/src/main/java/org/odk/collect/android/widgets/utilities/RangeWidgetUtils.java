@@ -24,12 +24,12 @@ import timber.log.Timber;
 
 public class RangeWidgetUtils {
     public static final boolean DUMMIES = true;
-    public static final double STEP = newRandomStepSize();
+    public static final double STEP = newDummyStep();
 
-    private static double newRandomStepSize() {
-        double size = (true ? 558 : (int) (Math.random() * 900 + 100)) / 10000d;
-        System.out.println("6424: " + size);
-        return size;
+    private static double newDummyStep() {
+        double step = true ? .175 : (int) (Math.random() * 90 + 10) / 10d;
+        System.out.println("6424: " + step);
+        return step;
     }
 
     static double[][] DUMMIES_ALL = new double[][]{

@@ -34,6 +34,8 @@ import org.odk.collect.android.widgets.QuestionWidget;
 import org.odk.collect.android.widgets.utilities.RangeWidgetUtils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 @SuppressLint("ViewConstructor")
 public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChangeListener {
@@ -89,15 +91,13 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
         }
     }
 
-    @SuppressLint("SetTextI18n")
     private void updateActualValueLabel(BigDecimal actualValue) {
        if (actualValue != null) {
-           float stepSize = slider.getStepSize();
-            if (stepSize < 1) {
-                String asString = truncateToStepSize(actualValue, stepSize);
-                System.out.println("6424: " + actualValue + " " + stepSize);
-                asString = truncateToStepSize(actualValue, stepSize);
-                currentValue.setText(asString);
+           float step = slider.getStepSize();
+           System.out.println("6424: " + actualValue + " " + step);
+           if (step < 1) {
+               String truncated = truncateDecimalsToStep(actualValue.doubleValue(), step);
+               currentValue.setText(truncated);
             }
             else {
                 currentValue.setText(String.valueOf(actualValue.doubleValue()));
@@ -109,28 +109,37 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     }
 
     @NonNull
-    private static String truncateToStepSize(BigDecimal actualValue, float stepSize) {
-        String stepTxt = String.valueOf(stepSize);//1.0E-4
-        int stepChars = (stepTxt.contains("E")
+    private static String truncateDecimalsToStep(double decimals, float step) {
+        String stepTxt = String.valueOf(step);
+        int stepChars = stepTxt.contains("E")
                 ? Integer.valueOf(String.valueOf(stepTxt.charAt(stepTxt.length() - 1)))
-                : stepTxt.length() - 2); // Following '0.'
-        // Mantissa truncated to include decimals to match step
-        int shiftUpAndCast = (int)
-                (actualValue.doubleValue() * Math.pow(10, stepChars + 1)); // Extra for 9 check
+                : stepTxt.length() - 2; // Following '0.'
+        // Mantissa truncated so decimals match step
+        double shift = Math.pow(10, stepChars + 1);
+        int shiftUpAndCast = (int) (decimals * shift); // Extra for 9 check
+
+        double backOnePlace = shiftUpAndCast / 10d;
+        int rounded = (int) Math.round(backOnePlace);
+        double shiftBack = rounded / shift * 10;
+        String spurious0s = String.valueOf(shiftBack)
+                .replaceAll("(\\.[1-9])+0+[1-9]$", "$1");
+        System.out.println("6424a: " + spurious0s);
+
         String asString = String.valueOf(shiftUpAndCast);
         // Round up?
         if (asString.endsWith("9")) {
             asString = String.valueOf(++shiftUpAndCast);
         }
-        // Trim last char
+        // Trim last digit
         asString = asString.substring(0, asString.length() - 1);
         int pointAt = asString.length() - stepChars;
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.GERMAN);
+        char separator = false ? dfs.getDecimalSeparator() : '.';
         if (pointAt < 1) {
-            asString = "0." + "0".repeat(pointAt * -1)
-                    + asString;
+            asString = "0" + separator + "0".repeat(pointAt * -1) + asString;
         } else {
             asString = asString.substring(0, pointAt)
-                    + "." + asString.substring(pointAt);
+                    + separator + asString.substring(pointAt);
         }
         return asString;
     }
