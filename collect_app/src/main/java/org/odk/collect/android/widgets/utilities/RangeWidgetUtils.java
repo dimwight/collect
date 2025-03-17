@@ -23,11 +23,12 @@ import java.math.BigDecimal;
 import timber.log.Timber;
 
 public class RangeWidgetUtils {
-    public static final boolean DUMMIES = true;
+    public static final boolean DUMMIES = false;
     public static final double STEP = newDummyStep();
 
     private static double newDummyStep() {
-        double step = true ? .175 : (int) (Math.random() * 90 + 10) / 10d;
+        double step = true ? .025 : (int) (Math.random() * 90 + 10) / 10d;
+        int scale = BigDecimal.valueOf(step).scale();
         System.out.println("6424: " + step);
         return step;
     }

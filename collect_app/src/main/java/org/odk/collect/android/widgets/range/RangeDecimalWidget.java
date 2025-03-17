@@ -95,7 +95,8 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
        if (actualValue != null) {
            float step = slider.getStepSize();
            System.out.println("6424: " + actualValue + " " + step);
-           if (step < 1) {
+           if ((true || RangeWidgetUtils.DUMMIES) &&
+                   step < 1) {
                String truncated = truncateDecimalsToStep(actualValue.doubleValue(), step);
                currentValue.setText(truncated);
             }
@@ -111,7 +112,9 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     @NonNull
     private static String truncateDecimalsToStep(double decimals, float step) {
         String stepTxt = String.valueOf(step);
-        int stepChars = stepTxt.contains("E")
+        int scale = BigDecimal.valueOf(step).scale();
+        int stepChars = false ? scale :
+                stepTxt.contains("E")
                 ? Integer.valueOf(String.valueOf(stepTxt.charAt(stepTxt.length() - 1)))
                 : stepTxt.length() - 2; // Following '0.'
         // Mantissa truncated so decimals match step
@@ -136,7 +139,8 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.GERMAN);
         char separator = false ? dfs.getDecimalSeparator() : '.';
         if (pointAt < 1) {
-            asString = "0" + separator + "0".repeat(pointAt * -1) + asString;
+            asString = "0" + separator
+                    + "0".repeat(pointAt * -1) + asString;
         } else {
             asString = asString.substring(0, pointAt)
                     + separator + asString.substring(pointAt);
