@@ -16,7 +16,7 @@
 
 package org.odk.collect.android.widgets.range;
 
-import static org.odk.collect.android.widgets.utilities.RangeWidgetUtils.DUMMIES_NOW;
+import static org.odk.collect.android.widgets.utilities.RangeWidgetUtils.ACTUALS;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.slider.Slider;
 
+import org.javarosa.core.model.RangeQuestion;
 import org.javarosa.core.model.data.DecimalData;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.instance.TreeElement;
@@ -79,9 +80,15 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
         Double step = Double.valueOf(Step.getValue().getDisplayText());
         TreeElement Multiple = g.getChildAt(1);
         Integer multiple = Integer.valueOf(Multiple.getValue().getDisplayText());
-        DUMMIES_NOW[0] = 0;
-        DUMMIES_NOW[1] = step * multiple;
-        DUMMIES_NOW[2] = step;
+        if (ACTUALS != null) {
+            ACTUALS[0] = 0;
+            ACTUALS[1] = step * multiple;
+            ACTUALS[2] = step;
+        }
+        RangeQuestion question = (RangeQuestion) prompt.getQuestion();
+        question.setRangeStart(BigDecimal.valueOf(0));
+        question.setRangeEnd(BigDecimal.valueOf(step * multiple));
+        question.setRangeEnd(BigDecimal.valueOf(step));
 
         RangeWidgetUtils.RangeWidgetLayoutElements layoutElements = RangeWidgetUtils.setUpLayoutElements(context, prompt);
         slider = layoutElements.getSlider();
