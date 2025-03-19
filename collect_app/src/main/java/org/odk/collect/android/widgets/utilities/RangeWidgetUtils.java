@@ -38,7 +38,7 @@ public class RangeWidgetUtils {
             {0, .5, .00001},
             {0, .32 * 10, 0.32},
     };
-    static double[] DUMMIES_NOW = DUMMIES_ALL[0];
+    public final static double[] DUMMIES_NOW = DUMMIES_ALL[0];
     private static final String VERTICAL_APPEARANCE = "vertical";
     private static final String NO_TICKS_APPEARANCE = "no-ticks";
 

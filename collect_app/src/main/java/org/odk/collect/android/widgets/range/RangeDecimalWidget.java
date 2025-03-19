@@ -16,6 +16,8 @@
 
 package org.odk.collect.android.widgets.range;
 
+import static org.odk.collect.android.widgets.utilities.RangeWidgetUtils.DUMMIES_NOW;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
@@ -27,12 +29,14 @@ import com.google.android.material.slider.Slider;
 
 import org.javarosa.core.model.data.DecimalData;
 import org.javarosa.core.model.data.IAnswerData;
+import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.views.TrackingTouchSlider;
 import org.odk.collect.android.widgets.QuestionWidget;
 import org.odk.collect.android.widgets.utilities.RangeWidgetUtils;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -42,6 +46,25 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     TrackingTouchSlider slider;
     TextView currentValue;
 
+    Object accessField(Object obj, String name) {
+        try {
+            Field field = obj.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+            return field.get(obj);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private TreeElement findFocusStore(FormEntryPrompt prompt) {
+        Object point = accessField(prompt, "mTreeElement");
+        Object repeat = accessField(point, "parent");
+        Object data_ = accessField(repeat, "parent");
+        TreeElement focus = ((TreeElement) data_).getChildAt(0);
+        return focus;
+    }
+
     public RangeDecimalWidget(Context context, QuestionDetails prompt) {
         super(context, prompt);
         render();
@@ -49,6 +72,17 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
 
     @Override
     protected View onCreateAnswerView(Context context, FormEntryPrompt prompt, int answerFontSize) {
+        Object Tester = accessField(prompt, "mTreeElement");
+        Object data = accessField(Tester, "parent");
+        TreeElement g = ((TreeElement) data).getChildAt(0);
+        TreeElement Step = g.getChildAt(0);
+        Double step = Double.valueOf(Step.getValue().getDisplayText());
+        TreeElement Multiple = g.getChildAt(1);
+        Integer multiple = Integer.valueOf(Multiple.getValue().getDisplayText());
+        DUMMIES_NOW[0] = 0;
+        DUMMIES_NOW[1] = step * multiple;
+        DUMMIES_NOW[2] = step;
+
         RangeWidgetUtils.RangeWidgetLayoutElements layoutElements = RangeWidgetUtils.setUpLayoutElements(context, prompt);
         slider = layoutElements.getSlider();
         currentValue = layoutElements.getCurrentValue();
