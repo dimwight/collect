@@ -16,7 +16,7 @@
 
 package org.odk.collect.android.widgets.range;
 
-import static org.odk.collect.android.widgets.utilities.RangeWidgetUtils.ACTUALS;
+import static org.odk.collect.android.widgets.utilities.RangeWidgetUtils.DUMMIES_NOW;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.slider.Slider;
 
-import org.javarosa.core.model.RangeQuestion;
 import org.javarosa.core.model.data.DecimalData;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.instance.TreeElement;
@@ -46,6 +45,7 @@ import java.util.Locale;
 public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChangeListener {
     TrackingTouchSlider slider;
     TextView currentValue;
+    private String name;
 
     Object accessField(Object obj, String name) {
         try {
@@ -74,21 +74,17 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     @Override
     protected View onCreateAnswerView(Context context, FormEntryPrompt prompt, int answerFontSize) {
         Object Tester = accessField(prompt, "mTreeElement");
-        Object data = accessField(Tester, "parent");
-        TreeElement g = ((TreeElement) data).getChildAt(0);
-        TreeElement Step = g.getChildAt(0);
+        name = Tester.toString();
+        Object g2 = accessField(Tester, "parent");
+        Object data = accessField(g2, "parent");
+        TreeElement g1 = ((TreeElement) data).getChildAt(0);
+        TreeElement Step = g1.getChildAt(0);
         Double step = Double.valueOf(Step.getValue().getDisplayText());
-        TreeElement Multiple = g.getChildAt(1);
+        TreeElement Multiple = g1.getChildAt(1);
         Integer multiple = Integer.valueOf(Multiple.getValue().getDisplayText());
-        if (ACTUALS != null) {
-            ACTUALS[0] = 0;
-            ACTUALS[1] = step * multiple;
-            ACTUALS[2] = step;
-        }
-        RangeQuestion question = (RangeQuestion) prompt.getQuestion();
-        question.setRangeStart(BigDecimal.valueOf(0));
-        question.setRangeEnd(BigDecimal.valueOf(step * multiple));
-        question.setRangeEnd(BigDecimal.valueOf(step));
+        DUMMIES_NOW[0] = 0;
+        DUMMIES_NOW[1] = step * multiple;
+        DUMMIES_NOW[2] = step;
 
         RangeWidgetUtils.RangeWidgetLayoutElements layoutElements = RangeWidgetUtils.setUpLayoutElements(context, prompt);
         slider = layoutElements.getSlider();
@@ -136,8 +132,7 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
        if (actualValue != null) {
            float step = slider.getStepSize();
            System.out.println("6424: " + actualValue + " " + step);
-           if ((true || RangeWidgetUtils.DUMMIES) &&
-                   step < 1) {
+           if (name.startsWith("Tester1") && step < 1) {
                String truncated = truncateDecimalsToStep(actualValue.doubleValue(), step);
                currentValue.setText(truncated);
             }

@@ -23,7 +23,7 @@ import java.math.BigDecimal;
 import timber.log.Timber;
 
 public class RangeWidgetUtils {
-    public static final boolean DUMMIES = false;
+    public static boolean DUMMIES = true;
     public static final double STEP = newDummyStep();
 
     private static double newDummyStep() {
@@ -39,8 +39,6 @@ public class RangeWidgetUtils {
             {0, .32 * 10, 0.32},
     };
     public final static double[] DUMMIES_NOW = DUMMIES_ALL[0];
-    public final static double[] ACTUALS = DUMMIES ? null
-            : new double[]{Double.NaN, Double.NaN, Double.NaN};
     private static final String VERTICAL_APPEARANCE = "vertical";
     private static final String NO_TICKS_APPEARANCE = "no-ticks";
 
@@ -124,12 +122,11 @@ public class RangeWidgetUtils {
     public static BigDecimal setUpSlider(FormEntryPrompt prompt, TrackingTouchSlider slider, boolean isIntegerType) {
         RangeQuestion rangeQuestion = (RangeQuestion) prompt.getQuestion();
 
-        double[] now = ACTUALS == null ? DUMMIES_NOW : ACTUALS;
-        BigDecimal rangeStart = DUMMIES ? BigDecimal.valueOf(now[0]) :
+        BigDecimal rangeStart = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[0]) :
                 rangeQuestion.getRangeStart();
-        BigDecimal rangeEnd = DUMMIES ? BigDecimal.valueOf(now[1]) :
+        BigDecimal rangeEnd = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[1]) :
                 rangeQuestion.getRangeEnd();
-        BigDecimal rangeStep = DUMMIES ? BigDecimal.valueOf(now[2]) :
+        BigDecimal rangeStep = DUMMIES ? BigDecimal.valueOf(DUMMIES_NOW[2]) :
                 rangeQuestion.getRangeStep().abs() != null ? rangeQuestion.getRangeStep().abs() : BigDecimal.valueOf(0.5);
 
         BigDecimal actualValue = null;
