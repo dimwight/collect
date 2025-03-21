@@ -36,7 +36,7 @@ public class RangeWidgetUtils {
     static double[][] DUMMIES_ALL = new double[][]{
             {0, STEP * 20, STEP},
             {0, .5, .00001},
-            {0, .32 * 10, 0.32},
+            {0, 1 / 12, 1 / 12 * 36},
     };
     public final static double[] DUMMIES_NOW = DUMMIES_ALL[0];
     private static final String VERTICAL_APPEARANCE = "vertical";

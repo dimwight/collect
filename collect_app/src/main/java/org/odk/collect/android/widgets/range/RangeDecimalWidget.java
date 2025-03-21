@@ -16,6 +16,7 @@
 
 package org.odk.collect.android.widgets.range;
 
+import static org.odk.collect.android.widgets.utilities.RangeWidgetUtils.DUMMIES;
 import static org.odk.collect.android.widgets.utilities.RangeWidgetUtils.DUMMIES_NOW;
 
 import android.annotation.SuppressLint;
@@ -38,6 +39,7 @@ import org.odk.collect.android.widgets.utilities.RangeWidgetUtils;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
@@ -73,18 +75,20 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
 
     @Override
     protected View onCreateAnswerView(Context context, FormEntryPrompt prompt, int answerFontSize) {
-        Object Tester = accessField(prompt, "mTreeElement");
-        name = Tester.toString();
-        Object g2 = accessField(Tester, "parent");
-        Object data = accessField(g2, "parent");
-        TreeElement g1 = ((TreeElement) data).getChildAt(0);
-        TreeElement Step = g1.getChildAt(0);
-        Double step = Double.valueOf(Step.getValue().getDisplayText());
-        TreeElement Multiple = g1.getChildAt(1);
-        Integer multiple = Integer.valueOf(Multiple.getValue().getDisplayText());
-        DUMMIES_NOW[0] = 0;
-        DUMMIES_NOW[1] = step * multiple;
-        DUMMIES_NOW[2] = step;
+        if (DUMMIES) {
+            Object Tester = accessField(prompt, "mTreeElement");
+            name = Tester.toString();
+            Object g2 = accessField(Tester, "parent");
+            Object data = accessField(g2, "parent");
+            TreeElement g1 = ((TreeElement) data).getChildAt(0);
+            TreeElement Step = g1.getChildAt(0);
+            Double step = Double.valueOf(Step.getValue().getDisplayText());
+            TreeElement Multiple = g1.getChildAt(1);
+            Integer multiple = Integer.valueOf(Multiple.getValue().getDisplayText());
+            DUMMIES_NOW[0] = 0;
+            DUMMIES_NOW[1] = step * multiple;
+            DUMMIES_NOW[2] = step;
+        }
 
         RangeWidgetUtils.RangeWidgetLayoutElements layoutElements = RangeWidgetUtils.setUpLayoutElements(context, prompt);
         slider = layoutElements.getSlider();
@@ -131,13 +135,18 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     private void updateActualValueLabel(BigDecimal actualValue) {
        if (actualValue != null) {
            float step = slider.getStepSize();
-           System.out.println("6424: " + actualValue + " " + step);
-           if (name.startsWith("Tester1") && step < 1) {
-               String truncated = truncateDecimalsToStep(actualValue.doubleValue(), step);
-               currentValue.setText(truncated);
-            }
-            else {
-                currentValue.setText(String.valueOf(actualValue.doubleValue()));
+           System.out.println("6424a: " + actualValue + " " + step);
+           if (name.startsWith("Tester1")) {
+               if (step < 1) {
+                   String truncated = truncateDecimalsToStep(actualValue, step);
+                   currentValue.setText(truncated);
+               } else {
+                   String check = String.valueOf(actualValue.setScale(3, RoundingMode.HALF_UP)
+                           .doubleValue());
+                   currentValue.setText(check);
+               }
+           } else {
+               currentValue.setText(String.valueOf(actualValue.doubleValue()));
             }
         }else {
             currentValue.setText("");
@@ -146,23 +155,26 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     }
 
     @NonNull
-    private static String truncateDecimalsToStep(double decimals, float step) {
+    private static String truncateDecimalsToStep(BigDecimal decimals, float step) {
         String stepTxt = String.valueOf(step);
         int scale = BigDecimal.valueOf(step).scale();
         int stepChars = false ? scale :
-                stepTxt.contains("E")
-                ? Integer.valueOf(String.valueOf(stepTxt.charAt(stepTxt.length() - 1)))
+                stepTxt.contains("E") ? Integer.valueOf(
+                        String.valueOf(stepTxt.charAt(stepTxt.length() - 1)))
                 : stepTxt.length() - 2; // Following '0.'
+
         // Mantissa truncated so decimals match step
         double shift = Math.pow(10, stepChars + 1);
-        int shiftUpAndCast = (int) (decimals * shift); // Extra for 9 check
+        int shiftUpAndCast = (int) (decimals.doubleValue() * shift); // Extra for 9 check
 
-        double backOnePlace = shiftUpAndCast / 10d;
-        int rounded = (int) Math.round(backOnePlace);
-        double shiftBack = rounded / shift * 10;
-        String spurious0s = String.valueOf(shiftBack)
-                .replaceAll("(\\.[1-9])+0+[1-9]$", "$1");
-        System.out.println("6424a: " + spurious0s);
+        if (false) {
+            double backOnePlace = shiftUpAndCast / 10d;
+            int rounded = (int) Math.round(backOnePlace);
+            double shiftBack = rounded / shift * 10;
+            String spurious0s = String.valueOf(shiftBack)
+                    .replaceAll("(\\.[1-9])+0+[1-9]$", "$1");
+            System.out.println("6424b: " + spurious0s);
+        }
 
         String asString = String.valueOf(shiftUpAndCast);
         // Round up?
@@ -181,6 +193,8 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
             asString = asString.substring(0, pointAt)
                     + separator + asString.substring(pointAt);
         }
-        return asString;
+        System.out.println("6424c:" + asString);
+        return String.valueOf(decimals.setScale(5, RoundingMode.HALF_UP)
+                .doubleValue());
     }
 }
