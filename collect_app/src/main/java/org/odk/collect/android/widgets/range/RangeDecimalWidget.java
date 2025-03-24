@@ -47,7 +47,8 @@ import java.util.Locale;
 public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChangeListener {
     TrackingTouchSlider slider;
     TextView currentValue;
-    private String name;
+    private String name = "";
+    private boolean applyFix;
 
     Object accessField(Object obj, String name) {
         try {
@@ -75,6 +76,7 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
 
     @Override
     protected View onCreateAnswerView(Context context, FormEntryPrompt prompt, int answerFontSize) {
+        DUMMIES = false;
         if (DUMMIES) {
             Object Tester = accessField(prompt, "mTreeElement");
             name = Tester.toString();
@@ -89,6 +91,7 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
             DUMMIES_NOW[1] = step * multiple;
             DUMMIES_NOW[2] = step;
         }
+        applyFix = false || (DUMMIES && name.startsWith("Tester1"));
 
         RangeWidgetUtils.RangeWidgetLayoutElements layoutElements = RangeWidgetUtils.setUpLayoutElements(context, prompt);
         slider = layoutElements.getSlider();
@@ -135,19 +138,21 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
     private void updateActualValueLabel(BigDecimal actualValue) {
        if (actualValue != null) {
            float step = slider.getStepSize();
-           System.out.println("6424a: " + actualValue + " " + step);
-           if (name.startsWith("Tester1")) {
-               if (step < 1) {
-                   String truncated = truncateDecimalsToStep(actualValue, step);
-                   currentValue.setText(truncated);
-               } else {
-                   String check = String.valueOf(actualValue.setScale(3, RoundingMode.HALF_UP)
-                           .doubleValue());
-                   currentValue.setText(check);
-               }
+           String valueOf;
+           if (false && !applyFix) {
+               valueOf = String.valueOf(actualValue.doubleValue());
            } else {
-               currentValue.setText(String.valueOf(actualValue.doubleValue()));
+               System.out.println("6424a: " + actualValue + " " + step);
+               if (step < 1) {
+                   System.out.println("6424b:" + truncateDecimalsToStep(actualValue, step));
+                   valueOf = String.valueOf(
+                           actualValue.setScale(5, RoundingMode.HALF_UP).doubleValue());
+               } else {
+                   valueOf = String.valueOf(
+                           actualValue.setScale(5, RoundingMode.HALF_UP).doubleValue());
+               }
             }
+           currentValue.setText(valueOf);
         }else {
             currentValue.setText("");
             slider.reset();
@@ -193,8 +198,6 @@ public class RangeDecimalWidget extends QuestionWidget implements Slider.OnChang
             asString = asString.substring(0, pointAt)
                     + separator + asString.substring(pointAt);
         }
-        System.out.println("6424c:" + asString);
-        return String.valueOf(decimals.setScale(5, RoundingMode.HALF_UP)
-                .doubleValue());
+        return asString;
     }
 }
