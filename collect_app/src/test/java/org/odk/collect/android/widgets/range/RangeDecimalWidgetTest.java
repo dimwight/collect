@@ -60,6 +60,14 @@ public class RangeDecimalWidgetTest {
     }
 
     @Test
+    public void changingSliderValueToAnIntermediate_setsTheValueCorrectly() {
+        RangeDecimalWidget widget = createWidget(promptWithQuestionDefAndAnswer(rangeQuestion, null));
+
+        SliderExtKt.clickOnFractionOfMaxValue(widget.slider, 0.3f);
+        assertThat(widget.currentValue.getText(), equalTo("2.3"));
+    }
+
+    @Test
     public void getAnswer_whenPromptDoesNotHaveAnswer_returnsNull() {
         assertThat(createWidget(promptWithReadOnlyAndQuestionDef(rangeQuestion)).getAnswer(), nullValue());
     }
