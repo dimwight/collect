@@ -11,7 +11,7 @@ fun Slider.clickOnMaxValue() {
     clickOnPosition(width.toFloat())
 }
 
-fun Slider.clickOnFractionOfMaxValue(fraction: Float) {
+fun Slider.clickOnFractionalValue(fraction: Float) {
     clickOnPosition(width.toFloat() * fraction)
 }
 

@@ -219,7 +219,7 @@ public class RangeDecimalWidgetTest {
     public void changingSliderValueToAnIntermediate_setsTheValueCorrectly() {
         RangeDecimalWidget widget = createWidget(promptWithQuestionDefAndAnswer(rangeQuestion, null));
 
-        SliderExtKt.clickOnFractionOfMaxValue(widget.slider, 0.3f);
+        SliderExtKt.clickOnFractionalValue(widget.slider, 0.3f);
         assertThat(widget.currentValue.getText(), equalTo("2.3"));
     }
 
