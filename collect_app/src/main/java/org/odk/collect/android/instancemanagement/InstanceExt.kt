@@ -1,5 +1,6 @@
 package org.odk.collect.android.instancemanagement
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Resources
 import org.odk.collect.forms.instances.Instance
@@ -9,7 +10,6 @@ import org.odk.collect.strings.R
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 fun Instance.canBeEdited(settingsProvider: SettingsProvider): Boolean {
     return isDraft() &&
@@ -33,9 +33,9 @@ fun Instance.showAsEditable(settingsProvider: SettingsProvider): Boolean {
         .getBoolean(ProtectedProjectKeys.KEY_EDIT_SAVED)
 }
 
+@SuppressLint("NewApi")
 private fun getStatusDescription(resources: Resources, state: String?, date: Date): String {
-    val locale = if (false) Locale.getDefault()
-    else resources.configuration.locale
+    val locale = resources.configuration.locales.get(0)
     return try {
         if (Instance.STATUS_INCOMPLETE.equals(state, ignoreCase = true)) {
             SimpleDateFormat(

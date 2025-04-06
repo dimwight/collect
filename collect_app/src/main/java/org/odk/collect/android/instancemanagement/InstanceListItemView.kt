@@ -1,5 +1,6 @@
 package org.odk.collect.android.instancemanagement
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.widget.ImageView
@@ -12,12 +13,12 @@ import org.odk.collect.strings.R.string
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 object InstanceListItemView {
 
     private const val DISABLED_ALPHA = 0.38f
 
+    @SuppressLint("NewApi")
     @JvmStatic
     @Deprecated("This should eventually be replaced by a ViewHolder or View implementation")
     fun setInstance(view: View, instance: Instance, shouldCheckDisabled: Boolean) {
@@ -55,7 +56,8 @@ object InstanceListItemView {
                 val disabledMessage = if (date != null) {
                     try {
                         val deletedTime: String = context.getString(string.deleted_on_date_at_time)
-                        SimpleDateFormat(deletedTime, Locale.getDefault()).format(Date(date))
+                        val locale = context.resources.configuration.locales.get(0)
+                        SimpleDateFormat(deletedTime, locale).format(Date(date))
                     } catch (e: IllegalArgumentException) {
                         Timber.e(e)
                         context.getString(string.submission_deleted)

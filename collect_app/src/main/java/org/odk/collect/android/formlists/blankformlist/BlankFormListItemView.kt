@@ -1,5 +1,6 @@
 package org.odk.collect.android.formlists.blankformlist
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.widget.FrameLayout
@@ -7,12 +8,12 @@ import org.odk.collect.android.databinding.BlankFormListItemBinding
 import org.odk.collect.strings.R.string
 import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.util.Locale
 
 class BlankFormListItemView(context: Context) : FrameLayout(context) {
 
     val binding = BlankFormListItemBinding.inflate(LayoutInflater.from(context), this, true)
 
+    @SuppressLint("NewApi")
     fun setItem(item: BlankFormListItem) {
         binding.formTitle.text = item.formName
 
@@ -29,9 +30,8 @@ class BlankFormListItemView(context: Context) : FrameLayout(context) {
                 string.id_number,
                 item.formId
             )
-        val locale = if (false) Locale.getDefault()
-        else context.resources.configuration.locale
 
+        val locale = resources.configuration.locales.get(0)
         binding.formHistory.text = try {
             if (item.dateOfLastDetectedAttachmentsUpdate != null) {
                 SimpleDateFormat(
@@ -42,7 +42,6 @@ class BlankFormListItemView(context: Context) : FrameLayout(context) {
                 SimpleDateFormat(
                     binding.root.context.getString(string.added_on_date_at_time),
                     locale
-                    //   getDefault()
                 ).format(item.dateOfCreation)
             }
         } catch (e: IllegalArgumentException) {
