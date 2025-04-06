@@ -29,17 +29,20 @@ class BlankFormListItemView(context: Context) : FrameLayout(context) {
                 string.id_number,
                 item.formId
             )
+        val locale = if (false) Locale.getDefault()
+        else context.resources.configuration.locale
 
         binding.formHistory.text = try {
             if (item.dateOfLastDetectedAttachmentsUpdate != null) {
                 SimpleDateFormat(
                     binding.root.context.getString(string.updated_on_date_at_time),
-                    Locale.getDefault()
+                    locale
                 ).format(item.dateOfLastDetectedAttachmentsUpdate)
             } else {
                 SimpleDateFormat(
                     binding.root.context.getString(string.added_on_date_at_time),
-                    Locale.getDefault()
+                    locale
+                    //   getDefault()
                 ).format(item.dateOfCreation)
             }
         } catch (e: IllegalArgumentException) {

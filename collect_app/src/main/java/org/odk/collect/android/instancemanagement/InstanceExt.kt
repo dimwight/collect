@@ -34,45 +34,47 @@ fun Instance.showAsEditable(settingsProvider: SettingsProvider): Boolean {
 }
 
 private fun getStatusDescription(resources: Resources, state: String?, date: Date): String {
+    val locale = if (false) Locale.getDefault()
+    else resources.configuration.locale
     return try {
         if (Instance.STATUS_INCOMPLETE.equals(state, ignoreCase = true)) {
             SimpleDateFormat(
                 resources.getString(R.string.saved_on_date_at_time),
-                Locale.getDefault()
+                locale
             ).format(date)
         } else if (Instance.STATUS_COMPLETE.equals(state, ignoreCase = true)) {
             SimpleDateFormat(
                 resources.getString(R.string.finalized_on_date_at_time),
-                Locale.getDefault()
+                locale
             ).format(date)
         } else if (Instance.STATUS_SUBMITTED.equals(state, ignoreCase = true)) {
             SimpleDateFormat(
                 resources.getString(R.string.sent_on_date_at_time),
-                Locale.getDefault()
+                locale
             ).format(date)
         } else if (Instance.STATUS_SUBMISSION_FAILED.equals(state, ignoreCase = true)) {
             SimpleDateFormat(
                 resources.getString(R.string.sending_failed_on_date_at_time),
-                Locale.getDefault()
+                locale
             ).format(date)
         } else if (Instance.STATUS_INVALID.equals(state, ignoreCase = true)) {
             SimpleDateFormat(
                 resources.getString(R.string.saved_on_date_at_time),
-                Locale.getDefault()
+                locale
             ).format(date)
         } else if (Instance.STATUS_VALID.equals(state, ignoreCase = true)) {
             SimpleDateFormat(
                 resources.getString(R.string.saved_on_date_at_time),
-                Locale.getDefault()
+                locale
             ).format(date)
         } else {
             SimpleDateFormat(
                 resources.getString(R.string.added_on_date_at_time),
-                Locale.getDefault()
+                locale
             ).format(date)
         }
     } catch (e: IllegalArgumentException) {
-        Timber.e(e, "Current locale: %s", Locale.getDefault())
+        Timber.e(e, "Current locale: %s", locale)
         ""
     }
 }
