@@ -758,7 +758,7 @@ public class JavaRosaFormController implements FormController {
             // we only display relevant questions
             List<FormEntryPrompt> questionList = new ArrayList<>();
             for (FormIndex index : getIndicesForGroup(gd)) {
-                if (getEvent(index) != FormEntryController.EVENT_QUESTION) {
+                if (getEvent(index) != FormEntryController.EVENT_QUESTION) { //#5194
                     throw new RepeatsInFieldListException("Repeats in 'field-list' groups " +
                             "are not supported. Please update the form design to remove the " +
                             "following repeat from a field list: " + index.getReference().toString(false));

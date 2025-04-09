@@ -833,6 +833,7 @@ public class FormFillingActivity extends LocalizedActivity implements AnimationL
         if (requestCode == RequestCodes.HIERARCHY_ACTIVITY || requestCode == RequestCodes.CHANGE_SETTINGS) {
             activityDisplayed();
             formEntryViewModel.refreshSync();
+//            formEntryViewModel.refresh(); #5194 unaffected
             return;
         }
 
