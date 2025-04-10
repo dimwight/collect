@@ -58,8 +58,8 @@ public class DeleteRepeatDialogFragment extends DialogFragment {
         alertDialog.setMessage(getActivity().getString(org.odk.collect.strings.R.string.delete_repeat_confirm, name));
         DialogInterface.OnClickListener quitListener = (dialog, i) -> {
             if (i == BUTTON_POSITIVE) { // yes
-                formController.getAuditEventLogger().logEvent(AuditEvent.AuditEventType.DELETE_REPEAT, true, System.currentTimeMillis());
                 formController.deleteRepeat();
+                formController.getAuditEventLogger().logEvent(AuditEvent.AuditEventType.DELETE_REPEAT, true, System.currentTimeMillis());
                 getParentFragmentManager().setFragmentResult(REQUEST_DELETE_REPEAT, new Bundle());
             }
             alertDialog.cancel();

@@ -739,8 +739,25 @@ public class JavaRosaFormController implements FormController {
     }
 
     public void deleteRepeat() {
+        FormIndex start = getFormIndex();
+        String nameStart = start.getReference().getNameLast();
+        FormEntryModel model = formEntryController.getModel();
+        FormIndex next = start;
+        while (nameStart.equals(next.getReference().getNameLast())) {
+            System.out.println("5194b: " + iStr(next));
+            next = model.incrementIndex(next);
+        }
+        jumpToIndex(start);
         FormIndex fi = formEntryController.deleteRepeat();
         formEntryController.jumpToIndex(fi);
+    }
+
+    private static String iStr(FormIndex i) {
+        return String.format(Locale.getDefault(),
+                "%s, %d",
+                i.getReference().getNameLast(),
+                i.getElementMultiplicity()
+        );
     }
 
     public void setLanguage(String language) {

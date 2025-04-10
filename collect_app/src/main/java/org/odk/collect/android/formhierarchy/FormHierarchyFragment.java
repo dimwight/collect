@@ -749,14 +749,24 @@ public class FormHierarchyFragment extends Fragment {
         @Override
         public void onPrepareMenu(@NonNull Menu menu) {
             FormIndex screenIndex = formHierarchyViewModel.getScreenIndex();
+            FormIndex repeatGroupPickerIndex = formHierarchyViewModel.getRepeatGroupPickerIndex();
+            int multiplicity = screenIndex.getElementMultiplicity();
+            TreeReference localReference = screenIndex.getLocalReference();
+            TreeReference reference = screenIndex.getReference();
             boolean isAtBeginning = screenIndex.isBeginningOfFormIndex() && !formHierarchyViewModel.shouldShowRepeatGroupPicker();
             boolean shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker();
             boolean isInRepeat = formEntryViewModel.getFormController().indexContainsRepeatableGroup(screenIndex);
             boolean isGroupSizeLocked = shouldShowPicker
-                    ? isGroupSizeLocked(formHierarchyViewModel.getRepeatGroupPickerIndex()) : isGroupSizeLocked(screenIndex);
+                    ? isGroupSizeLocked(repeatGroupPickerIndex) : isGroupSizeLocked(screenIndex);
 
             menu.findItem(R.id.menu_add_repeat).setVisible(shouldShowPicker && !isGroupSizeLocked && !viewOnly);
-            menu.findItem(R.id.menu_delete_child).setVisible(isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly);
+            boolean delete = isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly;
+            if (delete) {
+                if (reference != null) {
+                    System.out.println("5194a: " + reference.getMultLast());
+                }
+                menu.findItem(R.id.menu_delete_child).setVisible(delete);
+            }
             menu.findItem(R.id.menu_go_up).setVisible(!isAtBeginning);
         }
 
