@@ -753,7 +753,7 @@ public class FormHierarchyFragment extends Fragment {
             boolean isAtBeginning = screenIndex.isBeginningOfFormIndex() && !formHierarchyViewModel.shouldShowRepeatGroupPicker();
             boolean shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker();
             JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
-            boolean isInRepeat = formController._indexContainsRepeatableGroup(screenIndex);
+            boolean isInRepeat = formController.indexContainsRepeatableGroup(screenIndex);
             boolean isGroupSizeLocked = shouldShowPicker
                     ? isGroupSizeLocked(repeatGroupPickerIndex) : isGroupSizeLocked(screenIndex);
 

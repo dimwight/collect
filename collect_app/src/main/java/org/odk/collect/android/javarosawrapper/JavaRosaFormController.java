@@ -744,23 +744,45 @@ public class JavaRosaFormController implements FormController {
         formEntryController.jumpToIndex(fi);
     }
 
-    public boolean isRepeatUnique(FormIndex repeat) {
-        String nameStart = repeat.getReference().getNameLast();
-        FormEntryModel model = formEntryController.getModel();
-        FormIndex next = repeat;
-        while (nameStart.equals(next.getReference().getNameLast())) {
-            System.out.println("5194b: " + iStr(next));
-            next = model.incrementIndex(next);
+    public boolean isRepeatUnique(FormIndex index) {
+        String name = index.getReference().getNameLast();
+        if (!indexContainsRepeatableGroup(index)) {
+            throw new IllegalArgumentException("'" + name +
+                    "' is not in repeatable group");
         }
-        jumpToIndex(repeat);
-        return false;
+        FormEntryModel model = formEntryController.getModel();
+        FormIndex next = model.incrementIndex(index, false);
+        System.out.println("5194b1: " + iStr(next));
+        if (true &&
+                next.getElementMultiplicity() > 1) {
+            return false;
+        }
+        boolean unique = false;
+        while (true) {
+            next = model.incrementIndex(next, false);
+            if (next.isEndOfFormIndex()) {
+                unique = true;
+                break;
+            } else if (next.getElementMultiplicity() < 0) {
+                if (true)
+                System.out.println("5194b2: " + iStr(next));
+                continue;
+            } else if (true &&
+                    name.equals(next.getReference().getNameLast())) {
+                System.out.println("5194b3: " + iStr(next));
+                break;
+            }
+        }
+        jumpToIndex(index);
+        return unique;
     }
 
     private static String iStr(FormIndex i) {
         return String.format(Locale.getDefault(),
-                "%s, %d",
+                "%s,%d,%s",
                 i.getReference().getNameLast(),
-                i.getElementMultiplicity()
+                i.getElementMultiplicity(),
+                i.toString()
         );
     }
 
