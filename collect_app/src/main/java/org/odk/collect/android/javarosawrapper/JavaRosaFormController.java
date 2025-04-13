@@ -740,16 +740,20 @@ public class JavaRosaFormController implements FormController {
 
     public void deleteRepeat() {
         FormIndex start = getFormIndex();
-        String nameStart = start.getReference().getNameLast();
+        FormIndex fi = formEntryController.deleteRepeat();
+        formEntryController.jumpToIndex(fi);
+    }
+
+    public boolean isRepeatUnique(FormIndex repeat) {
+        String nameStart = repeat.getReference().getNameLast();
         FormEntryModel model = formEntryController.getModel();
-        FormIndex next = start;
+        FormIndex next = repeat;
         while (nameStart.equals(next.getReference().getNameLast())) {
             System.out.println("5194b: " + iStr(next));
             next = model.incrementIndex(next);
         }
-        jumpToIndex(start);
-        FormIndex fi = formEntryController.deleteRepeat();
-        formEntryController.jumpToIndex(fi);
+        jumpToIndex(repeat);
+        return true;
     }
 
     private static String iStr(FormIndex i) {
