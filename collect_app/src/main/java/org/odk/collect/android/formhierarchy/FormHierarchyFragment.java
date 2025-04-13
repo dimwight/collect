@@ -750,21 +750,20 @@ public class FormHierarchyFragment extends Fragment {
         public void onPrepareMenu(@NonNull Menu menu) {
             FormIndex screenIndex = formHierarchyViewModel.getScreenIndex();
             FormIndex repeatGroupPickerIndex = formHierarchyViewModel.getRepeatGroupPickerIndex();
+
             boolean isAtBeginning = screenIndex.isBeginningOfFormIndex() && !formHierarchyViewModel.shouldShowRepeatGroupPicker();
             boolean shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker();
             JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
             boolean isInRepeat = formController.indexContainsRepeatableGroup(screenIndex);
+            boolean uniqueRepeat = isInRepeat && formController.isRepeatUnique(screenIndex);
             boolean isGroupSizeLocked = shouldShowPicker
                     ? isGroupSizeLocked(repeatGroupPickerIndex) : isGroupSizeLocked(screenIndex);
-
-            menu.findItem(R.id.menu_add_repeat).setVisible(shouldShowPicker &&
-                    !isGroupSizeLocked && !viewOnly);
             boolean delete = isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly;
-            if (delete) {
-                MenuItem item = menu.findItem(R.id.menu_delete_child);
-                boolean canDelete = !formController.isRepeatUnique(screenIndex);
-                item.setVisible(canDelete);
-            }
+
+            menu.findItem(R.id.menu_add_repeat).setVisible(
+                    shouldShowPicker && !isGroupSizeLocked && !viewOnly);
+            menu.findItem(R.id.menu_delete_child).setVisible(
+                    delete && !uniqueRepeat);
             menu.findItem(R.id.menu_go_up).setVisible(!isAtBeginning);
         }
 
