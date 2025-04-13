@@ -753,7 +753,7 @@ public class FormHierarchyFragment extends Fragment {
             boolean isAtBeginning = screenIndex.isBeginningOfFormIndex() && !formHierarchyViewModel.shouldShowRepeatGroupPicker();
             boolean shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker();
             JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
-            boolean isInRepeat = formController.indexContainsRepeatableGroup(screenIndex);
+            boolean isInRepeat = formController._indexContainsRepeatableGroup(screenIndex);
             boolean isGroupSizeLocked = shouldShowPicker
                     ? isGroupSizeLocked(repeatGroupPickerIndex) : isGroupSizeLocked(screenIndex);
 
@@ -762,8 +762,8 @@ public class FormHierarchyFragment extends Fragment {
             boolean delete = isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly;
             if (delete) {
                 MenuItem item = menu.findItem(R.id.menu_delete_child);
-                boolean canDelete = formController.isRepeatUnique(screenIndex);
-                item.setVisible(delete && canDelete);
+                boolean canDelete = !formController.isRepeatUnique(screenIndex);
+                item.setVisible(canDelete);
             }
             menu.findItem(R.id.menu_go_up).setVisible(!isAtBeginning);
         }

@@ -753,7 +753,7 @@ public class JavaRosaFormController implements FormController {
             next = model.incrementIndex(next);
         }
         jumpToIndex(repeat);
-        return true;
+        return false;
     }
 
     private static String iStr(FormIndex i) {
@@ -928,6 +928,39 @@ public class JavaRosaFormController implements FormController {
 
     public boolean indexContainsRepeatableGroup(FormIndex formIndex) {
         FormEntryCaption[] groups = getCaptionHierarchy(formIndex);
+        if (groups.length == 0) {
+            return false;
+        }
+        for (int i = 0; i < groups.length; i++) {
+            if (groups[i].repeats()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean _indexContainsRepeatableGroup(FormIndex formIndex) {
+        //   FormEntryCaption[] groups = getCaptionHierarchy(formIndex);
+        FormDef form = formEntryController.getModel().getForm();
+        List<FormEntryCaption> captions = new ArrayList<>();
+        FormIndex remaining = formIndex;
+        while (remaining != null) {
+            remaining = remaining.getNextLevel();
+            FormIndex localIndex = formIndex.diff(remaining);
+            IFormElement element = form.getChild(localIndex);
+            if (element != null) {
+                FormEntryCaption caption = null;
+                if (element instanceof GroupDef)
+                    caption = new FormEntryCaption(form, localIndex);
+                else if (element instanceof QuestionDef)
+                    caption = new FormEntryPrompt(form, localIndex);
+                if (caption != null) {
+                    captions.add(caption);
+                }
+            }
+        }
+        FormEntryCaption[] groups = captions.toArray(new FormEntryCaption[0]);
+
         if (groups.length == 0) {
             return false;
         }
