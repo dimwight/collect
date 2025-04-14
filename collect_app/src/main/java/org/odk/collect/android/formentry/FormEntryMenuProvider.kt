@@ -22,7 +22,10 @@ import org.odk.collect.androidshared.ui.multiclicksafe.MultiClickGuard.allowClic
 import org.odk.collect.audiorecorder.recording.AudioRecorder
 import org.odk.collect.settings.SettingsProvider
 import org.odk.collect.settings.keys.ProjectKeys
-import org.odk.collect.settings.keys.ProtectedProjectKeys
+import org.odk.collect.settings.keys.ProtectedProjectKeys.KEY_ACCESS_SETTINGS
+import org.odk.collect.settings.keys.ProtectedProjectKeys.KEY_CHANGE_LANGUAGE
+import org.odk.collect.settings.keys.ProtectedProjectKeys.KEY_JUMP_TO
+import org.odk.collect.settings.keys.ProtectedProjectKeys.KEY_SAVE_MID
 import org.odk.collect.strings.localization.getLocalizedString
 
 class FormEntryMenuProvider(
@@ -42,20 +45,22 @@ class FormEntryMenuProvider(
 
     override fun onPrepareMenu(menu: Menu) {
         val formController = formEntryViewModel.formController
+        val nonNull = formController != null
 
-        var useability: Boolean = settingsProvider.getProtectedSettings().getBoolean(ProtectedProjectKeys.KEY_SAVE_MID)
-        menu.findItem(R.id.menu_save).isVisible = useability
+        val settings = settingsProvider.getProtectedSettings()
+        var showMe: Boolean = settings.getBoolean(KEY_SAVE_MID)
+        menu.findItem(R.id.menu_save).isVisible = showMe
+        showMe = settings.getBoolean(KEY_JUMP_TO)
+        menu.findItem(R.id.menu_goto).isVisible = showMe
+        showMe = settings.getBoolean(KEY_CHANGE_LANGUAGE)
+                && nonNull
+                && formController.getLanguages() != null
+                && formController.getLanguages()!!.size > 1
+        menu.findItem(R.id.menu_languages).isVisible = showMe
+        showMe = settings.getBoolean(KEY_ACCESS_SETTINGS)
+        menu.findItem(R.id.menu_preferences).isVisible = showMe
 
-        useability = settingsProvider.getProtectedSettings().getBoolean(ProtectedProjectKeys.KEY_JUMP_TO)
-        menu.findItem(R.id.menu_goto).isVisible = useability
-
-        useability = settingsProvider.getProtectedSettings().getBoolean(ProtectedProjectKeys.KEY_CHANGE_LANGUAGE) && formController != null && formController.getLanguages() != null && formController.getLanguages()!!.size > 1
-        menu.findItem(R.id.menu_languages).isVisible = useability
-
-        useability = settingsProvider.getProtectedSettings().getBoolean(ProtectedProjectKeys.KEY_ACCESS_SETTINGS)
-        menu.findItem(R.id.menu_preferences).isVisible = useability
-
-        if (formController != null &&
+        if (nonNull &&
             formController.currentFormCollectsBackgroundLocation() &&
             PlayServicesChecker().isGooglePlayServicesAvailable(activity)
         ) {
