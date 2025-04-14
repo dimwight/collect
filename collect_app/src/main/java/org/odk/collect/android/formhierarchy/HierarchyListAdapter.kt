@@ -48,7 +48,7 @@ class HierarchyListAdapter(
         }
     }
 
-    interface OnElementClickListener {
-        fun onElementClick(element: HierarchyItem?)
+    fun interface OnElementClickListener {
+        fun onElementClick(element: HierarchyItem?)// 5194
     }
 }
