@@ -236,6 +236,7 @@ public class FormHierarchyFragment extends Fragment {
     }
 
     private void calculateElementsToDisplay(FormController formController, ImageView groupIcon, TextView groupPathTextView) {
+        System.out.println("5194c: calculateElementsToDisplay");
         List<HierarchyItem> elementsToDisplay = new ArrayList<>();
 
         jumpToHierarchyStartIndex();
@@ -420,6 +421,7 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         formHierarchyViewModel.setElementsToDisplay(elementsToDisplay);
+        System.out.println("5194c: calculateElementsToDisplay~");
     }
 
     /**
@@ -588,6 +590,7 @@ public class FormHierarchyFragment extends Fragment {
      * Creates and displays dialog with the given errorMsg.
      */
     protected void createErrorDialog(String errorMsg) {
+        System.out.println("5194c: createErrorDialog");
         AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext()).create();
 
         alertDialog.setTitle(getString(org.odk.collect.strings.R.string.error_occured));
@@ -848,6 +851,7 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         public boolean shouldShowRepeatGroupPicker() {
+            System.out.println("FormHierarchyViewModel.shouldShowRepeatGroupPicker");
             return repeatGroupPickerIndex != null;
         }
     }
