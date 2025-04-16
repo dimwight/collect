@@ -70,7 +70,9 @@ public class FormHierarchyFragment extends Fragment {
      */
     private FormIndex startIndex;
 
-    public FormHierarchyFragment(boolean viewOnly, ViewModelProvider.Factory viewModelFactory, MenuHost menuHost) {
+    public FormHierarchyFragment(boolean viewOnly,
+                                 ViewModelProvider.Factory viewModelFactory,
+                                 MenuHost menuHost) {
         super(R.layout.form_hierarchy_layout);
         this.viewOnly = viewOnly;
 
@@ -80,17 +82,27 @@ public class FormHierarchyFragment extends Fragment {
 
     @Override
     public void onAttach(@NonNull Context context) {
+        System.out.println("FormHierarchyFragment.onAttach");
         super.onAttach(context);
 
-        formEntryViewModel = new ViewModelProvider(requireActivity(), viewModelFactory).get(FormEntryViewModel.class);
-        formHierarchyViewModel = new ViewModelProvider(this, new ViewModelProvider.Factory() {
+        formEntryViewModel =
+                new ViewModelProvider(requireActivity(), viewModelFactory)
+                        .get(FormEntryViewModel.class);
+
+        ViewModelProvider.Factory factory = new ViewModelProvider.Factory() {
             @NonNull
             @Override
-            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+            public <T extends ViewModel> T
+            create(@NonNull Class<T> modelClass) {
                 return (T) new FormHierarchyViewModel();
             }
-        }).get(FormHierarchyViewModel.class);
-        requireActivity().setTitle(formEntryViewModel.getFormController().getFormTitle());
+        };
+        formHierarchyViewModel =
+                new ViewModelProvider(this, factory)
+                        .get(FormHierarchyViewModel.class);
+
+        requireActivity().setTitle(
+                formEntryViewModel.getFormController().getFormTitle());
 
         startIndex = formEntryViewModel.getFormController().getFormIndex();
 
@@ -137,6 +149,7 @@ public class FormHierarchyFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        System.out.println("FormHierarchyFragment.onViewCreated");
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -200,6 +213,7 @@ public class FormHierarchyFragment extends Fragment {
      * @see #refreshView()
      */
     private void refreshView(boolean isGoingUp) {
+        System.out.println("FormHierarchyFragment.refreshView");
         FormHierarchyLayoutBinding binding = FormHierarchyLayoutBinding.bind(requireView());
         ImageView groupIcon = binding.groupIcon;
         TextView groupPathTextView = binding.pathtext;
@@ -213,7 +227,9 @@ public class FormHierarchyFragment extends Fragment {
             formHierarchyViewModel.setCurrentIndex(formController.getFormIndex());
 
             calculateElementsToDisplay(formController, groupIcon, groupPathTextView);
-            recyclerView.setAdapter(new HierarchyListAdapter(formHierarchyViewModel.getElementsToDisplay(), this::onElementClick));
+            recyclerView.setAdapter(new HierarchyListAdapter(
+                    formHierarchyViewModel.getElementsToDisplay(),
+                    this::onElementClick));
 
             formController.jumpToIndex(formHierarchyViewModel.getCurrentIndex());
 
@@ -235,8 +251,9 @@ public class FormHierarchyFragment extends Fragment {
         }
     }
 
-    private void calculateElementsToDisplay(FormController formController, ImageView groupIcon, TextView groupPathTextView) {
-        System.out.println("5194c: calculateElementsToDisplay");
+    private void calculateElementsToDisplay(FormController formController,
+                                            ImageView groupIcon,
+                                            TextView groupPathTextView) {
         List<HierarchyItem> elementsToDisplay = new ArrayList<>();
 
         jumpToHierarchyStartIndex();
@@ -421,7 +438,6 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         formHierarchyViewModel.setElementsToDisplay(elementsToDisplay);
-        System.out.println("5194c: calculateElementsToDisplay~");
     }
 
     /**
@@ -590,7 +606,6 @@ public class FormHierarchyFragment extends Fragment {
      * Creates and displays dialog with the given errorMsg.
      */
     protected void createErrorDialog(String errorMsg) {
-        System.out.println("5194c: createErrorDialog");
         AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext()).create();
 
         alertDialog.setTitle(getString(org.odk.collect.strings.R.string.error_occured));
@@ -752,14 +767,21 @@ public class FormHierarchyFragment extends Fragment {
         @Override
         public void onPrepareMenu(@NonNull Menu menu) {
             FormIndex screenIndex = formHierarchyViewModel.getScreenIndex();
+            FormIndex repeatGroupPickerIndex = formHierarchyViewModel.getRepeatGroupPickerIndex();
+
             boolean isAtBeginning = screenIndex.isBeginningOfFormIndex() && !formHierarchyViewModel.shouldShowRepeatGroupPicker();
             boolean shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker();
-            boolean isInRepeat = formEntryViewModel.getFormController().indexContainsRepeatableGroup(screenIndex);
+            JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
+            boolean isInRepeat = formController.indexContainsRepeatableGroup(screenIndex);
+            boolean uniqueRepeat = isInRepeat && formController.isRepeatUnique(screenIndex);
             boolean isGroupSizeLocked = shouldShowPicker
-                    ? isGroupSizeLocked(formHierarchyViewModel.getRepeatGroupPickerIndex()) : isGroupSizeLocked(screenIndex);
+                    ? isGroupSizeLocked(repeatGroupPickerIndex) : isGroupSizeLocked(screenIndex);
+            boolean delete = isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly;
 
-            menu.findItem(R.id.menu_add_repeat).setVisible(shouldShowPicker && !isGroupSizeLocked && !viewOnly);
-            menu.findItem(R.id.menu_delete_child).setVisible(isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly);
+            menu.findItem(R.id.menu_add_repeat).setVisible(
+                    shouldShowPicker && !isGroupSizeLocked && !viewOnly);
+            menu.findItem(R.id.menu_delete_child).setVisible(
+                    delete && !uniqueRepeat);
             menu.findItem(R.id.menu_go_up).setVisible(!isAtBeginning);
         }
 
@@ -851,7 +873,6 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         public boolean shouldShowRepeatGroupPicker() {
-            System.out.println("FormHierarchyViewModel.shouldShowRepeatGroupPicker");
             return repeatGroupPickerIndex != null;
         }
     }
