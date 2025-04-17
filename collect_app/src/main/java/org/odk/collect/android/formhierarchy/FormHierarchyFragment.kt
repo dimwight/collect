@@ -512,7 +512,11 @@ class FormHierarchyFragment(
      * Returns true if the event is a displayable group or the start of the form.
      * See [FormController.stepToOuterScreenEvent] for more context.
      */
-    private fun isScreenEvent(formController: FormController, index: FormIndex?): Boolean {
+    private fun isScreenEvent(
+        formController: FormController,
+        index: FormIndex?
+    ): Boolean {
+        println("5194c: isScreenEvent")
         // Beginning of form.
         if (index == null) {
             return true
@@ -805,15 +809,15 @@ class FormHierarchyFragment(
             val screenIndex = formHierarchyViewModel.screenIndex
             val repeatGroupPickerIndex = formHierarchyViewModel.repeatGroupPickerIndex
 
-            val shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker(9)
             val isAtBeginning = screenIndex!!.isBeginningOfFormIndex
-                    && !shouldShowPicker
+                    && !formHierarchyViewModel.shouldShowRepeatGroupPicker(0)
+            val shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker(9)
             val formController = formEntryViewModel.formController as JavaRosaFormController
             val isInRepeat = formController.indexContainsRepeatableGroup(screenIndex)
             val uniqueRepeat = isInRepeat && formController.isRepeatUnique(screenIndex)
             val isGroupSizeLocked =
                 if (shouldShowPicker) isGroupSizeLocked(repeatGroupPickerIndex)
-            else isGroupSizeLocked(screenIndex)
+                else isGroupSizeLocked(screenIndex)
             val delete = isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly
 
             menu.findItem(R.id.menu_add_repeat).setVisible(
