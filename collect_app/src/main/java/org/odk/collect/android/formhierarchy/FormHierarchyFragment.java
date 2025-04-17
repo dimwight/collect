@@ -82,7 +82,7 @@ public class FormHierarchyFragment extends Fragment {
 
     @Override
     public void onAttach(@NonNull Context context) {
-        System.out.println("FormHierarchyFragment.onAttach");
+        System.out.println("5194d: onAttach");
         super.onAttach(context);
 
         formEntryViewModel =
@@ -114,7 +114,7 @@ public class FormHierarchyFragment extends Fragment {
                 // If `repeatGroupPickerIndex` is set it means we're currently displaying
                 // a list of repeat instances. If we unset `repeatGroupPickerIndex`,
                 // we will go back up to the previous screen.
-                if (formHierarchyViewModel.shouldShowRepeatGroupPicker()) {
+                if (formHierarchyViewModel.shouldShowRepeatGroupPicker(11)) {
                     // Exit the picker.
                     formHierarchyViewModel.setRepeatGroupPickerIndex(null);
                 } else {
@@ -149,7 +149,7 @@ public class FormHierarchyFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        System.out.println("FormHierarchyFragment.onViewCreated");
+        System.out.println("5194d: onViewCreated");
         requireActivity().getOnBackPressedDispatcher().addCallback(
                 getViewLifecycleOwner(),
                 new OnBackPressedCallback(true) {
@@ -213,7 +213,7 @@ public class FormHierarchyFragment extends Fragment {
      * @see #refreshView()
      */
     private void refreshView(boolean isGoingUp) {
-        System.out.println("FormHierarchyFragment.refreshView");
+        System.out.println("5194d: refreshView");
         FormHierarchyLayoutBinding binding = FormHierarchyLayoutBinding.bind(requireView());
         ImageView groupIcon = binding.groupIcon;
         TextView groupPathTextView = binding.pathtext;
@@ -254,22 +254,26 @@ public class FormHierarchyFragment extends Fragment {
     private void calculateElementsToDisplay(FormController formController,
                                             ImageView groupIcon,
                                             TextView groupPathTextView) {
+        System.out.println("5194d: calculateElementsToDisplay");
         List<HierarchyItem> elementsToDisplay = new ArrayList<>();
 
         jumpToHierarchyStartIndex();
 
         int event = formController.getEvent();
 
-        if (event == FormEntryController.EVENT_BEGINNING_OF_FORM && !formHierarchyViewModel.shouldShowRepeatGroupPicker()) {
+        if (event == FormEntryController.EVENT_BEGINNING_OF_FORM
+                && !formHierarchyViewModel.shouldShowRepeatGroupPicker(1)) {
             // The beginning of form has no valid prompt to display.
             groupIcon.setVisibility(View.GONE);
             groupPathTextView.setVisibility(View.GONE);
         } else {
+
             groupIcon.setVisibility(View.VISIBLE);
             groupPathTextView.setVisibility(View.VISIBLE);
             groupPathTextView.setText(getCurrentPath());
 
-            if (formController.indexContainsRepeatableGroup(formHierarchyViewModel.getScreenIndex()) || formHierarchyViewModel.shouldShowRepeatGroupPicker()) {
+            if (formController.indexContainsRepeatableGroup(formHierarchyViewModel.getScreenIndex())
+                    || formHierarchyViewModel.shouldShowRepeatGroupPicker(2)) {
                 groupIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_repeat));
             } else {
                 groupIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_folder_open));
@@ -314,7 +318,7 @@ public class FormHierarchyFragment extends Fragment {
             switch (event) {
                 case FormEntryController.EVENT_QUESTION: {
                     // Nothing but repeat group instances should show up in the picker.
-                    if (formHierarchyViewModel.shouldShowRepeatGroupPicker()) {
+                    if (formHierarchyViewModel.shouldShowRepeatGroupPicker(3)) {
                         break;
                     }
 
@@ -336,7 +340,7 @@ public class FormHierarchyFragment extends Fragment {
                         break;
                     }
                     // Nothing but repeat group instances should show up in the picker.
-                    if (formHierarchyViewModel.shouldShowRepeatGroupPicker()) {
+                    if (formHierarchyViewModel.shouldShowRepeatGroupPicker(4)) {
                         break;
                     }
 
@@ -375,7 +379,7 @@ public class FormHierarchyFragment extends Fragment {
                     break;
                 }
                 case FormEntryController.EVENT_REPEAT: {
-                    boolean forPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker();
+                    boolean forPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker(5);
                     // Only break to exclude non-relevant repeat from picker
                     if (!formController.isGroupRelevant() && forPicker) {
                         break;
@@ -438,6 +442,7 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         formHierarchyViewModel.setElementsToDisplay(elementsToDisplay);
+        System.out.println("5194d: calculateElementsToDisplay~");
     }
 
     /**
@@ -445,6 +450,7 @@ public class FormHierarchyFragment extends Fragment {
      * Backs out until the index is at the beginning of a repeat group or the beginning of the form.
      */
     private void jumpToHierarchyStartIndex() {
+        System.out.println("5194d: jumpToHierarchyStartIndex");
         FormController formController = formEntryViewModel.getFormController();
         FormIndex startIndex = formController.getFormIndex();
 
@@ -495,6 +501,7 @@ public class FormHierarchyFragment extends Fragment {
      * See {@link FormController#stepToOuterScreenEvent} for more context.
      */
     private boolean isScreenEvent(FormController formController, FormIndex index) {
+        System.out.println("5194d: isScreenEvent");
         // Beginning of form.
         if (index == null) {
             return true;
@@ -507,12 +514,13 @@ public class FormHierarchyFragment extends Fragment {
      * Navigates "up" in the form hierarchy.
      */
     protected void goUpLevel() {
+        System.out.println("5194d: goUpLevel");
         FormController formController = formEntryViewModel.getFormController();
 
         // If `repeatGroupPickerIndex` is set it means we're currently displaying
         // a list of repeat instances. If we unset `repeatGroupPickerIndex`,
         // we will go back up to the previous screen.
-        if (formHierarchyViewModel.shouldShowRepeatGroupPicker()) {
+        if (formHierarchyViewModel.shouldShowRepeatGroupPicker(10)) {
             // Exit the picker.
             formHierarchyViewModel.setRepeatGroupPickerIndex(null);
         } else {
@@ -533,12 +541,13 @@ public class FormHierarchyFragment extends Fragment {
      * Each level is separated by `>`.
      */
     private CharSequence getCurrentPath() {
+        System.out.println("5194d: getCurrentPath");
         FormController formController = formEntryViewModel.getFormController();
         FormIndex index = formHierarchyViewModel.getScreenIndex();
 
         List<FormEntryCaption> groups = new ArrayList<>();
 
-        if (formHierarchyViewModel.shouldShowRepeatGroupPicker()) {
+        if (formHierarchyViewModel.shouldShowRepeatGroupPicker(6)) {
             groups.add(formController.getCaptionPrompt(formHierarchyViewModel.getRepeatGroupPickerIndex()));
         }
 
@@ -548,7 +557,7 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         // If the repeat picker is showing, don't show an item number for the current index.
-        boolean hideLastMultiplicity = formHierarchyViewModel.shouldShowRepeatGroupPicker();
+        boolean hideLastMultiplicity = formHierarchyViewModel.shouldShowRepeatGroupPicker(7);
 
         return ODKView.getGroupsPath(groups.toArray(new FormEntryCaption[0]), hideLastMultiplicity);
     }
@@ -557,6 +566,7 @@ public class FormHierarchyFragment extends Fragment {
      * Handles clicks on a specific row in the hierarchy view.
      */
     private void onElementClick(HierarchyItem item) {
+        System.out.println("5194d: onElementClick");
         FormIndex index = item.getFormIndex();
 
         switch (item.getHierarchyItemType()) {
@@ -584,6 +594,7 @@ public class FormHierarchyFragment extends Fragment {
      * If the selected question is in a field list, show the entire field list.
      */
     void onQuestionClicked(FormIndex index) {
+        System.out.println("5194d: onQuestionClicked");
         if (viewOnly) {
             return;
         }
@@ -606,6 +617,7 @@ public class FormHierarchyFragment extends Fragment {
      * Creates and displays dialog with the given errorMsg.
      */
     protected void createErrorDialog(String errorMsg) {
+        System.out.println("5194d: createErrorDialog");
         AlertDialog alertDialog = new MaterialAlertDialogBuilder(requireContext()).create();
 
         alertDialog.setTitle(getString(org.odk.collect.strings.R.string.error_occured));
@@ -631,11 +643,14 @@ public class FormHierarchyFragment extends Fragment {
      * Groups like this are often used to display a label in the hierarchy path.
      */
     private boolean isDisplayingSingleGroup() {
+        System.out.println("5194d: isDisplayingSingleGroup");
         return formHierarchyViewModel.getElementsToDisplay().size() == 1
                 && formHierarchyViewModel.getElementsToDisplay().get(0).getHierarchyItemType() == HierarchyItemType.VISIBLE_GROUP;
     }
 
-    private void configureButtons(FormHierarchyLayoutBinding binding, FormController formController) {
+    private void configureButtons(FormHierarchyLayoutBinding binding,
+                                  FormController formController) {
+        System.out.println("5194d: configureButtons");
         Button exitButton = binding.exitButton;
         Button jumpBeginningButton = binding.jumpBeginningButton;
         Button jumpEndButton = binding.jumpEndButton;
@@ -670,6 +685,7 @@ public class FormHierarchyFragment extends Fragment {
      * returns true if the current index was the only item in the repeat group.
      */
     private boolean didDeleteLastRepeatItem() {
+        System.out.println("5194d: didDeleteLastRepeatItem");
         FormController formController = formEntryViewModel.getFormController();
         FormIndex index = formController.getFormIndex();
         int event = formController.getEvent(index);
@@ -681,6 +697,7 @@ public class FormHierarchyFragment extends Fragment {
     }
 
     private boolean didDeleteFirstRepeatItem() {
+        System.out.println("5194d: didDeleteFirstRepeatItem");
         return formEntryViewModel
                 .getFormController()
                 .getFormIndex()
@@ -688,6 +705,7 @@ public class FormHierarchyFragment extends Fragment {
     }
 
     private void onRepeatDeleted() {
+        System.out.println("5194d: onRepeatDeleted");
         if (didDeleteLastRepeatItem()) {
             // goUpLevel would put us in a weird state after deleting the last item;
             // just go back one event instead.
@@ -710,6 +728,7 @@ public class FormHierarchyFragment extends Fragment {
      * e.g. after deleting the final remaining item in a repeat group.
      */
     private void goToPreviousEvent() {
+        System.out.println("5194d: goToPreviousEvent");
         FormController formController = formEntryViewModel.getFormController();
         try {
             formController.stepToPreviousScreenEvent();
@@ -723,6 +742,7 @@ public class FormHierarchyFragment extends Fragment {
     }
 
     private void navigateToTheLastRelevantIndex(FormController formController) {
+        System.out.println("5194d: navigateToTheLastRelevantIndex");
         FormEntryController fec = new FormEntryController(new FormEntryModel(formController.getFormDef()));
         formController.jumpToIndex(startIndex);
 
@@ -750,9 +770,9 @@ public class FormHierarchyFragment extends Fragment {
         private final FormEntryViewModel formEntryViewModel;
         private final FormHierarchyViewModel formHierarchyViewModel;
         private final boolean viewOnly;
-        private final OnClickListener onClickListener;
+        private final FormHiearchyMenuProvider.OnClickListener onClickListener;
 
-        FormHiearchyMenuProvider(FormEntryViewModel formEntryViewModel, FormHierarchyViewModel formHierarchyViewModel, boolean viewOnly, OnClickListener goUpClicked) {
+        FormHiearchyMenuProvider(FormEntryViewModel formEntryViewModel, FormHierarchyViewModel formHierarchyViewModel, boolean viewOnly, FormHiearchyMenuProvider.OnClickListener goUpClicked) {
             this.formEntryViewModel = formEntryViewModel;
             this.formHierarchyViewModel = formHierarchyViewModel;
             this.viewOnly = viewOnly;
@@ -760,22 +780,27 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         @Override
-        public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        public void onCreateMenu(@NonNull Menu menu,
+                                 @NonNull MenuInflater menuInflater) {
+            System.out.println("5194d: onCreateMenu");
             menuInflater.inflate(R.menu.form_hierarchy_menu, menu);
         }
 
         @Override
         public void onPrepareMenu(@NonNull Menu menu) {
+            System.out.println("5194d: onPrepareMenu");
             FormIndex screenIndex = formHierarchyViewModel.getScreenIndex();
             FormIndex repeatGroupPickerIndex = formHierarchyViewModel.getRepeatGroupPickerIndex();
 
-            boolean isAtBeginning = screenIndex.isBeginningOfFormIndex() && !formHierarchyViewModel.shouldShowRepeatGroupPicker();
-            boolean shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker();
+            boolean isAtBeginning = screenIndex.isBeginningOfFormIndex()
+                    && !formHierarchyViewModel.shouldShowRepeatGroupPicker(0);
+            boolean shouldShowPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker(9);
             JavaRosaFormController formController = (JavaRosaFormController) formEntryViewModel.getFormController();
             boolean isInRepeat = formController.indexContainsRepeatableGroup(screenIndex);
             boolean uniqueRepeat = isInRepeat && formController.isRepeatUnique(screenIndex);
             boolean isGroupSizeLocked = shouldShowPicker
-                    ? isGroupSizeLocked(repeatGroupPickerIndex) : isGroupSizeLocked(screenIndex);
+                    ? isGroupSizeLocked(repeatGroupPickerIndex)
+                    : isGroupSizeLocked(screenIndex);
             boolean delete = isInRepeat && !shouldShowPicker && !isGroupSizeLocked && !viewOnly;
 
             menu.findItem(R.id.menu_add_repeat).setVisible(
@@ -787,6 +812,7 @@ public class FormHierarchyFragment extends Fragment {
 
         @Override
         public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+            System.out.println("5194d: onMenuItemSelected");
             if (menuItem.getItemId() == R.id.menu_delete_child) {
                 onClickListener.onDeleteRepeatClicked();
                 return true;
@@ -802,6 +828,7 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         private boolean isGroupSizeLocked(FormIndex index) {
+            System.out.println("5194d: isGroupSizeLocked");
             FormController formController = formEntryViewModel.getFormController();
             IFormElement element = formController.getCaptionPrompt(index).getFormElement();
             return element instanceof GroupDef && ((GroupDef) element).noAddRemove;
@@ -872,7 +899,8 @@ public class FormHierarchyFragment extends Fragment {
             this.startIndex = startIndex;
         }
 
-        public boolean shouldShowRepeatGroupPicker() {
+        public boolean shouldShowRepeatGroupPicker(int count) {
+            System.out.println("5194d: shouldShowRepeatGroupPicker " + count);
             return repeatGroupPickerIndex != null;
         }
     }
