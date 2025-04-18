@@ -39,6 +39,7 @@ import org.odk.collect.android.formhierarchy.QuestionAnswerProcessor.getQuestion
 import org.odk.collect.android.javarosawrapper.FormController
 import org.odk.collect.android.javarosawrapper.FormIndexUtils
 import org.odk.collect.android.javarosawrapper.JavaRosaFormController
+import org.odk.collect.android.javarosawrapper.JavaRosaFormController.STEP_INTO_GROUP
 import org.odk.collect.android.utilities.FormEntryPromptUtils
 import org.odk.collect.android.utilities.HtmlUtils
 import org.odk.collect.androidshared.ui.DialogFragmentUtils.showIfNotShowing
@@ -214,7 +215,7 @@ class FormHierarchyFragment(
 
             // Save the current index so we can return to the problematic question
             // in the event of an error.
-            formHierarchyViewModel.currentIndex = formController!!.getFormIndex()
+            formHierarchyViewModel.currentIndex = formController.getFormIndex()
 
             calculateElementsToDisplay(formController, groupIcon, groupPathTextView)
             recyclerView.adapter =
@@ -300,22 +301,19 @@ class FormHierarchyFragment(
         var visibleGroupRef: TreeReference? = null
 
         while (event != FormEntryController.EVENT_END_OF_FORM) {
+//            println("5194c: event = ${event}")
             // get the ref to this element
             val currentRef = formController.getFormIndex()!!.reference
 
             // retrieve the current group
-            val curGroup: TreeReference? =
-                if ((visibleGroupRef == null)) {
-                    formHierarchyViewModel.contextGroupRef
-                } else {
-                    visibleGroupRef
-                }
+            val curGroup = visibleGroupRef ?: formHierarchyViewModel.contextGroupRef
 
             if (curGroup != null && !curGroup.isParentOf(currentRef, false)) {
                 // We have left the current group
                 if (visibleGroupRef == null) {
                     // We are done.
-                    break
+                    event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                    continue
                 } else {
                     // exit the inner group
                     visibleGroupRef = null
@@ -325,17 +323,16 @@ class FormHierarchyFragment(
             if (visibleGroupRef != null) {
                 // We're in a group within the one we want to list
                 // skip this question/group/repeat and move to the next index.
-                event =
-                    formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP)
+                event = formController.stepToNextEvent(STEP_INTO_GROUP)
                 continue
             }
 
             when (event) {
-                FormEntryController.EVENT_PROMPT_NEW_REPEAT -> {}
                 FormEntryController.EVENT_QUESTION -> {
                     // Nothing but repeat group instances should show up in the picker.
                     if (formHierarchyViewModel.shouldShowRepeatGroupPicker(3)) {
-                        break
+                        event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                        continue
                     }
 
                     val fp = formController.getQuestionPrompt()
@@ -353,24 +350,28 @@ class FormHierarchyFragment(
 
                 FormEntryController.EVENT_GROUP -> {
                     if (!formController.isGroupRelevant()) {
-                        break
+                        event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                        continue
                     }
                     // Nothing but repeat group instances should show up in the picker.
                     if (formHierarchyViewModel.shouldShowRepeatGroupPicker(4)) {
-                        break
+                        event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                        continue
                     }
 
                     val index = formController.getFormIndex()
 
                     // Only display groups with a specific appearance attribute.
                     if (!formController.isDisplayableGroup(index)) {
-                        break
+                        event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                        continue
                     }
 
                     // Don't render other groups' children.
                     val contextGroupRef = formHierarchyViewModel.contextGroupRef
                     if (contextGroupRef != null && !contextGroupRef.isParentOf(currentRef, false)) {
-                        break
+                        event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                        continue
                     }
 
                     visibleGroupRef = currentRef
@@ -390,11 +391,13 @@ class FormHierarchyFragment(
                     continue
                 }
 
+                FormEntryController.EVENT_PROMPT_NEW_REPEAT -> {}
                 FormEntryController.EVENT_REPEAT -> {
                     val forPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker(5)
                     // Only break to exclude non-relevant repeat from picker
                     if (!formController.isGroupRelevant() && forPicker) {
-                        break
+                        event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                        continue
                     }
 
                     visibleGroupRef = currentRef
@@ -402,7 +405,8 @@ class FormHierarchyFragment(
                     // Don't render other groups' children.
                     val contextGroupRef = formHierarchyViewModel.contextGroupRef
                     if (contextGroupRef != null && !contextGroupRef.isParentOf(currentRef, false)) {
-                        break
+                        event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                        continue
                     }
 
                     val fc = formController.getCaptionPrompt()
@@ -413,7 +417,8 @@ class FormHierarchyFragment(
                             formHierarchyViewModel.repeatGroupPickerIndex!!.reference
                                 .toString(false)
                         if (currentRef.toString(false) != repeatGroupPickerRef) {
-                            break
+                            event = formController.stepToNextEvent(STEP_INTO_GROUP)
+                            continue
                         }
 
                         val itemNumber = fc!!.multiplicity + 1
@@ -423,7 +428,7 @@ class FormHierarchyFragment(
 
                         // If the child of the group has a more descriptive label, use that instead.
                         if (fc.formElement.children.size == 1 && fc.formElement.getChild(0) is GroupDef) {
-                            formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP)
+                            formController.stepToNextEvent(STEP_INTO_GROUP)
                             val itemLabel = formController.getCaptionPrompt()!!.shortText
                             if (itemLabel != null) {
                                 // e.g. `1. Alice`
@@ -450,7 +455,7 @@ class FormHierarchyFragment(
                 }
             }
 
-            event = formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP)
+            event = formController.stepToNextEvent(STEP_INTO_GROUP)
         }
 
         formHierarchyViewModel.elementsToDisplay = elementsToDisplay
@@ -477,7 +482,7 @@ class FormHierarchyFragment(
         // node to display.
         if (formController.isDisplayableGroup(startIndex)) {
             formHierarchyViewModel.contextGroupRef = formController.getFormIndex()!!.reference
-            formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP)
+            formController.stepToNextEvent(STEP_INTO_GROUP)
         } else {
             var potentialStartIndex = FormIndexUtils.getPreviousLevel(startIndex)
             // Step back until we hit a displayable group or the beginning.
@@ -499,7 +504,7 @@ class FormHierarchyFragment(
             // Now test again. This should be true at this point or we're at the beginning.
             if (formController.isDisplayableGroup(formController.getFormIndex())) {
                 formHierarchyViewModel.contextGroupRef = formController.getFormIndex()!!.reference
-                formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP)
+                formController.stepToNextEvent(STEP_INTO_GROUP)
             } else {
                 // Let contextGroupRef be null.
             }
