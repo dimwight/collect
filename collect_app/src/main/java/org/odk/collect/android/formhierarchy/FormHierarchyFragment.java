@@ -290,11 +290,15 @@ public class FormHierarchyFragment extends Fragment {
         TreeReference visibleGroupRef = null;
 
         while (event != FormEntryController.EVENT_END_OF_FORM) {
+
             // get the ref to this element
             TreeReference currentRef = formController.getFormIndex().getReference();
+//            System.out.println("5194d: " + currentRef.toString());
 
             // retrieve the current group
-            TreeReference curGroup = (visibleGroupRef == null) ? formHierarchyViewModel.getContextGroupRef() : visibleGroupRef;
+            TreeReference curGroup = visibleGroupRef == null
+                    ? formHierarchyViewModel.getContextGroupRef()
+                    : visibleGroupRef;
 
             if (curGroup != null && !curGroup.isParentOf(currentRef, false)) {
                 // We have left the current group
@@ -433,8 +437,6 @@ public class FormHierarchyFragment extends Fragment {
                                 )
                         );
                     }
-
-                    break;
                 }
             }
 
