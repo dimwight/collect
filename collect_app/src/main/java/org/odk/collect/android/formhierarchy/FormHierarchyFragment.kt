@@ -269,23 +269,18 @@ class FormHierarchyFragment(
             groupPathTextView.visibility = View.VISIBLE
             groupPathTextView.text = currentPath
 
-            if (formController.indexContainsRepeatableGroup(formHierarchyViewModel.screenIndex)
-                || formHierarchyViewModel.shouldShowRepeatGroupPicker(2)
-            ) {
-                groupIcon.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.ic_repeat
-                    )
-                )
-            } else {
-                groupIcon.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.ic_folder_open
-                    )
-                )
-            }
+            val drawable = ContextCompat.getDrawable( //5194
+                requireContext(),
+                if (formController.indexContainsRepeatableGroup(formHierarchyViewModel.screenIndex)
+                    || formHierarchyViewModel.shouldShowRepeatGroupPicker(2)
+                ) {
+                    R.drawable.ic_repeat
+                } else {
+                    R.drawable.ic_folder_open
+                }
+
+            )
+            groupIcon.setImageDrawable(drawable)
         }
 
         // Refresh the current event in case we did step forward.
@@ -305,7 +300,7 @@ class FormHierarchyFragment(
             // retrieve the current group
             val curGroup = visibleGroupRef ?: formHierarchyViewModel.contextGroupRef
 
-            if (curGroup != null && !curGroup.isParentOf(currentRef, false)) {
+            if (curGroup != null && !curGroup.isAncestorOf(currentRef, false)) {
                 // We have left the current group
                 if (visibleGroupRef == null) {
                     // We are done.
