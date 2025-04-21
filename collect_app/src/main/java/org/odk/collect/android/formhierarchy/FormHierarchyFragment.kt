@@ -53,6 +53,7 @@ class FormHierarchyFragment(
     Fragment(R.layout.form_hierarchy_layout) {
     private lateinit var menuProvider: FormHiearchyMenuProvider
     private lateinit var formEntryViewModel: FormEntryViewModel
+    private lateinit var controller: FormController
     private lateinit var formHierarchyViewModel: FormHierarchyViewModel
 
     /**
@@ -61,12 +62,14 @@ class FormHierarchyFragment(
      */
     private var startIndex: FormIndex? = null
 
+
     override fun onAttach(context: Context) {
         println("5194c: onAttach")
         super.onAttach(context)
 
         formEntryViewModel =
             ViewModelProvider(requireActivity(), viewModelFactory)[FormEntryViewModel::class.java]
+        controller = formEntryViewModel.formController
         formHierarchyViewModel = ViewModelProvider(
             this,
             object : ViewModelProvider.Factory {
@@ -79,14 +82,13 @@ class FormHierarchyFragment(
                 }
             })[FormHierarchyViewModel::class]
 
-        requireActivity().title = formEntryViewModel.formController.getFormTitle()
+        requireActivity().title = controller.getFormTitle()
 
-        startIndex = formEntryViewModel.formController.getFormIndex()
+        startIndex = controller.getFormIndex()
 
         menuProvider = FormHiearchyMenuProvider(formEntryViewModel, formHierarchyViewModel,
             viewOnly, object : FormHiearchyMenuProvider.OnClickListener {
                 override fun onGoUpClicked() {
-                    val formController = formEntryViewModel.formController
 
                     // If `repeatGroupPickerIndex` is set it means we're currently displaying
                     // a list of repeat instances. If we unset `repeatGroupPickerIndex`,
@@ -96,20 +98,20 @@ class FormHierarchyFragment(
                         formHierarchyViewModel.repeatGroupPickerIndex = null
                     } else {
                         // Enter the picker if coming from a repeat group.
-                        val screenIndex: FormIndex? = formHierarchyViewModel.screenIndex
-                        val event = formController.getEvent(screenIndex)
+                        val screenIndex = formHierarchyViewModel.screenIndex
+                        val event = controller.getEvent(screenIndex)
                         if (event == FormEntryController.EVENT_REPEAT || event == FormEntryController.EVENT_PROMPT_NEW_REPEAT) {
                             formHierarchyViewModel.repeatGroupPickerIndex = screenIndex
                         }
 
-                        formController.stepToOuterScreenEvent()
+                        controller.stepToOuterScreenEvent()
                     }
 
                     refreshView(true)
                 }
 
                 override fun onAddRepeatClicked() {
-                    formEntryViewModel.formController.jumpToIndex(formHierarchyViewModel.repeatGroupPickerIndex)
+                    controller.jumpToIndex(formHierarchyViewModel.repeatGroupPickerIndex)
                     formEntryViewModel.jumpToNewRepeat()
                     formEntryViewModel.addRepeat()
 
@@ -130,17 +132,15 @@ class FormHierarchyFragment(
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    val formController = formEntryViewModel.formController
-                    if (formController != null) {
-                        formController.getAuditEventLogger()!!.flush()
-                        navigateToTheLastRelevantIndex(formController)
-                    }
+                    val formController = controller
+                    formController.getAuditEventLogger()!!.flush()
+                    navigateToTheLastRelevantIndex(formController)
                     requireActivity().finish()
                 }
             }
         )
 
-        formHierarchyViewModel.startIndex = formEntryViewModel.formController.getFormIndex()
+        formHierarchyViewModel.startIndex = controller.getFormIndex()
         menuHost.addMenuProvider(menuProvider, viewLifecycleOwner)
 
         val binding = FormHierarchyLayoutBinding.bind(view)
@@ -155,26 +155,25 @@ class FormHierarchyFragment(
             )
         )
 
-        configureButtons(binding, formEntryViewModel.formController)
+        configureButtons(binding, controller)
         refreshView()
 
         // Scroll to the last question the user was looking at
         // TODO: avoid another iteration through all displayed elements
-        if (recyclerView.adapter != null && recyclerView.adapter!!
-                .itemCount > 0
+        if (recyclerView.adapter!!.itemCount > 0 //5194
         ) {
             binding.empty.visibility = View.GONE
             recyclerView.post {
                 var position = 0
                 // Iterate over all the elements currently displayed looking for a match with the
                 // startIndex which can either represent a question or a field list.
-                val elementsToDisplay: List<HierarchyItem> =
+                val elementsToDisplay =
                     formHierarchyViewModel.elementsToDisplay!!
                 for (hierarchyItem in elementsToDisplay) {
-                    val startIndex: FormIndex = formHierarchyViewModel.startIndex!!
+                    val startIndex = formHierarchyViewModel.startIndex!!
                     val indexToCheck = hierarchyItem.formIndex
                     val indexIsInFieldList =
-                        formEntryViewModel.formController.indexIsInFieldList(startIndex)
+                        controller.indexIsInFieldList(startIndex)
                     if (startIndex == indexToCheck
                         || (indexIsInFieldList && indexToCheck.toString()
                             .startsWith(startIndex.toString()))
@@ -183,10 +182,8 @@ class FormHierarchyFragment(
                         break
                     }
                 }
-                (recyclerView.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(
-                    position,
-                    0
-                )
+                (recyclerView.layoutManager as LinearLayoutManager)
+                    .scrollToPositionWithOffset(position, 0)
             }
         }
 
@@ -211,7 +208,7 @@ class FormHierarchyFragment(
         val recyclerView = binding.list
 
         try {
-            val formController = formEntryViewModel.formController
+            val formController = controller
 
             // Save the current index so we can return to the problematic question
             // in the event of an error.
@@ -468,7 +465,7 @@ class FormHierarchyFragment(
      */
     private fun jumpToHierarchyStartIndex() {
         println("5194c: jumpToHierarchyStartIndex")
-        val formController = formEntryViewModel.formController
+        val formController = controller
         val startIndex = formController!!.getFormIndex()
 
         // If we're not at the first level, we're inside a repeated group so we want to only
@@ -535,7 +532,7 @@ class FormHierarchyFragment(
      */
     private fun goUpLevel() {
         println("5194c: goUpLevel")
-        val formController = formEntryViewModel.formController
+        val formController = controller
 
         // If `repeatGroupPickerIndex` is set it means we're currently displaying
         // a list of repeat instances. If we unset `repeatGroupPickerIndex`,
@@ -566,7 +563,7 @@ class FormHierarchyFragment(
          */
         get() {
             println("5194c: currentPath")
-            val formController = formEntryViewModel.formController
+            val formController = controller
             var index: FormIndex? = formHierarchyViewModel.screenIndex
 
             val groups: MutableList<FormEntryCaption?> = ArrayList()
@@ -608,7 +605,7 @@ class FormHierarchyFragment(
             HierarchyItemType.VISIBLE_GROUP, HierarchyItemType.REPEAT_INSTANCE -> {
                 // Hide the picker.
                 formHierarchyViewModel.repeatGroupPickerIndex = null
-                formEntryViewModel.formController.jumpToIndex(index)
+                controller.jumpToIndex(index)
                 requireActivity().setResult(Activity.RESULT_OK)
                 refreshView()
             }
@@ -625,10 +622,10 @@ class FormHierarchyFragment(
             return
         }
 
-        formEntryViewModel.formController.jumpToIndex(index)
-        if (formEntryViewModel.formController.indexIsInFieldList()) {
+        controller.jumpToIndex(index)
+        if (controller.indexIsInFieldList()) {
             try {
-                formEntryViewModel.formController.stepToPreviousScreenEvent()
+                controller.stepToPreviousScreenEvent()
             } catch (e: JavaRosaException) {
                 Timber.d(e)
                 createErrorDialog(e.cause!!.message)
@@ -652,7 +649,7 @@ class FormHierarchyFragment(
             DialogInterface.OnClickListener { _, i ->
                 when (i) {
                     DialogInterface.BUTTON_POSITIVE -> {
-                        val formController = formEntryViewModel.formController
+                        val formController = controller
                         formController.jumpToIndex(formHierarchyViewModel.currentIndex)
                     }
                 }
@@ -719,7 +716,7 @@ class FormHierarchyFragment(
      */
     private fun didDeleteLastRepeatItem(): Boolean {
         println("5194c: didDeleteLastRepeatItem")
-        val formController = formEntryViewModel.formController
+        val formController = controller
         val index = formController!!.getFormIndex()
         val event = formController.getEvent(index)
 
@@ -731,7 +728,7 @@ class FormHierarchyFragment(
 
     private fun didDeleteFirstRepeatItem(): Boolean {
         println("5194c: didDeleteFirstRepeatItem")
-        return formEntryViewModel.formController?.getFormIndex()
+        return controller?.getFormIndex()
             ?.elementMultiplicity == 0
     }
 
@@ -760,7 +757,7 @@ class FormHierarchyFragment(
      */
     private fun goToPreviousEvent() {
         println("5194c: goToPreviousEvent")
-        val formController = formEntryViewModel.formController
+        val formController = controller
         try {
             formController!!.stepToPreviousScreenEvent()
         } catch (e: JavaRosaException) {
