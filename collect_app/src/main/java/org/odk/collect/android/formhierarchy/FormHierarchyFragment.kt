@@ -320,6 +320,7 @@ class FormHierarchyFragment(
             }
 
             when (event) {
+                FormEntryController.EVENT_PROMPT_NEW_REPEAT -> {}
                 FormEntryController.EVENT_QUESTION -> {
                     // Nothing but repeat group instances should show up in the picker.
                     if (formHierarchyViewModel.shouldShowRepeatGroupPicker(3)) {
@@ -361,7 +362,11 @@ class FormHierarchyFragment(
 
                     // Don't render other groups' children.
                     val contextGroupRef = formHierarchyViewModel.contextGroupRef
-                    if (contextGroupRef != null && !contextGroupRef.isParentOf(currentRef, false)) {
+                    if (contextGroupRef != null && !contextGroupRef.isAncestorOf(
+                            currentRef,
+                            false
+                        )
+                    ) {
                         event = formController.stepToNextEvent(STEP_INTO_GROUP)
                         continue
                     }
@@ -383,7 +388,6 @@ class FormHierarchyFragment(
                     continue
                 }
 
-                FormEntryController.EVENT_PROMPT_NEW_REPEAT -> {}
                 FormEntryController.EVENT_REPEAT -> {
                     val forPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker(5)
                     // Only break to exclude non-relevant repeat from picker
@@ -396,7 +400,9 @@ class FormHierarchyFragment(
 
                     // Don't render other groups' children.
                     val contextGroupRef = formHierarchyViewModel.contextGroupRef
-                    if (contextGroupRef != null && !contextGroupRef.isParentOf(currentRef, false)) {
+                    if (contextGroupRef != null
+                        && !contextGroupRef.isAncestorOf(currentRef, false)
+                    ) {
                         event = formController.stepToNextEvent(STEP_INTO_GROUP)
                         continue
                     }
@@ -460,8 +466,7 @@ class FormHierarchyFragment(
      */
     private fun jumpToHierarchyStartIndex() {
         println("5194c: jumpToHierarchyStartIndex")
-        val formController = controller
-        val startIndex = formController!!.getFormIndex()
+        val startIndex = controller.getFormIndex()
 
         // If we're not at the first level, we're inside a repeated group so we want to only
         // display everything enclosed within that group.
@@ -472,13 +477,13 @@ class FormHierarchyFragment(
 
         // If we're currently at a displayable group, record the name of the node and step to the next
         // node to display.
-        if (formController.isDisplayableGroup(startIndex)) {
-            formHierarchyViewModel.contextGroupRef = formController.getFormIndex()!!.reference
-            formController.stepToNextEvent(STEP_INTO_GROUP)
+        if (controller.isDisplayableGroup(startIndex)) {
+            formHierarchyViewModel.contextGroupRef = controller.getFormIndex()!!.reference
+            controller.stepToNextEvent(STEP_INTO_GROUP)
         } else {
             var potentialStartIndex = FormIndexUtils.getPreviousLevel(startIndex)
             // Step back until we hit a displayable group or the beginning.
-            while (!isScreenEvent(formController, potentialStartIndex)) {
+            while (!isScreenEvent(controller, potentialStartIndex)) {
                 potentialStartIndex = FormIndexUtils.getPreviousLevel(potentialStartIndex)
             }
 
@@ -491,12 +496,12 @@ class FormHierarchyFragment(
                 formHierarchyViewModel.screenIndex = FormIndex.createBeginningOfFormIndex()
             }
 
-            formController.jumpToIndex(formHierarchyViewModel.screenIndex)
+            controller.jumpToIndex(formHierarchyViewModel.screenIndex)
 
             // Now test again. This should be true at this point or we're at the beginning.
-            if (formController.isDisplayableGroup(formController.getFormIndex())) {
-                formHierarchyViewModel.contextGroupRef = formController.getFormIndex()!!.reference
-                formController.stepToNextEvent(STEP_INTO_GROUP)
+            if (controller.isDisplayableGroup(controller.getFormIndex())) {
+                formHierarchyViewModel.contextGroupRef = controller.getFormIndex()!!.reference
+                controller.stepToNextEvent(STEP_INTO_GROUP)
             } else {
                 // Let contextGroupRef be null.
             }
@@ -527,7 +532,6 @@ class FormHierarchyFragment(
      */
     private fun goUpLevel() {
         println("5194c: goUpLevel")
-        val formController = controller
 
         // If `repeatGroupPickerIndex` is set it means we're currently displaying
         // a list of repeat instances. If we unset `repeatGroupPickerIndex`,
@@ -537,7 +541,7 @@ class FormHierarchyFragment(
             formHierarchyViewModel.repeatGroupPickerIndex = null
         } else {
             // Enter the picker if coming from a repeat group.
-            val event = formController!!.getEvent(formHierarchyViewModel.screenIndex)
+            val event = controller.getEvent(formHierarchyViewModel.screenIndex)
             if (event == FormEntryController.EVENT_REPEAT
                 || event == FormEntryController.EVENT_PROMPT_NEW_REPEAT
             ) {
@@ -545,7 +549,7 @@ class FormHierarchyFragment(
                     formHierarchyViewModel.screenIndex
             }
 
-            formController.stepToOuterScreenEvent()
+            controller.stepToOuterScreenEvent()
         }
 
         refreshView(true)
@@ -558,17 +562,16 @@ class FormHierarchyFragment(
          */
         get() {
             println("5194c: currentPath")
-            val formController = controller
-            var index: FormIndex? = formHierarchyViewModel.screenIndex
+            var index = formHierarchyViewModel.screenIndex
 
             val groups: MutableList<FormEntryCaption?> = ArrayList()
 
             if (formHierarchyViewModel.shouldShowRepeatGroupPicker(6)) {
-                groups.add(formController!!.getCaptionPrompt(formHierarchyViewModel.repeatGroupPickerIndex))
+                groups.add(controller.getCaptionPrompt(formHierarchyViewModel.repeatGroupPickerIndex))
             }
 
             while (index != null) {
-                groups.add(0, formController!!.getCaptionPrompt(index))
+                groups.add(0, controller.getCaptionPrompt(index))
                 index = FormIndexUtils.getPreviousLevel(index)
             }
 
@@ -711,9 +714,8 @@ class FormHierarchyFragment(
      */
     private fun didDeleteLastRepeatItem(): Boolean {
         println("5194c: didDeleteLastRepeatItem")
-        val formController = controller
-        val index = formController!!.getFormIndex()
-        val event = formController.getEvent(index)
+        val index = controller.getFormIndex()
+        val event = controller.getEvent(index)
 
         // If we're on item 0, but we will be prompted to add another item next,
         // it must be the last remaining item.
@@ -723,7 +725,7 @@ class FormHierarchyFragment(
 
     private fun didDeleteFirstRepeatItem(): Boolean {
         println("5194c: didDeleteFirstRepeatItem")
-        return controller?.getFormIndex()
+        return controller.getFormIndex()
             ?.elementMultiplicity == 0
     }
 
@@ -752,9 +754,8 @@ class FormHierarchyFragment(
      */
     private fun goToPreviousEvent() {
         println("5194c: goToPreviousEvent")
-        val formController = controller
         try {
-            formController!!.stepToPreviousScreenEvent()
+            controller.stepToPreviousScreenEvent()
         } catch (e: JavaRosaException) {
             Timber.d(e)
             createErrorDialog(e.cause!!.message)
