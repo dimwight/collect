@@ -335,4 +335,5 @@ interface FormController {
     fun getAnswer(treeReference: TreeReference?): IAnswerData?
 
     fun getEntities(): EntitiesExtra?
+    fun iStr(i: FormIndex): String
 }

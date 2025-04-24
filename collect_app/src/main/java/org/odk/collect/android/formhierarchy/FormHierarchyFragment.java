@@ -251,7 +251,7 @@ public class FormHierarchyFragment extends Fragment {
         }
     }
 
-    private void calculateElementsToDisplay(FormController formController,
+    private void calculateElementsToDisplay(FormController fc,
                                             ImageView groupIcon,
                                             TextView groupPathTextView) {
         System.out.println("5194d: calculateElementsToDisplay");
@@ -259,7 +259,7 @@ public class FormHierarchyFragment extends Fragment {
 
         jumpToHierarchyStartIndex();
 
-        int event = formController.getEvent();
+        int event = fc.getEvent();
 
         if (event == FormEntryController.EVENT_BEGINNING_OF_FORM
                 && !formHierarchyViewModel.shouldShowRepeatGroupPicker(1)) {
@@ -272,7 +272,8 @@ public class FormHierarchyFragment extends Fragment {
             groupPathTextView.setVisibility(View.VISIBLE);
             groupPathTextView.setText(getCurrentPath());
 
-            if (formController.indexContainsRepeatableGroup(formHierarchyViewModel.getScreenIndex())
+            if (fc.indexContainsRepeatableGroup( //5194
+                    formHierarchyViewModel.getScreenIndex())
                     || formHierarchyViewModel.shouldShowRepeatGroupPicker(2)) {
                 groupIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_repeat));
             } else {
@@ -281,7 +282,7 @@ public class FormHierarchyFragment extends Fragment {
         }
 
         // Refresh the current event in case we did step forward.
-        event = formController.getEvent();
+        event = fc.getEvent();
 
         // Ref to the parent group that's currently being displayed.
         //
@@ -290,9 +291,10 @@ public class FormHierarchyFragment extends Fragment {
         TreeReference visibleGroupRef = null;
 
         while (event != FormEntryController.EVENT_END_OF_FORM) {
+            System.out.println("5194e " + fc.iStr(fc.getFormIndex()));
 
             // get the ref to this element
-            TreeReference currentRef = formController.getFormIndex().getReference();
+            TreeReference currentRef = fc.getFormIndex().getReference();
 //            System.out.println("5194d: " + currentRef.toString());
 
             // retrieve the current group
@@ -315,7 +317,7 @@ public class FormHierarchyFragment extends Fragment {
                 // We're in a group within the one we want to list
                 // skip this question/group/repeat and move to the next index.
                 event =
-                        formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP);
+                        fc.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP);
                 continue;
             }
 
@@ -326,9 +328,9 @@ public class FormHierarchyFragment extends Fragment {
                         break;
                     }
 
-                    FormEntryPrompt fp = formController.getQuestionPrompt();
+                    FormEntryPrompt fp = fc.getQuestionPrompt();
                     String label = fp.getShortText();
-                    String answerDisplay = QuestionAnswerProcessor.getQuestionAnswer(fp, requireContext(), formController);
+                    String answerDisplay = QuestionAnswerProcessor.getQuestionAnswer(fp, requireContext(), fc);
                     elementsToDisplay.add(
                             new HierarchyItem(
                                     fp.getIndex(),
@@ -340,7 +342,7 @@ public class FormHierarchyFragment extends Fragment {
                     break;
                 }
                 case FormEntryController.EVENT_GROUP: {
-                    if (!formController.isGroupRelevant()) {
+                    if (!fc.isGroupRelevant()) {
                         break;
                     }
                     // Nothing but repeat group instances should show up in the picker.
@@ -348,10 +350,10 @@ public class FormHierarchyFragment extends Fragment {
                         break;
                     }
 
-                    FormIndex index = formController.getFormIndex();
+                    FormIndex index = fc.getFormIndex();
 
                     // Only display groups with a specific appearance attribute.
-                    if (!formController.isDisplayableGroup(index)) {
+                    if (!fc.isDisplayableGroup(index)) {
                         break;
                     }
 
@@ -363,7 +365,7 @@ public class FormHierarchyFragment extends Fragment {
 
                     visibleGroupRef = currentRef;
 
-                    FormEntryCaption caption = formController.getCaptionPrompt();
+                    FormEntryCaption caption = fc.getCaptionPrompt();
 
                     elementsToDisplay.add(
                             new HierarchyItem(
@@ -374,7 +376,7 @@ public class FormHierarchyFragment extends Fragment {
                     );
 
                     // Skip to the next item outside the group.
-                    event = formController.stepOverGroup();
+                    event = fc.stepOverGroup();
                     continue;
                 }
                 case FormEntryController.EVENT_PROMPT_NEW_REPEAT: {
@@ -385,7 +387,7 @@ public class FormHierarchyFragment extends Fragment {
                 case FormEntryController.EVENT_REPEAT: {
                     boolean forPicker = formHierarchyViewModel.shouldShowRepeatGroupPicker(5);
                     // Only break to exclude non-relevant repeat from picker
-                    if (!formController.isGroupRelevant() && forPicker) {
+                    if (!fc.isGroupRelevant() && forPicker) {
                         break;
                     }
 
@@ -397,7 +399,7 @@ public class FormHierarchyFragment extends Fragment {
                         break;
                     }
 
-                    FormEntryCaption fc = formController.getCaptionPrompt();
+                    FormEntryCaption fec = fc.getCaptionPrompt();
 
                     if (forPicker) {
                         // Don't render other groups' instances.
@@ -406,15 +408,15 @@ public class FormHierarchyFragment extends Fragment {
                             break;
                         }
 
-                        int itemNumber = fc.getMultiplicity() + 1;
+                        int itemNumber = fec.getMultiplicity() + 1;
 
                         // e.g. `friends > 1`
-                        String repeatLabel = fc.getShortText() + " > " + itemNumber;
+                        String repeatLabel = fec.getShortText() + " > " + itemNumber;
 
                         // If the child of the group has a more descriptive label, use that instead.
-                        if (fc.getFormElement().getChildren().size() == 1 && fc.getFormElement().getChild(0) instanceof GroupDef) {
-                            formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP);
-                            String itemLabel = formController.getCaptionPrompt().getShortText();
+                        if (fec.getFormElement().getChildren().size() == 1 && fec.getFormElement().getChild(0) instanceof GroupDef) {
+                            fc.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP);
+                            String itemLabel = fc.getCaptionPrompt().getShortText();
                             if (itemLabel != null) {
                                 // e.g. `1. Alice`
                                 repeatLabel = itemNumber + ".\u200E " + itemLabel;
@@ -423,17 +425,17 @@ public class FormHierarchyFragment extends Fragment {
 
                         elementsToDisplay.add(
                                 new HierarchyItem(
-                                        fc.getIndex(),
+                                        fec.getIndex(),
                                         HierarchyItemType.REPEAT_INSTANCE,
                                         HtmlUtils.textToHtml(repeatLabel)
                                 )
                         );
-                    } else if (fc.getMultiplicity() == 0) {
+                    } else if (fec.getMultiplicity() == 0) {
                         elementsToDisplay.add(
                                 new HierarchyItem(
-                                        fc.getIndex(),
+                                        fec.getIndex(),
                                         HierarchyItemType.REPEATABLE_GROUP,
-                                        HtmlUtils.textToHtml(fc.getShortText())
+                                        HtmlUtils.textToHtml(fec.getShortText())
                                 )
                         );
                     }
@@ -442,7 +444,7 @@ public class FormHierarchyFragment extends Fragment {
                 }
             }
 
-            event = formController.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP);
+            event = fc.stepToNextEvent(JavaRosaFormController.STEP_INTO_GROUP);
         }
 
         formHierarchyViewModel.setElementsToDisplay(elementsToDisplay);

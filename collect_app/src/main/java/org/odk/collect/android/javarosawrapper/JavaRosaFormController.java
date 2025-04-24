@@ -740,6 +740,7 @@ public class JavaRosaFormController implements FormController {
 
     public void deleteRepeat() {
         FormIndex fi = formEntryController.deleteRepeat();
+        System.out.println("5194f.deleteRepeat: " + iStr(fi));
         formEntryController.jumpToIndex(fi);
     }
 
@@ -776,12 +777,15 @@ public class JavaRosaFormController implements FormController {
         return unique;
     }
 
-    private static String iStr(FormIndex i) {
+    @Override
+    public String iStr(FormIndex i) {
+        TreeReference reference = i.getReference();
         return String.format(Locale.getDefault(),
-                "%s,%d,%s",
-                i.getReference().getNameLast(),
+                "%s,%d,%s,[%d]",
+                reference == null ? "null" : reference.getNameLast(),
                 i.getElementMultiplicity(),
-                i.toString()
+                i.toString(),
+                getEvent(i)
         );
     }
 
