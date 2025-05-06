@@ -54,6 +54,8 @@ import org.odk.collect.android.formentry.audit.AuditEventLogger;
 import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.entities.javarosa.finalization.EntitiesExtra;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -88,6 +90,7 @@ public class JavaRosaFormController implements FormController {
      */
     private static final String AUDIT = "audit";
     public static final String AUDIT_FILE_NAME = "audit.csv";
+    private static final Logger log = LoggerFactory.getLogger(JavaRosaFormController.class);
     private final boolean isEditing;
 
     /*
@@ -740,7 +743,10 @@ public class JavaRosaFormController implements FormController {
 
     public void deleteRepeat() {
         FormIndex fi = formEntryController.deleteRepeat();
-        System.out.println("5194f.deleteRepeat: " + iStr(fi));
+        TreeReference reference = fi.getReference();
+        reference.getNameLast();
+        log.info("5194f.deleteRepeat: ",
+                reference == null ? "null" : reference.getNameLast());
         formEntryController.jumpToIndex(fi);
     }
 
