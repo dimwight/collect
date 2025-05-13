@@ -439,8 +439,6 @@ public class FormHierarchyFragment extends Fragment {
                                 )
                         );
                     }
-
-                    break;
                 }
             }
 
