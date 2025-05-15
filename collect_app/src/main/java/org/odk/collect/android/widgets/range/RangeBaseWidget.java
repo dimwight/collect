@@ -57,7 +57,8 @@ public abstract class RangeBaseWidget extends QuestionWidget implements Slider.O
         slider = layoutElements.getSlider();
         currentValue = layoutElements.getCurrentValue();
 
-        setUpActualValueLabel(RangeWidgetUtils.setUpSlider(prompt, slider, true));
+        BigDecimal set = RangeWidgetUtils.setUpSlider(prompt, slider, !isDecimal);
+        setUpActualValueLabel(set == null ? null : set.floatValue());
 
         if (slider.isEnabled()) {
             slider.setListener(this);
@@ -94,12 +95,13 @@ public abstract class RangeBaseWidget extends QuestionWidget implements Slider.O
     public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
         if (fromUser) {
             BigDecimal actualValue = RangeWidgetUtils.getActualValue(getFormEntryPrompt(), value);
-            setUpActualValueLabel(actualValue);
+            setUpActualValueLabel(actualValue != null ? actualValue.floatValue() : null
+            );
             widgetValueChanged();
         }
     }
 
-    private void setUpActualValueLabel(BigDecimal actualValue) {
+    private void setUpActualValueLabel(Float actualValue) {
         if (actualValue != null) {
             currentValue.setText(
                     isDecimal ? String.valueOf(actualValue.doubleValue())
