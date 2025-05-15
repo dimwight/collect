@@ -37,7 +37,7 @@ import org.odk.collect.android.widgets.utilities.RangeWidgetUtils;
 import java.math.BigDecimal;
 
 @SuppressLint("ViewConstructor")
-public abstract class RangeBaseWidget extends QuestionWidget implements Slider.OnChangeListener {
+public class RangeBaseWidget extends QuestionWidget implements Slider.OnChangeListener {
     private final boolean isIntegerType;
     TrackingTouchSlider slider;
     TextView currentValue;
@@ -93,9 +93,7 @@ public abstract class RangeBaseWidget extends QuestionWidget implements Slider.O
     @Override
     public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
         if (fromUser) {
-            Float actualValue = RangeWidgetUtils.getActualValue(getFormEntryPrompt(), value);
-            setUpActualValueLabel(actualValue != null ? actualValue.floatValue() : null
-            );
+            setUpActualValueLabel(RangeWidgetUtils.getActualValue(getFormEntryPrompt(), value));
             widgetValueChanged();
         }
     }
