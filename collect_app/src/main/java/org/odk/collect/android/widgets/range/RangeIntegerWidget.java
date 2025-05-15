@@ -26,6 +26,6 @@ public class RangeIntegerWidget extends RangeBaseWidget {
     public RangeIntegerWidget(Context context,
                               QuestionDetails prompt,
                               Dependencies dependencies) {
-        super(context, prompt, dependencies, false);
+        super(context, prompt, dependencies, true);
     }
 }

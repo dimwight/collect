@@ -26,6 +26,6 @@ public class RangeDecimalWidget extends RangeBaseWidget {
     public RangeDecimalWidget(Context context,
                               QuestionDetails prompt,
                               Dependencies dependencies) {
-        super(context, prompt, dependencies, true);
+        super(context, prompt, dependencies, false);
     }
 }
