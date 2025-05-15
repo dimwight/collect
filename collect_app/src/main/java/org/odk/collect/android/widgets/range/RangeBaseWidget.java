@@ -34,6 +34,8 @@ import org.odk.collect.android.views.TrackingTouchSlider;
 import org.odk.collect.android.widgets.QuestionWidget;
 import org.odk.collect.android.widgets.utilities.RangeWidgetUtils;
 
+import java.math.BigDecimal;
+
 @SuppressLint("ViewConstructor")
 public abstract class RangeBaseWidget extends QuestionWidget implements Slider.OnChangeListener {
     private final boolean isDecimal;
@@ -55,7 +57,7 @@ public abstract class RangeBaseWidget extends QuestionWidget implements Slider.O
         slider = layoutElements.getSlider();
         currentValue = layoutElements.getCurrentValue();
 
-        setUpActualValueLabel(RangeWidgetUtils.setUpSlider(prompt, slider, !isDecimal).floatValue());
+        setUpActualValueLabel(RangeWidgetUtils.setUpSlider(prompt, slider, true));
 
         if (slider.isEnabled()) {
             slider.setListener(this);
@@ -91,13 +93,13 @@ public abstract class RangeBaseWidget extends QuestionWidget implements Slider.O
     @Override
     public void onValueChange(@NonNull Slider slider, float value, boolean fromUser) {
         if (fromUser) {
-            Float actualValue = RangeWidgetUtils.getActualValue(getFormEntryPrompt(), value);
+            BigDecimal actualValue = RangeWidgetUtils.getActualValue(getFormEntryPrompt(), value);
             setUpActualValueLabel(actualValue);
             widgetValueChanged();
         }
     }
 
-    private void setUpActualValueLabel(Float actualValue) {
+    private void setUpActualValueLabel(BigDecimal actualValue) {
         if (actualValue != null) {
             currentValue.setText(
                     isDecimal ? String.valueOf(actualValue.doubleValue())

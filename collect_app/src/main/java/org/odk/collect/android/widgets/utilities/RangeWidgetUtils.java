@@ -167,16 +167,17 @@ public class RangeWidgetUtils {
         }
     }
 
-    public static float getActualValue(FormEntryPrompt prompt, float value) {
+    public static BigDecimal getActualValue(FormEntryPrompt prompt, float value) {
         RangeQuestion rangeQuestion = (RangeQuestion) prompt.getQuestion();
-        Float rangeStart = rangeQuestion.getRangeStart().floatValue();
-        Float rangeEnd = rangeQuestion.getRangeEnd().floatValue();
+        BigDecimal rangeStart = rangeQuestion.getRangeStart();
+        BigDecimal rangeEnd = rangeQuestion.getRangeEnd();
+        BigDecimal actualValue = BigDecimal.valueOf(value);
 
         if (rangeEnd.compareTo(rangeStart) < 0) {
-            value = rangeEnd + rangeStart - value;
+            actualValue = rangeEnd.add(rangeStart).subtract(actualValue);
         }
 
-        return value;
+        return actualValue;
     }
 
     public static void showNumberPickerDialog(FragmentActivity activity, String[] displayedValuesForNumberPicker, int id, int progress) {
