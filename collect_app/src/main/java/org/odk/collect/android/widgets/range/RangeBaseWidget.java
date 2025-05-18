@@ -57,15 +57,13 @@ public class RangeBaseWidget extends QuestionWidget implements Slider.OnChangeLi
         slider = layoutElements.getSlider();
         currentValue = layoutElements.getCurrentValue();
 
-        BigDecimal set = RangeWidgetUtils.setUpSlider(prompt, slider, isIntegerType);
-        setUpActualValueLabel(set == null ? null : set.floatValue());
+        setUpActualValueLabel(RangeWidgetUtils.setUpSlider(prompt, slider, true));
 
         if (slider.isEnabled()) {
             slider.setListener(this);
         }
         return layoutElements.getAnswerView();
     }
-
     @Override
     public IAnswerData getAnswer() {
         String stringAnswer = currentValue.getText().toString();
@@ -98,7 +96,7 @@ public class RangeBaseWidget extends QuestionWidget implements Slider.OnChangeLi
         }
     }
 
-    private void setUpActualValueLabel(Float actualValue) {
+    private void setUpActualValueLabel(BigDecimal actualValue) {
         if (actualValue != null) {
             currentValue.setText(
                     isIntegerType ? String.valueOf(actualValue.intValue())
