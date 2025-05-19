@@ -15,8 +15,8 @@ import org.odk.collect.android.databinding.RangePickerWidgetAnswerBinding;
 import org.odk.collect.android.databinding.RangeWidgetHorizontalBinding;
 import org.odk.collect.android.databinding.RangeWidgetVerticalBinding;
 import org.odk.collect.android.fragments.dialogs.NumberPickerDialog;
-import org.odk.collect.androidshared.ui.ToastUtils;
 import org.odk.collect.android.views.TrackingTouchSlider;
+import org.odk.collect.androidshared.ui.ToastUtils;
 
 import java.math.BigDecimal;
 
