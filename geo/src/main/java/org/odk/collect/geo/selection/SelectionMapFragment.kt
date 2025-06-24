@@ -375,16 +375,6 @@ class SelectionMapFragment(
         }
     }
 
-    private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
-        val featureId = featureIdsByItemId[selectedItem.id]
-        if (featureId != null) {
-            map.setMarkerIcon(
-                featureId,
-                MarkerIconDescription(selectedItem.smallIcon, selectedItem.color, selectedItem.symbol)
-            )
-        }
-    }
-
     /**
      * Clears the existing features on the map and places features for the current form's instances.
      */
@@ -394,10 +384,13 @@ class SelectionMapFragment(
         itemsByFeatureId.clear()
 
         val singlePoints = items.filterIsInstance<MappableSelectItem.MappableSelectPoint>()
+            .toMutableList()
+        singlePoints.removeAll { it.selected }
+
         val lines = items.filterIsInstance<MappableSelectItem.MappableSelectLine>()
         val polygons = items.filterIsInstance<MappableSelectItem.MappableSelectPolygon>()
 
-        val markerDescriptions = singlePoints.map {
+        val markerDescriptions: List<MarkerDescription> = singlePoints.map {
             MarkerDescription(
                 MapPoint(it.point.latitude, it.point.longitude),
                 false,
@@ -425,6 +418,20 @@ class SelectionMapFragment(
         }
 
         featureCount = items.size
+    }
+
+    private fun resetIcon(selectedItem: MappableSelectItem.MappableSelectPoint) {
+        val featureId = featureIdsByItemId[selectedItem.id]
+        if (featureId != null) {
+            map.setMarkerIcon(
+                featureId,
+                MarkerIconDescription(
+                    selectedItem.smallIcon,
+                    selectedItem.color,
+                    selectedItem.symbol
+                )
+            )
+        }
     }
 
     companion object {
